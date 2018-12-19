@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+Properties props = new Properties()
+try {
+    props.load(file('twitter.properties').newDataInputStream())
+} catch (Exception ex) {
+    throw new FileNotFoundException("Missing twitter.properties, check the twitter.sample.properties file.");
+}
+
 android {
     compileSdkVersion 28
     defaultConfig {
@@ -10,20 +17,94 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    dataBinding {
+        enabled = true
+    }
     buildTypes {
+        debug {
+            buildConfigField "String", "CONSUMER_KEY", "\"${props.getProperty("twitterConsumerKey")}\""
+            buildConfigField "String", "CONSUMER_SECRET", "\"${props.getProperty("twitterConsumerSecret")}\""
+        }
         release {
+            buildConfigField "String", "CONSUMER_KEY", "\"${props.getProperty("twitterConsumerKey")}\""
+            buildConfigField "String", "CONSUMER_SECRET", "\"${props.getProperty("twitterConsumerSecret")}\""
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation('com.twitter.sdk.android:twitter:3.3.0@aar') {
+        transitive = true
+    }
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation 'com.android.support:design:28.0.0'
+    implementation 'com.android.support:cardview-v7:28.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    //레트로핏 라이브러리 추가
+    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+
+    def lifecycle_version = "1.1.1"
+
+    // ViewModel and LiveData
+    implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+//    annotationProcessor "android.arch.lifecycle:compiler:$lifecycle_version"
+
+    // alternately - if using Java8, use the following instead of compiler
+    implementation "android.arch.lifecycle:common-java8:$lifecycle_version"
+
+    // optional - ReactiveStreams support for LiveData
+    //    implementation "android.arch.lifecycle:reactivestreams:$lifecycle_version"
+
+    // optional - Test helpers for LiveData
+    testImplementation "android.arch.core:core-testing:$lifecycle_version"
+
+    //lambda
+    implementation 'me.tatarka:gradle-retrolambda:3.7.0'
+
+    // glide
+    implementation 'com.github.bumptech.glide:glide:4.7.1'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+
+    def room_version = "1.1.1"
+    implementation "android.arch.persistence.room:runtime:$room_version"
+    annotationProcessor "android.arch.persistence.room:compiler:$room_version"
+
+    // optional - RxJava support for Room
+//    implementation "android.arch.persistence.room:rxjava2:$room_version"
+
+    // optional - Guava support for Room, including Optional and ListenableFuture
+    //    implementation "android.arch.persistence.room:guava:$room_version"
+    // Test helpers
+//    testImplementation "android.arch.persistence.room:testing:$room_version"
+
+    //retrofit2
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+//    implementation 'com.squareup.retrofit2:adapter-rxjava2:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
+
+    // rxandroid2
+//    implementation 'io.reactivex.rxjava2:rxandroid:2.0.2'
+//    implementation 'com.jakewharton.rxbinding2:rxbinding:2.1.1'
+
+    //dagger
+    implementation 'com.google.dagger:dagger-android:2.15'
+    implementation 'com.google.dagger:dagger-android-support:2.15'
+
+    // if you use the support libraries
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.15'
+    implementation 'io.realm:android-adapters:2.0.0'
 }
