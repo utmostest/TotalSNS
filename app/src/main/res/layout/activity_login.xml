@@ -8,7 +8,7 @@
     tools:context=".view.LoginActivity">
 
 
-    <com.twitter.sdk.android.core.identity.TwitterLoginButton
+    <Button
         android:id="@+id/email_sign_in_button"
         style="?android:textAppearanceSmall"
         android:layout_width="0dp"
