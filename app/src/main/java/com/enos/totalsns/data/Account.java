@@ -15,20 +15,31 @@ public class Account {
     private String oauthKey;
     private String oauthSecret;
     private String profileImage;
+    private String name;
     private int snsType;
     private boolean isCurrent;
 
     public Account() {
     }
 
-    public Account(long uid, String screen_name, String oauth_key, String oauth_secret, String profileImagemage, int snsType, boolean isCurrent) {
+    public Account(long uid, String screen_name, String oauth_key, String oauth_secret, String profileImagemage, String name, int snsType, boolean isCurrent) {
         this.id = uid;
         this.screenName = screen_name;
         this.oauthKey = oauth_key;
         this.oauthSecret = oauth_secret;
         this.profileImage = profileImagemage;
+        this.name = name;
+
         this.snsType = snsType;
         this.isCurrent = isCurrent;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public long getId() {

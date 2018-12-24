@@ -3,6 +3,7 @@ package com.enos.totalsns.viewmodel;
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.enos.totalsns.AppExecutors;
 import com.enos.totalsns.data.Account;
@@ -22,6 +23,7 @@ import twitter4j.Paging;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.TwitterException;
+import twitter4j.URLEntity;
 import twitter4j.User;
 
 public class SnsClientViewModel extends AndroidViewModel {
@@ -120,6 +122,17 @@ public class SnsClientViewModel extends AndroidViewModel {
                 for (Status status : list) {
                     User user = status.getUser();
                     Article article = new Article(user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), status.getCreatedAt().getTime());
+                    URLEntity[] urls = status.getMediaEntities();
+                    if (urls != null) {
+                        String[] strs = new String[urls.length];
+                        int i = 0;
+                        for (URLEntity url : urls) {
+                            strs[i] = url.getExpandedURL();
+                            i++;
+                            Log.i("URL", url.getDisplayURL() + "\n" + url.getExpandedURL() + "\n" + url.getURL() + "\n" + url.getText());
+                        }
+                        article.setImageUrls(strs);
+                    }
                     articleList.add(article);
                 }
                 if (timeline != null) {

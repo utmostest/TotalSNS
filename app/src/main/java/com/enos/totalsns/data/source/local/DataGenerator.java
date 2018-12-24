@@ -30,13 +30,13 @@ public class DataGenerator {
     //TODO SNS계정 더미 데이터 수정
     public static List<Account> generateAccounts() {
         List<Account> accounts = new ArrayList<>(4);
-        Account account = new Account(21338, "fake_facebook1", "", "", "", Constants.FACEBOOK, true);
+        Account account = new Account(21338, "fake_facebook1", "", "", "", "John", Constants.FACEBOOK, true);
         accounts.add(account);
-        account = new Account(5164, "fake_instagram1", "", "", "", Constants.INSTAGRAM, true);
+        account = new Account(5164, "fake_instagram1", "", "", "", "James", Constants.INSTAGRAM, true);
         accounts.add(account);
-        account = new Account(44964, "fake_facebook2", "", "", "", Constants.FACEBOOK, false);
+        account = new Account(44964, "fake_facebook2", "", "", "", "Paul", Constants.FACEBOOK, false);
         accounts.add(account);
-        account = new Account(8799, "fake_instagram2", "", "", "", Constants.INSTAGRAM, false);
+        account = new Account(8799, "fake_instagram2", "", "", "", "David", Constants.INSTAGRAM, false);
         accounts.add(account);
         return accounts;
     }

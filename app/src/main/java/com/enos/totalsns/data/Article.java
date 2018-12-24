@@ -5,6 +5,7 @@ public class Article {
     private String userName;
     private String userId;
     private String message;
+    private String[] imageUrls;
     private long postedAt;
 
     public Article() {
@@ -17,6 +18,14 @@ public class Article {
         message = msg;
         profileImg = profile;
         postedAt = time;
+    }
+
+    public String[] getImageUrls() {
+        return imageUrls;
+    }
+
+    public void setImageUrls(String[] imageUrls) {
+        this.imageUrls = imageUrls;
     }
 
     public String getProfileImg() {

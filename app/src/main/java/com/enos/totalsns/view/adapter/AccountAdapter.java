@@ -6,12 +6,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.view.AccountFragment;
+
+import org.w3c.dom.Text;
 
 import java.util.List;
 
@@ -86,8 +89,8 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
             ItemViewHolder holder = (ItemViewHolder) vh;
             holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getId() + "");
-            holder.mContentView.setText(mValues.get(position).getScreenName());
+            holder.mIdView.setText(mValues.get(position).getScreenName());
+            holder.mNameView.setText(mValues.get(position).getName());
 
             holder.mView.setOnClickListener(v -> {
                 if (null != mListener) {
@@ -150,14 +153,16 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private class ItemViewHolder extends RecyclerView.ViewHolder {
         final View mView;
         final TextView mIdView;
-        final TextView mContentView;
+        final TextView mNameView;
+        final ImageView mProfileView;
         public Account mItem;
 
         ItemViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mIdView = (TextView) view.findViewById(R.id.accUserId);
+            mNameView = (TextView) view.findViewById(R.id.accUserName);
+            mProfileView = (ImageView) view.findViewById(R.id.accProfileImg);
         }
     }
 

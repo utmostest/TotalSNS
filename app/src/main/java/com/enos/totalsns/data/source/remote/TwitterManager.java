@@ -76,8 +76,9 @@ public class TwitterManager {
         long userId = credential.getId();
         String profileImg = credential.get400x400ProfileImageURL();
         String screenName = credential.getScreenName();
+        String name = credential.getName();
 
-        return new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, Constants.TWITTER, true);
+        return new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, name, Constants.TWITTER, true);
     }
 
     public Status updateStatus(String message) throws TwitterException {
