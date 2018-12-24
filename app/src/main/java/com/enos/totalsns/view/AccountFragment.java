@@ -27,10 +27,10 @@ import java.util.List;
  */
 public class AccountFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
     private static final String ARG_SNS_TYPE = "sns-type";
-    // TODO: Customize parameters
+
     private int mSnsType = Constants.DEFAULT_SNS;
+
     private OnSnsAccountListener mListener;
 
     /**
@@ -40,7 +40,6 @@ public class AccountFragment extends Fragment {
     public AccountFragment() {
     }
 
-    // TODO: Customize parameter initialization
     public static AccountFragment newInstance(int snsType) {
         AccountFragment fragment = new AccountFragment();
         Bundle args = new Bundle();
@@ -61,7 +60,7 @@ public class AccountFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_account_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_account, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {
@@ -124,7 +123,6 @@ public class AccountFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnSnsAccountListener {
-        // TODO: Update argument type and name
         void onAccountClicked(Account item);
 
         void onNewAccountButtonClicked(int snsType);

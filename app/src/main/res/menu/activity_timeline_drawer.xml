@@ -5,35 +5,43 @@
 
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/nav_camera"
+            android:id="@+id/nav_dr_all"
             android:icon="@drawable/ic_menu_camera"
-            android:title="Import" />
+            android:title="@string/title_all" />
         <item
-            android:id="@+id/nav_gallery"
+            android:id="@+id/nav_dr_selected"
             android:icon="@drawable/ic_menu_gallery"
-            android:title="Gallery" />
+            android:title="@string/title_selected" />
         <item
-            android:id="@+id/nav_slideshow"
+            android:id="@+id/nav_dr_twitter"
             android:icon="@drawable/ic_menu_slideshow"
-            android:title="Slideshow" />
+            android:title="@string/title_twitter" />
         <item
-            android:id="@+id/nav_manage"
+            android:id="@+id/nav_dr_facebook"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Tools" />
+            android:title="@string/title_facebook" />
+        <item
+            android:id="@+id/nav_dr_instagram"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="@string/title_instagram" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="@string/addition_func">
         <menu>
             <item
-                android:id="@+id/nav_nearby"
+                android:id="@+id/nav_dr_edit"
+                android:icon="@drawable/ic_menu_manage"
+                android:title="@string/title_edit" />
+            <item
+                android:id="@+id/nav_dr_nearby"
                 android:icon="@drawable/ic_menu_share"
                 android:title="@string/nearby_artilce" />
             <item
-                android:id="@+id/nav_setting"
+                android:id="@+id/nav_dr_setting"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/setting" />
             <item
-                android:id="@+id/nav_sign_out"
+                android:id="@+id/nav_dr_sign_out"
                 android:icon="@drawable/ic_menu_send"
                 android:title="@string/sign_out" />
         </menu>

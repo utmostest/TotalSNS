@@ -4,7 +4,16 @@ import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 
+import twitter4j.DirectMessage;
+import twitter4j.DirectMessageList;
+import twitter4j.GeoQuery;
+import twitter4j.Paging;
+import twitter4j.Place;
+import twitter4j.Query;
+import twitter4j.QueryResult;
+import twitter4j.ResponseList;
 import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
@@ -33,7 +42,7 @@ public class TwitterManager {
     public void init() {
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
+        cb.setDebugEnabled(Constants.IS_DEBUG)
                 .setOAuthConsumerKey(BuildConfig.CONSUMER_KEY)
                 .setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET);
 
@@ -49,7 +58,7 @@ public class TwitterManager {
     public Account signInWithOauthToken(OauthToken token) throws TwitterException {
 
         ConfigurationBuilder cb = new ConfigurationBuilder();
-        cb.setDebugEnabled(true)
+        cb.setDebugEnabled(Constants.IS_DEBUG)
                 .setOAuthConsumerKey(BuildConfig.CONSUMER_KEY)
                 .setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET)
                 .setOAuthAccessToken(token.getToken())
@@ -68,16 +77,61 @@ public class TwitterManager {
         String profileImg = credential.get400x400ProfileImageURL();
         String screenName = credential.getScreenName();
 
-        Account current = new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, Constants.TWITTER, true);
-
-        return current;
+        return new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, Constants.TWITTER, true);
     }
 
     public Status updateStatus(String message) throws TwitterException {
         if (mTwitter == null) return null;
 
-        Status status = mTwitter.updateStatus(message);
-        return status;
+        return mTwitter.updateStatus(message);
+    }
+
+    public Status updateStatus(StatusUpdate status) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.updateStatus(status);
+    }
+
+    public ResponseList<Status> getTimeLine(Paging paging) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.getHomeTimeline(paging);
+    }
+
+    public ResponseList<Status> getUserTimeline(long userId, Paging paging) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.getUserTimeline(userId, paging);
+    }
+
+    public DirectMessageList getDirectMessage(int count, String cursor) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.getDirectMessages(count, cursor);
+    }
+
+    public DirectMessage sendDirectMessage(long userId, String message, long mediaId) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.sendDirectMessage(userId, message, mediaId);
+    }
+
+    public QueryResult search(Query query) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.search(query);
+    }
+
+    public ResponseList<Place> search(GeoQuery geoQuery) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.searchPlaces(geoQuery);
+    }
+
+    public ResponseList<User> searchUser(String query, int page) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.searchUsers(query, page);
     }
 
     public void signOut() {

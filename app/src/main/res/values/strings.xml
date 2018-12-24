@@ -2,7 +2,7 @@
     <string name="app_name">TotalSNS</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_title">header title</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
@@ -21,22 +21,26 @@
         completions."
     </string>
 
-    <string name="title_activity_intro">IntroActivity</string>
-    <string name="dummy_button">Dummy Button</string>
+    <string name="title_activity_intro">인트로</string>
     <string name="app_name_intro">Total SNS</string>
-    <string name="sign_out">Sign Out</string>
-    <string name="setting">Settings</string>
-    <string name="nearby_artilce">Nearby Article</string>
+    <string name="sign_out">로그아웃</string>
+    <string name="setting">설정</string>
+    <string name="nearby_artilce">주변 글보기</string>
     <string name="sign_in_instagram">인스타그램에 로그인</string>
     <string name="sign_in_twitter">트위터에 로그인</string>
     <string name="sign_in_facebook">페이스북에 로그인</string>
     <string name="title_activity_select_sns">SNS 계정 선택</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
-    <string name="title_notifications">Notifications</string>
     <string name="title_twitter">트위터</string>
     <string name="title_facebook">페이스북</string>
     <string name="title_instagram">인스타그램</string>
     <string name="account_new">새로운 계정 등록하기</string>
     <string name="upload_test_message">upload test message</string>
+    <string name="title_timeline">글목록</string>
+    <string name="title_search">검색</string>
+    <string name="title_notificate">알림</string>
+    <string name="title_direct">쪽지</string>
+    <string name="title_edit">SNS 항목편집</string>
+    <string name="title_selected">선택항목</string>
+    <string name="title_all">모두</string>
+    <string name="addition_func">부가기능</string>
 </resources>
