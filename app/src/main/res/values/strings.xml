@@ -7,6 +7,7 @@
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_timeline">Timeline</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Password (optional)</string>
@@ -19,4 +20,23 @@
     <string name="permission_rationale">"Contacts permissions are needed for providing email
         completions."
     </string>
+
+    <string name="title_activity_intro">IntroActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="app_name_intro">Total SNS</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="setting">Settings</string>
+    <string name="nearby_artilce">Nearby Article</string>
+    <string name="sign_in_instagram">인스타그램에 로그인</string>
+    <string name="sign_in_twitter">트위터에 로그인</string>
+    <string name="sign_in_facebook">페이스북에 로그인</string>
+    <string name="title_activity_select_sns">SNS 계정 선택</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
+    <string name="title_twitter">트위터</string>
+    <string name="title_facebook">페이스북</string>
+    <string name="title_instagram">인스타그램</string>
+    <string name="account_new">새로운 계정 등록하기</string>
+    <string name="upload_test_message">upload test message</string>
 </resources>

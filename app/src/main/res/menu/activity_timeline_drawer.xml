@@ -25,13 +25,17 @@
     <item android:title="Communicate">
         <menu>
             <item
-                android:id="@+id/nav_share"
+                android:id="@+id/nav_nearby"
                 android:icon="@drawable/ic_menu_share"
-                android:title="Share" />
+                android:title="@string/nearby_artilce" />
             <item
-                android:id="@+id/nav_send"
+                android:id="@+id/nav_setting"
                 android:icon="@drawable/ic_menu_send"
-                android:title="Send" />
+                android:title="@string/setting" />
+            <item
+                android:id="@+id/nav_sign_out"
+                android:icon="@drawable/ic_menu_send"
+                android:title="@string/sign_out" />
         </menu>
     </item>
 

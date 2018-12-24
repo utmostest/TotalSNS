@@ -11,11 +11,12 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.enos.totalsns"
-        minSdkVersion 15
+        minSdkVersion 16
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        vectorDrawables.useSupportLibrary = true
     }
     dataBinding {
         enabled = true
@@ -46,12 +47,14 @@ dependencies {
     implementation 'com.android.support:cardview-v7:28.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0'
     implementation 'com.android.support.constraint:constraint-layout:1.1.3'
+    implementation 'com.android.support:support-v4:28.0.0'
+    implementation 'com.android.support:support-vector-drawable:28.0.0'
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     //레트로핏 라이브러리 추가
-    implementation 'com.squareup.retrofit2:retrofit:2.1.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.1.0'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
     implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
 
@@ -81,6 +84,26 @@ dependencies {
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
+    def work_version = "1.0.0-beta01"
+
+    implementation "android.arch.work:work-runtime:$work_version" // use -ktx for Kotlin+Coroutines
+
+    // optional - RxJava2 support
+//    implementation "android.arch.work:work-rxjava2:$work_version"
+
+    // optional - Test helpers
+    androidTestImplementation "android.arch.work:work-testing:$work_version"
+
+    def paging_version = "1.0.1"
+
+    implementation "android.arch.paging:runtime:$paging_version"
+
+    // alternatively - without Android dependencies for testing
+//    testImplementation "android.arch.paging:common:$paging_version"
+
+    // optional - RxJava support
+//    implementation "android.arch.paging:rxjava2:$paging_version"
+
     // optional - RxJava support for Room
 //    implementation "android.arch.persistence.room:rxjava2:$room_version"
 
@@ -105,4 +128,6 @@ dependencies {
     // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.15'
     implementation 'io.realm:android-adapters:2.0.0'
+
+    implementation 'me.saket:better-link-movement-method:2.2.0'
 }

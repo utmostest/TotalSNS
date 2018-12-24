@@ -14,14 +14,21 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".view.TimelineActivity"
-            android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.LoginActivity">
+        <activity android:name=".view.LoginActivity" />
+        <activity
+            android:name=".view.IntroActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".view.SelectSNSActivity"
+            android:label="@string/title_activity_select_sns">
         </activity>
     </application>
 
