@@ -13,6 +13,7 @@ import java.util.List;
  */
 public class DataRepository {
 
+    //TODO SNS Client Repository 생성 및 SNS별 기능 추가
     private static DataRepository sInstance;
 
     private final AppDatabase mDatabase;

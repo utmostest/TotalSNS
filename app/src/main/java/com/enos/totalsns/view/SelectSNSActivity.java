@@ -45,6 +45,8 @@ public class SelectSNSActivity extends AppCompatActivity implements AccountFragm
         return menuSelected;
     };
 
+    // TODO 페이스북 과 인스타그램의 더미계정 추가
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -27,6 +27,7 @@ import java.util.List;
  */
 public class DataGenerator {
 
+    //TODO SNS계정 더미 데이터 수정
     public static List<Account> generateAccounts() {
         List<Account> accounts = new ArrayList<>(4);
         Account account = new Account(21338, "fake_facebook1", "", "", "", Constants.FACEBOOK, true);

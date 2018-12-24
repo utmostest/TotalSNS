@@ -18,10 +18,10 @@ import java.util.List;
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Account} and makes a call to the
  * specified {@link AccountFragment.OnSnsAccountListener}.
- * TODO: Replace the implementation with code for your data type.
  */
 public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
+    // TODO SNS별 뷰홀더 추가 및 화면 표시
     //    private Context mContext;
     private List<Account> mValues;
     private AccountFragment.OnSnsAccountListener mListener;
@@ -58,7 +58,7 @@ public class AccountAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             return new FooterViewHolder(itemView);
         } else {
             //Inflating recycle view item layout
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.fragment_account, parent, false);
+            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account, parent, false);
             return new ItemViewHolder(itemView);
         }
     }

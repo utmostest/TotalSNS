@@ -28,6 +28,8 @@ import java.util.List;
 
 public class AccountListViewModel extends AndroidViewModel {
 
+    // TODO 화면에 맞게 뷰모델 추가 및 설정 구현
+    // TODO 데이터바인딩 사용을 위해 레이아웃 수정 및 구현
     // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Account>> mObservableAccounts;
 

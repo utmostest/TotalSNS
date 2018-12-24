@@ -55,7 +55,7 @@ public class IntroActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        // TODO 로그인 레이아웃 변경
         setContentView(R.layout.activity_intro);
 
         viewModel = ViewModelProviders.of(this).get(SnsClientViewModel.class);

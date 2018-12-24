@@ -45,6 +45,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private final MutableLiveData<Boolean> mIsDatabaseCreated = new MutableLiveData<>();
 
+    // TODO 외부 클래스에서 사용가능한 범용 함수 추가
+
     public static AppDatabase getInstance(final Context context) {
         if (sInstance == null) {
             synchronized (AppDatabase.class) {

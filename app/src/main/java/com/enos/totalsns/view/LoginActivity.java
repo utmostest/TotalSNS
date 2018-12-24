@@ -23,6 +23,8 @@ import com.enos.totalsns.viewmodel.SnsClientViewModel;
  */
 public class LoginActivity extends AppCompatActivity {
 
+    // TODO SNS 별 프래그먼트 생성 및 분기
+    // TODO 페이스북과 인스타그램의 페이크 로그인 구현
 
     public static final String SNS_TYPE_KEY = "SNS_TYPE_KEY";
 
