@@ -101,7 +101,7 @@ public abstract class AppDatabase extends RoomDatabase {
 
     private static void insertData(final AppDatabase database, final List<Account> accounts) {
         database.runInTransaction(() -> {
-            database.accountDao().insertAll(accounts);
+            database.accountDao().insertAccounts(accounts);
         });
     }
 
@@ -113,15 +113,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
         if (current == null) return;
 
-        List<Account> accounts = accountDao().loadCurrentAccountsBySns(snsType);
-        if (accounts != null) {
-            for (Account account : accounts) {
-                account.setCurrent(false);
-            }
-            accountDao().updateUsers(accounts);
-        }
+        accountDao().updateSignOutBySns(snsType);
 
         if (!current.isCurrent()) current.setCurrent(true);
-        accountDao().insert(current);
+        accountDao().insertAccount(current);
     }
 }

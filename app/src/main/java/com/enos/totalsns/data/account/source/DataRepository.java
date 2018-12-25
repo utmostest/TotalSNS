@@ -1,4 +1,4 @@
-package com.enos.totalsns.data.source;
+package com.enos.totalsns.data.account.source;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
@@ -23,7 +23,7 @@ public class DataRepository {
         mDatabase = database;
         mObservableAccounts = new MediatorLiveData<>();
 
-        mObservableAccounts.addSource(mDatabase.accountDao().loadAllAccounts(),
+        mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> {
                     if (mDatabase.getDatabaseCreated().getValue() != null) {
                         mObservableAccounts.postValue(accounts);
@@ -50,6 +50,6 @@ public class DataRepository {
     }
 
     public Account loadAccountSync(final long uid) {
-        return mDatabase.accountDao().loadAccountsSync(uid);
+        return mDatabase.accountDao().getAccountById(uid);
     }
 }

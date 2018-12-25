@@ -2,7 +2,7 @@ package com.enos.totalsns;
 
 import android.app.Application;
 
-import com.enos.totalsns.data.source.DataRepository;
+import com.enos.totalsns.data.account.source.DataRepository;
 import com.enos.totalsns.data.account.source.local.AppDatabase;
 
 public class TotalSNSApp extends Application {

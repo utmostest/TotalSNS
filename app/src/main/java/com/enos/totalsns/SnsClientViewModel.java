@@ -64,9 +64,8 @@ public class SnsClientViewModel extends AndroidViewModel {
     public void signInTwitterWithSaved(OnTwitterLoginListener login, boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
             TwitterManager.getInstance().init();
-            List<Account> accountList = mAppDatabase.accountDao().loadCurrentAccountsBySns(Constants.TWITTER);
-            if (accountList != null && accountList.size() > 0) {
-                Account current = accountList.get(0);
+            Account current = mAppDatabase.accountDao().getCurrentAccountsBySns(Constants.TWITTER);
+            if (current != null) {
                 OauthToken oauthToken = new OauthToken(current.getOauthKey(), current.getOauthSecret());
                 oauthToken.setIsAccessToken(true);
                 signInTwitterWithOauthToken(oauthToken, login, isEnableUpdate);
@@ -103,13 +102,7 @@ public class SnsClientViewModel extends AndroidViewModel {
 
     public void signOut() {
         mAppExecutors.networkIO().execute(() -> {
-            List<Account> accounts = mAppDatabase.accountDao().loadCurrentAccounts();
-            if (accounts != null) {
-                for (Account account : accounts) {
-                    account.setCurrent(false);
-                }
-                mAppDatabase.accountDao().updateUsers(accounts);
-            }
+            mAppDatabase.accountDao().updateSignOut();
             TwitterManager.getInstance().signOut();
         });
     }
