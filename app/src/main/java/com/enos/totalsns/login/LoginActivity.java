@@ -1,4 +1,4 @@
-package com.enos.totalsns.view;
+package com.enos.totalsns.login;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -10,13 +10,10 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.TwitterWebViewClient;
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.account.Account;
 import com.enos.totalsns.data.source.remote.OauthToken;
-import com.enos.totalsns.interfaces.OnTwitterInitComplete;
-import com.enos.totalsns.interfaces.OnTwitterLogin;
-import com.enos.totalsns.interfaces.OnTwitterLoginWebView;
-import com.enos.totalsns.viewmodel.SnsClientViewModel;
+import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.SnsClientViewModel;
 
 /**
  * A login screen that offers login via email/password.
@@ -46,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         setupUI();
     }
 
-    OnTwitterLogin onTwitterLogin = new OnTwitterLogin() {
+    OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
         @Override
         public void onLoginFailed(String message) {
             loginFailed(message);
@@ -58,9 +55,9 @@ public class LoginActivity extends AppCompatActivity {
         }
     };
 
-    OnTwitterInitComplete onTwitterAuthorization = new OnTwitterInitComplete() {
+    OnTwitterInitListener onTwitterAuthorization = new OnTwitterInitListener() {
         @Override
-        public void onInitCompleted(String authorization) {
+        public void onTwitterInit(String authorization) {
             webView.loadUrl(authorization);
         }
     };
@@ -71,7 +68,7 @@ public class LoginActivity extends AppCompatActivity {
         viewModel = ViewModelProviders.of(LoginActivity.this).get(SnsClientViewModel.class);
 
         TwitterWebViewClient twitterWebViewClient = new TwitterWebViewClient();
-        twitterWebViewClient.setTwitterLoginListener(new OnTwitterLoginWebView() {
+        twitterWebViewClient.setTwitterLoginListener(new OnTwitterLoginWebViewListener() {
             @Override
             public void onWebViewLoginCanceled() {
                 loginFailed("user canceled login");
@@ -104,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
 
         OauthToken oauthToken = new OauthToken(token, oauthSecret);
 
-        viewModel.signInTwitterWithOauthToken(oauthToken, onTwitterLogin, true);
+        viewModel.signInTwitterWithOauthToken(oauthToken, onTwitterLoginListener, true);
     }
 
     private void entireLoginSucceed(String message) {

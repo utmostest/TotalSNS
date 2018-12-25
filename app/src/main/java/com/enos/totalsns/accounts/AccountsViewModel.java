@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns.viewmodel;
+package com.enos.totalsns.accounts;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
@@ -22,18 +22,18 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
 import com.enos.totalsns.TotalSNSApp;
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.account.Account;
 
 import java.util.List;
 
-public class AccountListViewModel extends AndroidViewModel {
+public class AccountsViewModel extends AndroidViewModel {
 
     // TODO 화면에 맞게 뷰모델 추가 및 설정 구현
     // TODO 데이터바인딩 사용을 위해 레이아웃 수정 및 구현
     // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Account>> mObservableAccounts;
 
-    public AccountListViewModel(Application application) {
+    public AccountsViewModel(Application application) {
         super(application);
 
         mObservableAccounts = new MediatorLiveData<>();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns.data.source.local;
+package com.enos.totalsns.data.account.source.local;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
@@ -27,8 +27,8 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.annotation.VisibleForTesting;
 
-import com.enos.totalsns.AppExecutors;
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.util.AppExecutors;
+import com.enos.totalsns.data.account.Account;
 
 import java.util.List;
 

@@ -1,4 +1,4 @@
-package com.enos.totalsns.view;
+package com.enos.totalsns.intro;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -11,9 +11,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Account;
-import com.enos.totalsns.interfaces.OnTwitterLogin;
-import com.enos.totalsns.viewmodel.SnsClientViewModel;
+import com.enos.totalsns.accounts.AccountsActivity;
+import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.login.OnTwitterLoginListener;
+import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.SnsClientViewModel;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -105,7 +107,7 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     private void startActivity() {
-        viewModel.signInTwitterWithSaved(onTwitterLogin, false);
+        viewModel.signInTwitterWithSaved(onTwitterLoginListener, false);
     }
 
     private void startActivityDelayed(int delayMillis) {
@@ -119,11 +121,11 @@ public class IntroActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    private OnTwitterLogin onTwitterLogin = new OnTwitterLogin() {
+    private OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
         @Override
         public void onLoginFailed(String message) {
             Toast.makeText(IntroActivity.this, message, Toast.LENGTH_SHORT).show();
-            finishAndStartActivity(SelectSNSActivity.class);
+            finishAndStartActivity(AccountsActivity.class);
         }
 
         @Override

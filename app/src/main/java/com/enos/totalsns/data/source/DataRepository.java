@@ -3,8 +3,8 @@ package com.enos.totalsns.data.source;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
-import com.enos.totalsns.data.Account;
-import com.enos.totalsns.data.source.local.AppDatabase;
+import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.account.source.local.AppDatabase;
 
 import java.util.List;
 

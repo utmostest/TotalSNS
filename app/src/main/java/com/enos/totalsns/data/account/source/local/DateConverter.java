@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns.data.source.local;
+package com.enos.totalsns.data.account.source.local;
 
 import android.arch.persistence.room.TypeConverter;
 

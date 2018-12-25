@@ -1,20 +1,20 @@
-package com.enos.totalsns.viewmodel;
+package com.enos.totalsns;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.enos.totalsns.AppExecutors;
-import com.enos.totalsns.data.Account;
-import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.article.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.source.local.AppDatabase;
+import com.enos.totalsns.data.account.source.local.AppDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
-import com.enos.totalsns.interfaces.OnTimelineResult;
-import com.enos.totalsns.interfaces.OnTwitterInitComplete;
-import com.enos.totalsns.interfaces.OnTwitterLogin;
+import com.enos.totalsns.login.OnTwitterInitListener;
+import com.enos.totalsns.login.OnTwitterLoginListener;
+import com.enos.totalsns.timelines.OnTimelineResult;
+import com.enos.totalsns.util.AppExecutors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class SnsClientViewModel extends AndroidViewModel {
         mAppDatabase = AppDatabase.getInstance(application);
     }
 
-    public void init(OnTwitterInitComplete authorization) {
+    public void init(OnTwitterInitListener authorization) {
         mAppExecutors.networkIO().execute(() -> {
             TwitterManager.getInstance().init();
             if (authorization != null) {
@@ -48,12 +48,12 @@ public class SnsClientViewModel extends AndroidViewModel {
         });
     }
 
-    public void requestAuthorizationUrl(OnTwitterInitComplete onTwitterAuthorization) {
+    public void requestAuthorizationUrl(OnTwitterInitListener onTwitterAuthorization) {
         mAppExecutors.networkIO().execute(() -> {
             try {
                 String url = TwitterManager.getInstance().getAuthorizationUrl();
                 if (onTwitterAuthorization != null) {
-                    mAppExecutors.mainThread().execute(() -> onTwitterAuthorization.onInitCompleted(url));
+                    mAppExecutors.mainThread().execute(() -> onTwitterAuthorization.onTwitterInit(url));
                 }
             } catch (TwitterException e) {
                 e.printStackTrace();
@@ -61,7 +61,7 @@ public class SnsClientViewModel extends AndroidViewModel {
         });
     }
 
-    public void signInTwitterWithSaved(OnTwitterLogin login, boolean isEnableUpdate) {
+    public void signInTwitterWithSaved(OnTwitterLoginListener login, boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
             TwitterManager.getInstance().init();
             List<Account> accountList = mAppDatabase.accountDao().loadCurrentAccountsBySns(Constants.TWITTER);
@@ -77,11 +77,11 @@ public class SnsClientViewModel extends AndroidViewModel {
         });
     }
 
-    public void signInTwitterWithAccount(Account account, OnTwitterLogin login, boolean isEnableUpdate) {
+    public void signInTwitterWithAccount(Account account, OnTwitterLoginListener login, boolean isEnableUpdate) {
         signInTwitterWithOauthToken(new OauthToken(account), login, isEnableUpdate);
     }
 
-    public void signInTwitterWithOauthToken(OauthToken token, OnTwitterLogin login, boolean isEnableUpdate) {
+    public void signInTwitterWithOauthToken(OauthToken token, OnTwitterLoginListener login, boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
             try {
                 if (token == null) {

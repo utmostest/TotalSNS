@@ -1,4 +1,4 @@
-package com.enos.totalsns.view;
+package com.enos.totalsns.timelines;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -19,11 +20,12 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.article.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.interfaces.OnTimelineResult;
-import com.enos.totalsns.view.adapter.ArticleAdapter;
-import com.enos.totalsns.viewmodel.SnsClientViewModel;
+import com.enos.totalsns.accounts.AccountsActivity;
+import com.enos.totalsns.timelinedetail.TimelineDetailActivity;
+import com.enos.totalsns.timelinedetail.TimelineDetailFragment;
+import com.enos.totalsns.SnsClientViewModel;
 
 import java.util.List;
 
@@ -77,6 +79,8 @@ public class TimelineActivity extends AppCompatActivity
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
+            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
             toggleFab(fab);
 //            new Thread(() -> {
 //                try {
@@ -121,8 +125,11 @@ public class TimelineActivity extends AppCompatActivity
         viewModel.getHomeTimeline(new OnTimelineResult() {
             @Override
             public void onReceivedTimeline(List<Article> articleList) {
-                ArticleAdapter adapter = new ArticleAdapter(articleList, (mItem, position) -> {
-                    Toast.makeText(getBaseContext(), mItem.getMessage(), Toast.LENGTH_SHORT).show();
+                TimelineAdapter adapter = new TimelineAdapter(articleList, (mItem, position) -> {
+                    Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
+                    intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE,mItem);
+                    startActivity(intent);
+//                    Toast.makeText(getBaseContext(), mItem.getMessage(), Toast.LENGTH_SHORT).show();
                 });
                 rv.setAdapter(adapter);
             }
@@ -202,6 +209,6 @@ public class TimelineActivity extends AppCompatActivity
     private void signOut() {
         viewModel.signOut();
         finish();
-        startActivity(new Intent(this, SelectSNSActivity.class));
+        startActivity(new Intent(this, AccountsActivity.class));
     }
 }

@@ -1,17 +1,15 @@
-package com.enos.totalsns;
+package com.enos.totalsns.login;
 
 import android.net.Uri;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.enos.totalsns.interfaces.OnTwitterLoginWebView;
-
 public class TwitterWebViewClient extends WebViewClient {
     public static String CALLBACK_URL = "twittersdk://";
 
-    private OnTwitterLoginWebView mListener = null;
+    private OnTwitterLoginWebViewListener mListener = null;
 
-    public void setTwitterLoginListener(OnTwitterLoginWebView listener) {
+    public void setTwitterLoginListener(OnTwitterLoginWebViewListener listener) {
         mListener = listener;
     }
 

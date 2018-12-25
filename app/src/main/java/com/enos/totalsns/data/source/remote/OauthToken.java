@@ -1,6 +1,6 @@
 package com.enos.totalsns.data.source.remote;
 
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.account.Account;
 
 public class OauthToken {
     private String token;

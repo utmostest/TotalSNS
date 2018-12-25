@@ -1,6 +1,6 @@
-package com.enos.totalsns.interfaces;
+package com.enos.totalsns.login;
 
-public interface OnTwitterLoginWebView {
+public interface OnTwitterLoginWebViewListener {
     void onWebViewLoginCanceled();
 
     void onWebViewLoginSucceed(String callbackUrl, String oauthToken, String oauthSecret);

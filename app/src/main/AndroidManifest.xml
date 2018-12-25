@@ -13,11 +13,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".view.TimelineActivity"
+            android:name=".timelines.TimelineActivity"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".view.LoginActivity" />
+        <activity android:name=".login.LoginActivity" />
         <activity
-            android:name=".view.IntroActivity"
+            android:name=".intro.IntroActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -27,8 +27,29 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".view.SelectSNSActivity"
-            android:label="@string/title_activity_select_sns">
+            android:name=".accounts.AccountsActivity"
+            android:label="@string/title_activity_accounts" />
+        <activity
+            android:name=".timelinedetail.TimelineDetailActivity"
+            android:label="@string/title_timeline_detail"
+            android:parentActivityName=".timelines.TimelineActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enos.totalsns.timelines.TimelineActivity" />
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".timelinewrite.TimelineWriteActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 

@@ -1,4 +1,4 @@
-package com.enos.totalsns.view.adapter;
+package com.enos.totalsns.timelines;
 
 
 import android.content.Context;
@@ -14,8 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Article;
-import com.enos.totalsns.interfaces.OnArticleClickListener;
+import com.enos.totalsns.data.article.Article;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.enos.totalsns.util.autolink.AutoLinkTextView;
 
@@ -28,13 +27,13 @@ import java.util.List;
  * specified {@link OnArticleClickListener}.
  * TODO: Replace the implementation with code for your data type.
  */
-public class ArticleAdapter extends RecyclerView.Adapter<ArticleAdapter.ViewHolder> {
+public class TimelineAdapter extends RecyclerView.Adapter<TimelineAdapter.ViewHolder> {
 
     private final List<Article> mValues;
     private final List<Article> mFilteredList;
     private final OnArticleClickListener mListener;
 
-    public ArticleAdapter(List<Article> items, OnArticleClickListener listener) {
+    public TimelineAdapter(List<Article> items, OnArticleClickListener listener) {
         mValues = items;
         mFilteredList = items;
         mListener = listener;

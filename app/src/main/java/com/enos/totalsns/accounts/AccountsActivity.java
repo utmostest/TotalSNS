@@ -1,4 +1,4 @@
-package com.enos.totalsns.view;
+package com.enos.totalsns.accounts;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -9,12 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.account.Account;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.interfaces.OnTwitterLogin;
-import com.enos.totalsns.viewmodel.SnsClientViewModel;
+import com.enos.totalsns.login.OnTwitterLoginListener;
+import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.login.LoginActivity;
+import com.enos.totalsns.SnsClientViewModel;
 
-public class SelectSNSActivity extends AppCompatActivity implements AccountFragment.OnSnsAccountListener {
+public class AccountsActivity extends AppCompatActivity implements AccountFragment.OnSnsAccountListener {
 
     private SnsClientViewModel viewModel;
 
@@ -40,7 +42,7 @@ public class SelectSNSActivity extends AppCompatActivity implements AccountFragm
                 break;
         }
 
-        fragmentManager.beginTransaction().replace(R.id.select_sns_frag_container, AccountFragment.newInstance(snsType)).commit();
+        fragmentManager.beginTransaction().replace(R.id.accounts_frag_container, AccountFragment.newInstance(snsType)).commit();
 
         return menuSelected;
     };
@@ -50,7 +52,7 @@ public class SelectSNSActivity extends AppCompatActivity implements AccountFragm
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select_sns);
+        setContentView(R.layout.activity_accounts);
 
         viewModel = ViewModelProviders.of(this).get(SnsClientViewModel.class);
 
@@ -61,11 +63,11 @@ public class SelectSNSActivity extends AppCompatActivity implements AccountFragm
     }
 
     private void initFragment() {
-        getSupportFragmentManager().beginTransaction().add(R.id.select_sns_frag_container, AccountFragment.newInstance(Constants.DEFAULT_SNS)).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.accounts_frag_container, AccountFragment.newInstance(Constants.DEFAULT_SNS)).commit();
     }
 
     private void loginTwitter(Account account) {
-        viewModel.signInTwitterWithAccount(account, onTwitterLogin, true);
+        viewModel.signInTwitterWithAccount(account, onTwitterLoginListener, true);
     }
 
     private void finishAndStartActivity(Class<?> activity) {
@@ -79,11 +81,11 @@ public class SelectSNSActivity extends AppCompatActivity implements AccountFragm
         startActivity(intent);
     }
 
-    private OnTwitterLogin onTwitterLogin = new OnTwitterLogin() {
+    private OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
         @Override
         public void onLoginFailed(String message) {
-            Toast.makeText(SelectSNSActivity.this, message, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(SelectSNSActivity.this, LoginActivity.class);
+            Toast.makeText(AccountsActivity.this, message, Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AccountsActivity.this, LoginActivity.class);
             intent.putExtra(LoginActivity.SNS_TYPE_KEY, Constants.TWITTER);
             finishAndStartActivity(intent);
         }

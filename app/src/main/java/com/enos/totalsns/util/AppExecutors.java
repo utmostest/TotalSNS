@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns;
+package com.enos.totalsns.util;
 
 import android.os.Handler;
 import android.os.Looper;

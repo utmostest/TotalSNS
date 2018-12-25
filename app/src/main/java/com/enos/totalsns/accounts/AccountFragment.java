@@ -1,4 +1,4 @@
-package com.enos.totalsns.view;
+package com.enos.totalsns.accounts;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -11,10 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.account.Account;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.view.adapter.AccountAdapter;
-import com.enos.totalsns.viewmodel.AccountListViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,15 +65,15 @@ public class AccountFragment extends Fragment {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            final AccountListViewModel viewModel = ViewModelProviders.of(this).get(AccountListViewModel.class);
+            final AccountsViewModel viewModel = ViewModelProviders.of(this).get(AccountsViewModel.class);
             recyclerView.setAdapter(getAdapter(viewModel.getAccounts().getValue()));
             viewModel.getAccounts().observe(this, accounts -> recyclerView.setAdapter(getAdapter(accounts)));
         }
         return view;
     }
 
-    private AccountAdapter getAdapter(List<Account> accounts) {
-        AccountAdapter adapter = new AccountAdapter(getContext(), mSnsType, mListener);
+    private AccountsAdapter getAdapter(List<Account> accounts) {
+        AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
         adapter.setEnableFooter(true, true, v -> {
             if (mListener != null) mListener.onNewAccountButtonClicked(mSnsType);
         });
