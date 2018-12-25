@@ -1,6 +1,9 @@
-package com.enos.totalsns.data;
+package com.enos.totalsns.data.article;
 
-public class Article {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Article implements Parcelable {
     private String profileImg;
     private String userName;
     private String userId;
@@ -19,6 +22,28 @@ public class Article {
         profileImg = profile;
         postedAt = time;
     }
+
+    protected Article(Parcel in) {
+        profileImg = in.readString();
+        userName = in.readString();
+        userId = in.readString();
+        message = in.readString();
+        imageUrls = in.createStringArray();
+        postedAt = in.readLong();
+    }
+
+    public static final Creator<Article> CREATOR = new Creator<Article>() {
+        @Override
+        public Article createFromParcel(Parcel in) {
+
+            return new Article(in);
+        }
+
+        @Override
+        public Article[] newArray(int size) {
+            return new Article[size];
+        }
+    };
 
     public String[] getImageUrls() {
         return imageUrls;
@@ -66,5 +91,20 @@ public class Article {
 
     public void setPostedAt(long postedAt) {
         this.postedAt = postedAt;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(profileImg);
+        dest.writeString(userName);
+        dest.writeString(userId);
+        dest.writeString(message);
+        dest.writeStringArray(imageUrls);
+        dest.writeLong(postedAt);
     }
 }
