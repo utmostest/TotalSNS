@@ -29,7 +29,7 @@
     <string name="sign_in_instagram">인스타그램에 로그인</string>
     <string name="sign_in_twitter">트위터에 로그인</string>
     <string name="sign_in_facebook">페이스북에 로그인</string>
-    <string name="title_activity_select_sns">SNS 계정 선택</string>
+    <string name="title_activity_accounts">SNS 계정 선택</string>
     <string name="title_twitter">트위터</string>
     <string name="title_facebook">페이스북</string>
     <string name="title_instagram">인스타그램</string>
@@ -43,4 +43,5 @@
     <string name="title_selected">선택항목</string>
     <string name="title_all">모두</string>
     <string name="addition_func">부가기능</string>
+    <string name="title_timeline_detail">자세히 보기</string>
 </resources>

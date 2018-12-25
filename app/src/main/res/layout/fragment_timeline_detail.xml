@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/batang_white"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/tldProfileImg"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_menu_gallery"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/tldUserName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:textColor="@color/black_overlay"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tldUserId"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
+        app:layout_constraintTop_toTopOf="@+id/tldProfileImg"
+        app:layout_constraintVertical_bias="0.0"
+        tools:hint="이름이름이다" />
+
+    <!--* app:layout_constraintHorizontal_chainStyle="packed" CHAIN IT for biasing-->
+    <TextView
+        android:id="@+id/tldUserId"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:ellipsize="end"
+        android:maxLines="1"
+        android:textColor="@color/colorPrimary"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/tldTime"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tldUserName"
+        app:layout_constraintTop_toTopOf="@+id/tldProfileImg"
+        app:layout_constraintVertical_bias="0.0"
+        tools:hint="'@userid'" />
+
+    <TextView
+        android:id="@+id/tldTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:textColor="@color/text_pink"
+        android:textSize="16dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/tldUserId"
+        app:layout_constraintTop_toTopOf="@+id/tldProfileImg"
+        app:layout_constraintVertical_bias="0.0"
+        tools:hint="2017년 6월 21일" />
+
+    <com.enos.totalsns.util.autolink.AutoLinkTextView
+        android:id="@+id/tldMessage"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="8dp"
+        android:clickable="false"
+        android:duplicateParentState="true"
+        android:focusable="false"
+        android:textColor="@color/text_black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
+        app:layout_constraintTop_toBottomOf="@+id/tldUserName"
+        app:layout_constraintVertical_bias="0.0"
+        tools:hint="소셜 네트워크 서비스에는 트위터, 페이스북, 인스타그램 등이 있으며 전세계의 수많은 사람과 소통할 수 있으며 컴퓨터나 모바일 기기 어디에서 사용할 수 있다." />
+</android.support.constraint.ConstraintLayout>
