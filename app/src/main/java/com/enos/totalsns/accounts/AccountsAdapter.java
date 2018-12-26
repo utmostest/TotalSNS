@@ -6,13 +6,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.TextView;
 
-import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.databinding.ItemAccountBinding;
+import com.enos.totalsns.databinding.ItemAccountFooterBinding;
 
 import java.util.List;
 
@@ -49,18 +47,16 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         if (viewType == TYPE_HEADER) {
-            //Inflating header view
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account_footer, parent, false);
-            return new HeaderViewHolder(itemView);
+            ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
+            return new HeaderViewHolder(itemAccountFooterBinding);
         } else if (viewType == TYPE_FOOTER) {
-            //Inflating footer view
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account_footer, parent, false);
-            return new FooterViewHolder(itemView);
+            ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
+            return new FooterViewHolder(itemAccountFooterBinding);
         } else {
-            //Inflating recycle view item layout
-            View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_account, parent, false);
-            return new ItemViewHolder(itemView);
+            ItemAccountBinding itemAccountBinding = ItemAccountBinding.inflate(inflater, parent, false);
+            return new ItemViewHolder(itemAccountBinding);
         }
     }
 
@@ -69,35 +65,26 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         if (vh instanceof HeaderViewHolder) {
             HeaderViewHolder holder = (HeaderViewHolder) vh;
-
+            holder.bind();
         } else if (vh instanceof FooterViewHolder) {
             FooterViewHolder holder = (FooterViewHolder) vh;
-            holder.newBtn.setOnClickListener(v -> {
-                if (mListener != null) {
-                    mListener.onNewAccountButtonClicked(mSnsType);
-                }
-            });
-
+            holder.bind();
         } else {
-            int size = mValues == null ? 0 : mValues.size();
-            boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-
-            if (size <= 0) return;
-            int position = pos - (isHeaderEnabled ? 1 : 0);
+            int position = getActualPosition(pos);
+            if (position < 0) return;
 
             ItemViewHolder holder = (ItemViewHolder) vh;
-            holder.mItem = mValues.get(position);
-            holder.mIdView.setText(mValues.get(position).getScreenName());
-            holder.mNameView.setText(mValues.get(position).getName());
-
-            holder.mView.setOnClickListener(v -> {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onAccountClicked(holder.mItem);
-                }
-            });
+            holder.bind(mValues.get(position));
         }
+    }
+
+    private int getActualPosition(int pos) {
+        int size = mValues == null ? 0 : mValues.size();
+        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
+
+        if (size <= 0) return -1;
+        int position = (pos - (isHeaderEnabled ? 1 : 0));
+        return position;
     }
 
     @Override
@@ -186,41 +173,55 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
-        final View mView;
-        final TextView mIdView;
-        final TextView mNameView;
-        final ImageView mProfileView;
+        public final ItemAccountBinding binding;
         public Account mItem;
 
-        ItemViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.accUserId);
-            mNameView = (TextView) view.findViewById(R.id.accUserName);
-            mProfileView = (ImageView) view.findViewById(R.id.accProfileImg);
+        ItemViewHolder(ItemAccountBinding view) {
+            super(view.getRoot());
+            binding = view;
+        }
+
+        public void bind(final Account item) {
+            mItem = item;
+            binding.accUserId.setText(item.getScreenName());
+            binding.accUserName.setText(item.getName());
+
+            binding.getRoot().setOnClickListener(v -> {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onAccountClicked(item);
+                }
+            });
         }
     }
 
     private class HeaderViewHolder extends RecyclerView.ViewHolder {
-        final View mView;
-        TextView headerTitle;
+        public final ItemAccountFooterBinding binding;
 
-        HeaderViewHolder(View view) {
-            super(view);
-            mView = view;
-//            headerTitle = (TextView) view.findViewById(R.id.header_text);
+        HeaderViewHolder(ItemAccountFooterBinding view) {
+            super(view.getRoot());
+            binding = view;
+        }
+
+        public void bind() {
         }
     }
 
     private class FooterViewHolder extends RecyclerView.ViewHolder {
-        final View mView;
-        Button newBtn;
+        public final ItemAccountFooterBinding binding;
 
-        FooterViewHolder(View view) {
-            super(view);
-            mView = view;
-            newBtn = view.findViewById(R.id.fragment_account_new_btn);
-//            footerText = (TextView) view.findViewById(R.id.footer_text);
+        FooterViewHolder(ItemAccountFooterBinding view) {
+            super(view.getRoot());
+            binding = view;
+        }
+
+        public void bind() {
+            binding.fragmentAccountNewBtn.setOnClickListener(v -> {
+                if (mListener != null) {
+                    mListener.onNewAccountButtonClicked(mSnsType);
+                }
+            });
         }
     }
 }

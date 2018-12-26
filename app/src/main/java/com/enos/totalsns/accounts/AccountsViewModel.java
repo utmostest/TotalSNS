@@ -16,35 +16,41 @@
 
 package com.enos.totalsns.accounts;
 
-import android.app.Application;
-import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
+import android.arch.lifecycle.ViewModel;
+import android.content.Context;
 
-import com.enos.totalsns.TotalSNSApp;
 import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.intro.LoginResult;
 
 import java.util.List;
 
-public class AccountsViewModel extends AndroidViewModel {
+public class AccountsViewModel extends ViewModel {
 
     // TODO 화면에 맞게 뷰모델 추가 및 설정 구현
     // TODO 데이터바인딩 사용을 위해 레이아웃 수정 및 구현
     // MediatorLiveData can observe other LiveData objects and react on their emissions.
     private final MediatorLiveData<List<Account>> mObservableAccounts;
 
-    public AccountsViewModel(Application application) {
-        super(application);
+    private Context mContext;
+    private TotalSnsRepository mRepository;
 
+    private MutableLiveData<LoginResult> loginResultMutableLiveData;
+
+    public AccountsViewModel(Context application, TotalSnsRepository repository) {
+
+        mContext = application;
+        mRepository = repository;
         mObservableAccounts = new MediatorLiveData<>();
+        loginResultMutableLiveData = repository.getLoginResult();
         // set by default null, until we get data from the database.
         mObservableAccounts.setValue(null);
 
-        LiveData<List<Account>> accounts = ((TotalSNSApp) application).getRepository()
-                .getAccounts();
-
         // observe the changes of the products from the database and forward them
-        mObservableAccounts.addSource(accounts, mObservableAccounts::setValue);
+        mObservableAccounts.addSource(repository.getAccounts(), mObservableAccounts::setValue);
     }
 
     /**
@@ -52,5 +58,10 @@ public class AccountsViewModel extends AndroidViewModel {
      */
     public LiveData<List<Account>> getAccounts() {
         return mObservableAccounts;
+    }
+
+    public LiveData<LoginResult> getLoginResult(Account account, boolean b) {
+        mRepository.signInTwitterWithAccount(account, b);
+        return loginResultMutableLiveData;
     }
 }

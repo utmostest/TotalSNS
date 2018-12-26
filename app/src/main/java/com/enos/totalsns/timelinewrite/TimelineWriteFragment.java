@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineWriteFragment extends Fragment {
 
@@ -29,7 +30,7 @@ public class TimelineWriteFragment extends Fragment {
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TimelineWriteViewModel.class);
+        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(TimelineWriteViewModel.class);
         // TODO: Use the ViewModel
     }
 

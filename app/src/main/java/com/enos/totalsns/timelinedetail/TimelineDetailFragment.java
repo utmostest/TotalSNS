@@ -1,8 +1,12 @@
 package com.enos.totalsns.timelinedetail;
 
 import android.app.Activity;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -10,14 +14,14 @@ import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
-import com.enos.totalsns.util.autolink.AutoLinkTextView;
+import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.util.ViewModelFactory;
+import com.enos.totalsns.util.autolink.AutoLinkMode;
 
 import java.util.Date;
 
@@ -35,6 +39,10 @@ public class TimelineDetailFragment extends Fragment {
     public static final String ITEM_ARTICLE = "item_article";
 
     private Article mArticle;
+
+    TimelineDetailViewModel viewModel;
+
+    FragmentTimelineDetailBinding mDataBinding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -58,62 +66,70 @@ public class TimelineDetailFragment extends Fragment {
             if (appBarLayout != null && mArticle != null) {
                 appBarLayout.setTitle(mArticle.getUserName());
             }
+            final long articleId = mArticle.getArticleId();
+//            viewModel.getArticle(articleId).observe(this, article -> {
+//                mArticle = article;
+//            });
         }
+
+        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(TimelineDetailViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_timeline_detail, container, false);
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_detail, container, false);
 
         // Show the dummy content as text in a TextView.
+        updateUI();
+
+        return mDataBinding.getRoot();
+    }
+
+    private void updateUI() {
         if (mArticle != null) {
-            TextView userId = rootView.findViewById(R.id.tldUserId);
-            userId.setText(mArticle.getUserId());
+
+            mDataBinding.tldUserId.setText(mArticle.getUserId());
             Date date = new Date();
             date.setTime(mArticle.getPostedAt());
             CharSequence dateStr = DateFormat.format("yyyy.M.d h:m a", date);
-            TextView time = rootView.findViewById(R.id.tldTime);
-            time.setText(mArticle.getPostedAt() == 0 ? "" : dateStr);
-            TextView name = rootView.findViewById(R.id.tldUserName);
-            name.setText(mArticle.getUserName());
 
-            AutoLinkTextView autoLinkTextView = rootView.findViewById(R.id.tldMessage);
-            autoLinkTextView.addAutoLinkMode(
+            mDataBinding.tldTime.setText(mArticle.getPostedAt() == 0 ? "" : dateStr);
+            mDataBinding.tldUserName.setText(mArticle.getUserName());
+
+            mDataBinding.tldMessage.addAutoLinkMode(
                     AutoLinkMode.MODE_HASHTAG,
                     AutoLinkMode.MODE_PHONE,
                     AutoLinkMode.MODE_URL,
                     AutoLinkMode.MODE_MENTION,
                     AutoLinkMode.MODE_CUSTOM);
             //step1 required add auto link mode
-            autoLinkTextView.setCustomRegex("\\sutmostest\\b");
+            mDataBinding.tldMessage.setCustomRegex("\\sutmostest\\b");
             //step1 optional add custom regex
 
             Context th = this.getContext();
-            autoLinkTextView.setHashtagModeColor(ContextCompat.getColor(th, R.color.red)); //setColor
-            autoLinkTextView.setPhoneModeColor(ContextCompat.getColor(th, R.color.text_yellow));
-            autoLinkTextView.setCustomModeColor(ContextCompat.getColor(th, R.color.green));
-            autoLinkTextView.setUrlModeColor(ContextCompat.getColor(th, R.color.blue));
-            autoLinkTextView.setMentionModeColor(ContextCompat.getColor(th, R.color.orange));
-            autoLinkTextView.setEmailModeColor(ContextCompat.getColor(th, R.color.gray));
-            autoLinkTextView.setSelectedStateColor(ContextCompat.getColor(th, R.color.batang_white)); //clickedColor
-            autoLinkTextView.setBoldAutoLinkModes(
+            mDataBinding.tldMessage.setHashtagModeColor(ContextCompat.getColor(th, R.color.red)); //setColor
+            mDataBinding.tldMessage.setPhoneModeColor(ContextCompat.getColor(th, R.color.text_yellow));
+            mDataBinding.tldMessage.setCustomModeColor(ContextCompat.getColor(th, R.color.green));
+            mDataBinding.tldMessage.setUrlModeColor(ContextCompat.getColor(th, R.color.blue));
+            mDataBinding.tldMessage.setMentionModeColor(ContextCompat.getColor(th, R.color.orange));
+            mDataBinding.tldMessage.setEmailModeColor(ContextCompat.getColor(th, R.color.gray));
+            mDataBinding.tldMessage.setSelectedStateColor(ContextCompat.getColor(th, R.color.batang_white)); //clickedColor
+            mDataBinding.tldMessage.setBoldAutoLinkModes(
                     AutoLinkMode.MODE_HASHTAG,
                     AutoLinkMode.MODE_PHONE,
                     AutoLinkMode.MODE_URL,
                     AutoLinkMode.MODE_EMAIL,
                     AutoLinkMode.MODE_MENTION
             ); //bold
-            autoLinkTextView.enableUnderLine(); //underline
+            mDataBinding.tldMessage.enableUnderLine(); //underline
             // step2 optional set mode color, selected color, bold, underline
 
-            autoLinkTextView.setText(mArticle.getMessage());
+            mDataBinding.tldMessage.setText(mArticle.getMessage());
             //step3 required settext
 
-            autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, matchedText) -> Toast.makeText(this.getContext(), autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show());
+            mDataBinding.tldMessage.setAutoLinkOnClickListener((autoLinkMode, matchedText) -> Toast.makeText(this.getContext(), autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show());
             //step4 required set on click listener
         }
-
-        return rootView;
     }
 }

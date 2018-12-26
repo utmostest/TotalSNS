@@ -1,7 +1,10 @@
 package com.enos.totalsns.accounts;
 
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.FragmentManager;
@@ -9,22 +12,26 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.SnsClientViewModel;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.databinding.ActivityAccountsBinding;
+import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.login.LoginActivity;
-import com.enos.totalsns.login.OnTwitterLoginListener;
 import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.util.ViewModelFactory;
 
 public class AccountsActivity extends AppCompatActivity implements OnSnsAccountListener {
 
-    private SnsClientViewModel viewModel;
+    private AccountsViewModel viewModel;
+    private int snsType = Constants.TWITTER;
+
+    ActivityAccountsBinding mDataBinding;
+    LiveData<LoginResult> loginResultLiveData;
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
         FragmentManager fragmentManager = getSupportFragmentManager();
 
-        int snsType = Constants.TWITTER;
         boolean menuSelected = false;
 
         switch (item.getItemId()) {
@@ -52,12 +59,12 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_accounts);
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_accounts);
 
-        viewModel = ViewModelProviders.of(this).get(SnsClientViewModel.class);
+        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(AccountsViewModel.class);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mDataBinding.navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mDataBinding.acAccFab.setOnClickListener((v) -> onNewAccountButtonClicked(snsType));
 
         initFragment();
     }
@@ -66,8 +73,17 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         getSupportFragmentManager().beginTransaction().add(R.id.accounts_frag_container, AccountFragment.newInstance(Constants.DEFAULT_SNS)).commit();
     }
 
+    Observer<LoginResult> observer = result -> {
+        if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
+            onLoginSucceed(result.getAccount());
+        } else {
+            onLoginFailed(result.getMessage());
+        }
+    };
+
     private void loginTwitter(Account account) {
-        viewModel.signInTwitterWithAccount(account, onTwitterLoginListener, true);
+        loginResultLiveData = viewModel.getLoginResult(account, true);
+        loginResultLiveData.observe(this, observer);
     }
 
     private void finishAndStartActivity(Class<?> activity) {
@@ -77,24 +93,22 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     }
 
     private void finishAndStartActivity(Intent intent) {
+//        loginResultLiveData.removeObserver(observer);
         finish();
         startActivity(intent);
     }
 
-    private OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
-        @Override
-        public void onLoginFailed(String message) {
-            Toast.makeText(AccountsActivity.this, message, Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(AccountsActivity.this, LoginActivity.class);
-            intent.putExtra(LoginActivity.SNS_TYPE_KEY, Constants.TWITTER);
-            finishAndStartActivity(intent);
-        }
+    private void onLoginFailed(String message) {
+//        loginResultLiveData.removeObserver(observer);
+        Toast.makeText(AccountsActivity.this, message, Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(AccountsActivity.this, LoginActivity.class);
+        intent.putExtra(LoginActivity.SNS_TYPE_KEY, Constants.TWITTER);
+        finishAndStartActivity(intent);
+    }
 
-        @Override
-        public void onLoginSucceed(Account account) {
-            finishAndStartActivity(TimelineActivity.class);
-        }
-    };
+    private void onLoginSucceed(Account account) {
+        finishAndStartActivity(TimelineActivity.class);
+    }
 
     @Override
     public void onAccountClicked(Account item) {

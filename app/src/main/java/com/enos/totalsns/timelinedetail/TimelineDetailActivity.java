@@ -1,5 +1,7 @@
 package com.enos.totalsns.timelinedetail;
 
+import android.arch.lifecycle.ViewModelProvider;
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -11,6 +13,8 @@ import android.view.View;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.timelines.TimelineViewModel;
+import com.enos.totalsns.util.ViewModelFactory;
 
 /**
  * An activity representing a single Item detail screen. This

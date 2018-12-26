@@ -31,5 +31,14 @@
             app:layout_constraintTop_toBottomOf="@+id/accounts_frag_container"
             app:menu="@menu/navigation" />
 
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/ac_acc_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:clickable="true"
+            app:layout_constraintBottom_toTopOf="@+id/navigation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:srcCompat="@android:drawable/stat_notify_more" />
     </android.support.constraint.ConstraintLayout>
 </layout>

@@ -1,9 +1,11 @@
 package com.enos.totalsns.timelines;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -25,14 +27,16 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.timelinedetail.TimelineDetailActivity;
 import com.enos.totalsns.timelinedetail.TimelineDetailFragment;
-import com.enos.totalsns.SnsClientViewModel;
+import com.enos.totalsns.timelinewrite.TimelineWriteActivity;
+import com.enos.totalsns.timelinewrite.TimelineWriteViewModel;
+import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.List;
 
 public class TimelineActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    private SnsClientViewModel viewModel;
+    private TimelineViewModel viewModel;
 
     // TODO 하단 네비게이션 뷰 추가 및 각종 화면 구현
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -75,13 +79,15 @@ public class TimelineActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        viewModel = ViewModelProviders.of(this).get(SnsClientViewModel.class);
+        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(TimelineViewModel.class);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-            toggleFab(fab);
+            Intent write = new Intent(this, TimelineWriteActivity.class);
+            startActivity(write);
+//            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show();
+//            toggleFab(fab);
 //            new Thread(() -> {
 //                try {
 //                    Status status = TwitterManager.getInstance().updateStatus(new Date().toString() + " 트윗 메시지 테스트");
@@ -122,24 +128,20 @@ public class TimelineActivity extends AppCompatActivity
     private void initFragment() {
         RecyclerView rv = findViewById(R.id.timeline_recylerview);
         rv.setLayoutManager(new LinearLayoutManager(this));
-        viewModel.getHomeTimeline(new OnTimelineResult() {
-            @Override
-            public void onReceivedTimeline(List<Article> articleList) {
+        viewModel.getHomeTimeline().observe(this, articleList -> {
+            if (articleList != null) {
                 TimelineAdapter adapter = new TimelineAdapter(articleList, (mItem, position) -> {
                     Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
-                    intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE,mItem);
+                    intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
                     startActivity(intent);
 //                    Toast.makeText(getBaseContext(), mItem.getMessage(), Toast.LENGTH_SHORT).show();
                 });
                 rv.setAdapter(adapter);
-            }
+            } else {
+                Toast.makeText(TimelineActivity.this, "timeline fetch failed", Toast.LENGTH_SHORT).show();
 
-            @Override
-            public void onFailedReceiveTimeline(String message) {
-                Toast.makeText(TimelineActivity.this, message, Toast.LENGTH_SHORT).show();
             }
         });
-//        getSupportFragmentManager().beginTransaction().add(R.id.main_frag_container, AccountFragment.newInstance(Constants.DEFAULT_SNS)).commit();
     }
 
     @Override

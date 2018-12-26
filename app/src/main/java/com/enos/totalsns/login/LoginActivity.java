@@ -1,19 +1,24 @@
 package com.enos.totalsns.login;
 
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
+import android.databinding.Observable;
+import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebSettings;
-import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.remote.OauthToken;
+import com.enos.totalsns.databinding.ActivityLoginBinding;
+import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.timelines.TimelineActivity;
-import com.enos.totalsns.SnsClientViewModel;
+import com.enos.totalsns.util.ViewModelFactory;
 
 /**
  * A login screen that offers login via email/password.
@@ -25,13 +30,14 @@ public class LoginActivity extends AppCompatActivity {
 
     public static final String SNS_TYPE_KEY = "SNS_TYPE_KEY";
 
-    private WebView webView;
-    private SnsClientViewModel viewModel;
+    private LoginViewModel viewModel;
+
+    private ActivityLoginBinding mDataBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         setTitle(R.string.title_activity_login);
 
         Intent data = getIntent();
@@ -41,70 +47,70 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         setupUI();
-    }
-
-    OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
-        @Override
-        public void onLoginFailed(String message) {
-            loginFailed(message);
-        }
-
-        @Override
-        public void onLoginSucceed(Account account) {
-            entireLoginSucceed(account.getScreenName());
-        }
-    };
-
-    OnTwitterInitListener onTwitterAuthorization = new OnTwitterInitListener() {
-        @Override
-        public void onTwitterInit(String authorization) {
-            webView.loadUrl(authorization);
-        }
-    };
-
-    private void setupUI() {
-
-        webView = findViewById(R.id.login_webview);
-        viewModel = ViewModelProviders.of(LoginActivity.this).get(SnsClientViewModel.class);
-
-        TwitterWebViewClient twitterWebViewClient = new TwitterWebViewClient();
-        twitterWebViewClient.setTwitterLoginListener(new OnTwitterLoginWebViewListener() {
-            @Override
-            public void onWebViewLoginCanceled() {
-                loginFailed("user canceled login");
-            }
-
-            @Override
-            public void onWebViewLoginSucceed(String url, String oauthToken, String oauthSecret) {
-                webviewLoginSucceed(url, oauthToken, oauthSecret);
-            }
-        });
-        webView.setWebViewClient(twitterWebViewClient);
-
-        WebSettings webSettings = webView.getSettings();
-        webSettings.setJavaScriptEnabled(true);
         startLogin();
     }
 
+    private void setupUI() {
+
+        viewModel = ViewModelProviders.of(LoginActivity.this, ViewModelFactory.getInstance(this)).get(LoginViewModel.class);
+
+        TwitterWebViewClient twitterWebViewClient = new TwitterWebViewClient();
+        twitterWebViewClient.setTwitterLoginListener(result -> {
+            if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
+                webviewLoginSucceed(result.getToken(), result.getTokenSecret());
+            } else {
+                loginCanceled("user canceled login");
+            }
+        });
+        mDataBinding.loginWebview.setWebViewClient(twitterWebViewClient);
+
+        WebSettings webSettings = mDataBinding.loginWebview.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+    }
+
     private void startLogin() {
-        viewModel.init(onTwitterAuthorization);
+        viewModel.signInFirstStep();
+        viewModel.getLoginResult().observe(this, result -> {
+            switch (result.getLoginStep()) {
+                case LoginResult.STEP1_INIT:
+                    if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
+                        mDataBinding.loginWebview.loadUrl(result.getAuthorizationUrl());
+                    } else {
+                        loginFailed(result.getMessage());
+                    }
+                    break;
+                case LoginResult.STEP2_AUTHORIZATION:
+                    break;
+                case LoginResult.STEP3_ENTIRELOGIN:
+                    if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
+                        entireLoginSucceed(result.getMessage());
+                    } else {
+                        loginFailed(result.getMessage());
+                    }
+                    break;
+            }
+        });
+    }
+
+    private void loginCanceled(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+        viewModel.signInFirstStep();
     }
 
     private void loginFailed(String message) {
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
         viewModel.signOut();
-        viewModel.requestAuthorizationUrl(onTwitterAuthorization);
+        viewModel.signInFirstStep();
     }
 
-    private void webviewLoginSucceed(String url, String token, String oauthSecret) {
-        Toast.makeText(getApplicationContext(), url, Toast.LENGTH_LONG).show();
-
+    private void webviewLoginSucceed(String token, String oauthSecret) {
         OauthToken oauthToken = new OauthToken(token, oauthSecret);
 
-        viewModel.signInTwitterWithOauthToken(oauthToken, onTwitterLoginListener, true);
+        viewModel.signInTwitterWithOauthToken(oauthToken, true);
     }
 
     private void entireLoginSucceed(String message) {
+//        viewModel.getLoginResult().removeObservers(this);
         finish();
         Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
         Intent intent = new Intent(LoginActivity.this, TimelineActivity.class);

@@ -25,6 +25,7 @@ import android.support.annotation.VisibleForTesting;
 
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.util.AppExecutors;
 
 import java.util.List;
 
@@ -34,6 +35,7 @@ public abstract class TotalSnsDatabase extends RoomDatabase {
 
     private static volatile TotalSnsDatabase sInstance;
     private static final Object LOCK = new Object();
+    private AppExecutors mAppExecutors;
 
     @VisibleForTesting
     public static final String DATABASE_NAME = "total-sns-db";

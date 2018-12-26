@@ -1,6 +1,7 @@
 package com.enos.totalsns.data;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -10,18 +11,20 @@ public class Article implements Parcelable {
 
     @PrimaryKey
     private long articleId;
-    private String profileImg;
-    private String userName;
     private String userId;
+    private String userName;
     private String message;
+    private String profileImg;
     private String[] imageUrls;
     private long postedAt;
     private int snsType;
 
+    //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
 
     }
 
+    @Ignore
     public Article(long articleId, String id, String name, String msg, String profile, String[] imgUrls, long time, int snsType) {
         this.articleId = articleId;
         this.userId = id;
@@ -33,7 +36,7 @@ public class Article implements Parcelable {
         this.snsType = snsType;
     }
 
-
+    @Ignore
     protected Article(Parcel in) {
         articleId = in.readLong();
         profileImg = in.readString();
