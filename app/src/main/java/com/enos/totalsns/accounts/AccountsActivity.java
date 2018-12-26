@@ -9,14 +9,14 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.SnsClientViewModel;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.login.LoginActivity;
 import com.enos.totalsns.login.OnTwitterLoginListener;
 import com.enos.totalsns.timelines.TimelineActivity;
-import com.enos.totalsns.login.LoginActivity;
-import com.enos.totalsns.SnsClientViewModel;
 
-public class AccountsActivity extends AppCompatActivity implements AccountFragment.OnSnsAccountListener {
+public class AccountsActivity extends AppCompatActivity implements OnSnsAccountListener {
 
     private SnsClientViewModel viewModel;
 

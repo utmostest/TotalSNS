@@ -14,7 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.article.Article;
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.enos.totalsns.util.autolink.AutoLinkTextView;
 import com.enos.totalsns.timelines.TimelineActivity;

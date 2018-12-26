@@ -1,10 +1,10 @@
-package com.enos.totalsns.data.account.source;
+package com.enos.totalsns.data.source;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
-import com.enos.totalsns.data.account.Account;
-import com.enos.totalsns.data.account.source.local.AppDatabase;
+import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 
 import java.util.List;
 
@@ -16,22 +16,18 @@ public class DataRepository {
     //TODO SNS Client Repository 생성 및 SNS별 기능 추가
     private static DataRepository sInstance;
 
-    private final AppDatabase mDatabase;
+    private final TotalSnsDatabase mDatabase;
     private MediatorLiveData<List<Account>> mObservableAccounts;
 
-    private DataRepository(final AppDatabase database) {
+    private DataRepository(final TotalSnsDatabase database) {
         mDatabase = database;
         mObservableAccounts = new MediatorLiveData<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
-                accounts -> {
-                    if (mDatabase.getDatabaseCreated().getValue() != null) {
-                        mObservableAccounts.postValue(accounts);
-                    }
-                });
+                accounts -> mObservableAccounts.postValue(accounts));
     }
 
-    public static DataRepository getInstance(final AppDatabase database) {
+    public static DataRepository getInstance(final TotalSnsDatabase database) {
         if (sInstance == null) {
             synchronized (DataRepository.class) {
                 if (sInstance == null) {

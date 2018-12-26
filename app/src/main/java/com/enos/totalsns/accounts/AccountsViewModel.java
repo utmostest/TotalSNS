@@ -22,7 +22,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 
 import com.enos.totalsns.TotalSNSApp;
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.Account;
 
 import java.util.List;
 

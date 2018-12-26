@@ -20,7 +20,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.article.Article;
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.timelinedetail.TimelineDetailActivity;

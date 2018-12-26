@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns.data.account.source.local;
+package com.enos.totalsns.data.source.local;
 
 import android.arch.persistence.room.TypeConverter;
 
-import java.util.Date;
-
-public class DateConverter {
+public class StringArrayConverter {
     @TypeConverter
-    public static Date toDate(Long timestamp) {
-        return timestamp == null ? null : new Date(timestamp);
+    public static String[] toStringArray(String arrayString) {
+        return arrayString == null ? null : arrayString.split(";");
     }
 
     @TypeConverter
-    public static Long toTimestamp(Date date) {
-        return date == null ? null : date.getTime();
+    public static String toString(String[] stringArray) {
+        if (stringArray == null) return null;
+        StringBuilder sb = new StringBuilder();
+        for (String s : stringArray) {
+            sb.append(s).append(";");
+        }
+        return sb.toString();
     }
 }

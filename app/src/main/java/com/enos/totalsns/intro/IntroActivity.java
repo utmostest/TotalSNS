@@ -12,10 +12,7 @@ import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
-import com.enos.totalsns.data.account.Account;
-import com.enos.totalsns.login.OnTwitterLoginListener;
 import com.enos.totalsns.timelines.TimelineActivity;
-import com.enos.totalsns.SnsClientViewModel;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
@@ -50,17 +47,16 @@ public class IntroActivity extends AppCompatActivity {
     private final Runnable mHideRunnable = this::hide;
 
     private final Handler mActivityHandler = new Handler(Looper.myLooper());
-    private final Runnable mStartActivityRunnalbe = this::startActivity;
+    private final Runnable mStartActivityRunnalbe = this::attemptLogin;
 
-    private SnsClientViewModel viewModel;
+    private IntroViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // TODO 로그인 레이아웃 변경
         setContentView(R.layout.activity_intro);
 
-        viewModel = ViewModelProviders.of(this).get(SnsClientViewModel.class);
+        viewModel = ViewModelProviders.of(this).get(IntroViewModel.class);
 
         mContentView = findViewById(R.id.fullscreen_content);
     }
@@ -106,8 +102,18 @@ public class IntroActivity extends AppCompatActivity {
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
-    private void startActivity() {
-        viewModel.signInTwitterWithSaved(onTwitterLoginListener, false);
+    private void attemptLogin() {
+        viewModel.attempCurrentAccoutsLogin(this);
+        viewModel.getLoginResultList().observe(this, result -> {
+            if (result != null) {
+                if (result.isLoginSucced()) {
+                    finishAndStartActivity(TimelineActivity.class);
+                } else {
+                    Toast.makeText(IntroActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
+                    finishAndStartActivity(AccountsActivity.class);
+                }
+            }
+        });
     }
 
     private void startActivityDelayed(int delayMillis) {
@@ -120,17 +126,4 @@ public class IntroActivity extends AppCompatActivity {
         Intent intent = new Intent(this, activity);
         startActivity(intent);
     }
-
-    private OnTwitterLoginListener onTwitterLoginListener = new OnTwitterLoginListener() {
-        @Override
-        public void onLoginFailed(String message) {
-            Toast.makeText(IntroActivity.this, message, Toast.LENGTH_SHORT).show();
-            finishAndStartActivity(AccountsActivity.class);
-        }
-
-        @Override
-        public void onLoginSucceed(Account account) {
-            finishAndStartActivity(TimelineActivity.class);
-        }
-    };
 }

@@ -5,10 +5,10 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.enos.totalsns.data.account.Account;
-import com.enos.totalsns.data.article.Article;
+import com.enos.totalsns.data.Account;
+import com.enos.totalsns.data.source.local.TotalSnsDatabase;
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.account.source.local.AppDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.login.OnTwitterInitListener;
@@ -29,14 +29,14 @@ import twitter4j.User;
 public class SnsClientViewModel extends AndroidViewModel {
 
     private AppExecutors mAppExecutors;
-    private AppDatabase mAppDatabase;
+    private TotalSnsDatabase mTotalSnsDatabase;
 
     // TODO 각종 트위터 기능 추가
 
     public SnsClientViewModel(@NonNull Application application) {
         super(application);
         mAppExecutors = new AppExecutors();
-        mAppDatabase = AppDatabase.getInstance(application);
+        mTotalSnsDatabase = TotalSnsDatabase.getInstance(application);
     }
 
     public void init(OnTwitterInitListener authorization) {
@@ -64,7 +64,7 @@ public class SnsClientViewModel extends AndroidViewModel {
     public void signInTwitterWithSaved(OnTwitterLoginListener login, boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
             TwitterManager.getInstance().init();
-            Account current = mAppDatabase.accountDao().getCurrentAccountsBySns(Constants.TWITTER);
+            Account current = mTotalSnsDatabase.accountDao().getCurrentAccountsBySns(Constants.TWITTER);
             if (current != null) {
                 OauthToken oauthToken = new OauthToken(current.getOauthKey(), current.getOauthSecret());
                 oauthToken.setIsAccessToken(true);
@@ -90,7 +90,7 @@ public class SnsClientViewModel extends AndroidViewModel {
 
                 Account account = TwitterManager.getInstance().signInWithOauthToken(token);
                 if (isEnableUpdate) {
-                    mAppExecutors.diskIO().execute(() -> mAppDatabase.updateCurrentUser(account, Constants.TWITTER));
+                    mAppExecutors.diskIO().execute(() -> mTotalSnsDatabase.updateCurrentUser(account, Constants.TWITTER));
                 }
                 mAppExecutors.mainThread().execute(() -> login.onLoginSucceed(account));
             } catch (TwitterException e) {
@@ -102,7 +102,7 @@ public class SnsClientViewModel extends AndroidViewModel {
 
     public void signOut() {
         mAppExecutors.networkIO().execute(() -> {
-            mAppDatabase.accountDao().updateSignOut();
+            mTotalSnsDatabase.accountDao().updateSignOut();
             TwitterManager.getInstance().signOut();
         });
     }
@@ -114,7 +114,7 @@ public class SnsClientViewModel extends AndroidViewModel {
                 List<Article> articleList = new ArrayList<Article>();
                 for (Status status : list) {
                     User user = status.getUser();
-                    Article article = new Article(user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), status.getCreatedAt().getTime());
+                    Article article = new Article(status.getId(), user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), null, status.getCreatedAt().getTime(), Constants.TWITTER);
                     URLEntity[] urls = status.getMediaEntities();
                     if (urls != null) {
                         String[] strs = new String[urls.length];

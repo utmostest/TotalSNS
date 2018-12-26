@@ -11,7 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 
 import java.util.ArrayList;
@@ -66,20 +66,15 @@ public class AccountFragment extends Fragment {
             RecyclerView recyclerView = (RecyclerView) view;
             recyclerView.setLayoutManager(new LinearLayoutManager(context));
             final AccountsViewModel viewModel = ViewModelProviders.of(this).get(AccountsViewModel.class);
-            recyclerView.setAdapter(getAdapter(viewModel.getAccounts().getValue()));
-            viewModel.getAccounts().observe(this, accounts -> recyclerView.setAdapter(getAdapter(accounts)));
+            AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
+            adapter.setEnableFooter(true, true, v -> {
+                if (mListener != null) mListener.onNewAccountButtonClicked(mSnsType);
+            });
+            adapter.swapAccountsList(viewModel.getAccounts().getValue());
+            recyclerView.setAdapter(adapter);
+            viewModel.getAccounts().observe(this, accounts -> adapter.swapAccountsList(getFilteredAccount(accounts)));
         }
         return view;
-    }
-
-    private AccountsAdapter getAdapter(List<Account> accounts) {
-        AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
-        adapter.setEnableFooter(true, true, v -> {
-            if (mListener != null) mListener.onNewAccountButtonClicked(mSnsType);
-        });
-        adapter.setAccountsList(getFilteredAccount(accounts));
-
-        return adapter;
     }
 
     private List<Account> getFilteredAccount(List<Account> accounts) {
@@ -108,21 +103,5 @@ public class AccountFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
-    }
-
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnSnsAccountListener {
-        void onAccountClicked(Account item);
-
-        void onNewAccountButtonClicked(int snsType);
     }
 }

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.enos.totalsns.data.account.source.local;
+package com.enos.totalsns.data.source.local;
 
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 
 import java.util.ArrayList;

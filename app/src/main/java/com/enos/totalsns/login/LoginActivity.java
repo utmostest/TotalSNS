@@ -10,7 +10,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.timelines.TimelineActivity;
 import com.enos.totalsns.SnsClientViewModel;

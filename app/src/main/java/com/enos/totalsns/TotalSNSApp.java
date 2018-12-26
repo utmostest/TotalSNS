@@ -2,8 +2,8 @@ package com.enos.totalsns;
 
 import android.app.Application;
 
-import com.enos.totalsns.data.account.source.DataRepository;
-import com.enos.totalsns.data.account.source.local.AppDatabase;
+import com.enos.totalsns.data.source.DataRepository;
+import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 
 public class TotalSNSApp extends Application {
     @Override
@@ -12,8 +12,8 @@ public class TotalSNSApp extends Application {
 
     }
 
-    public AppDatabase getDatabase() {
-        return AppDatabase.getInstance(this);
+    public TotalSnsDatabase getDatabase() {
+        return TotalSnsDatabase.getInstance(this);
     }
 
     public DataRepository getRepository() {

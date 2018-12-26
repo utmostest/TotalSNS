@@ -1,6 +1,7 @@
 package com.enos.totalsns.accounts;
 
 import android.content.Context;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,21 +11,21 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.account.Account;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Account} and makes a call to the
- * specified {@link AccountFragment.OnSnsAccountListener}.
+ * specified {@link OnSnsAccountListener}.
  */
 public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     // TODO SNS별 뷰홀더 추가 및 화면 표시
     //    private Context mContext;
     private List<Account> mValues;
-    private AccountFragment.OnSnsAccountListener mListener;
+    private OnSnsAccountListener mListener;
 
     private final int TYPE_HEADER = -2;
     private final int TYPE_FOOTER = -1;
@@ -40,7 +41,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private int mSnsType = Constants.DEFAULT_SNS;
 
-    public AccountsAdapter(Context context, int snsType, AccountFragment.OnSnsAccountListener listener) {
+    public AccountsAdapter(Context context, int snsType, OnSnsAccountListener listener) {
 //        mContext = context;
         mSnsType = snsType;
         mListener = listener;
@@ -133,8 +134,45 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return currentType;
     }
 
-    public void setAccountsList(List<Account> list) {
-        mValues = list;
+    public void swapAccountsList(List<Account> list) {
+        if (mValues == null) {
+            mValues = list;
+            notifyDataSetChanged();
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+
+                @Override
+                public int getOldListSize() {
+                    return mValues.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return list.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return mValues.get(oldItemPosition).getId() == list.get(newItemPosition).getId();
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Account oldAccount = mValues.get(oldItemPosition);
+                    Account newAccount = list.get(newItemPosition);
+                    return oldAccount.getId() == newAccount.getId() &&
+                            oldAccount.getSnsType() == newAccount.getSnsType() &&
+                            oldAccount.isCurrent() == newAccount.isCurrent() &&
+                            oldAccount.getName().equals(newAccount.getName()) &&
+                            oldAccount.getOauthSecret().equals(newAccount.getOauthSecret()) &&
+                            oldAccount.getOauthKey().equals(newAccount.getOauthKey()) &&
+                            oldAccount.getProfileImage().equals(newAccount.getProfileImage()) &&
+                            oldAccount.getScreenName().equals(newAccount.getScreenName());
+                }
+            });
+            mValues = list;
+            result.dispatchUpdatesTo(this);
+        }
     }
 
     public void setEnableHeader(boolean isEnable, boolean isEnableAlways, View.OnClickListener headerListener) {

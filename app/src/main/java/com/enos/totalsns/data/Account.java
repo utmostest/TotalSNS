@@ -1,4 +1,4 @@
-package com.enos.totalsns.data.account;
+package com.enos.totalsns.data;
 
 
 import android.arch.persistence.room.Entity;
