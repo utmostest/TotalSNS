@@ -130,4 +130,6 @@ dependencies {
     // if you use the support libraries
     annotationProcessor 'com.google.dagger:dagger-android-processor:2.15'
     implementation 'io.realm:android-adapters:2.0.0'
+
+    implementation 'com.github.omadahealth:swipy:1.2.3@aar'
 }

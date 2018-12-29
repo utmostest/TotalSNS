@@ -45,6 +45,7 @@ public class TwitterManager {
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
             mTwitterManager = new TwitterManager();
+            Log.i("tweet","tweet constructor called");
         }
         return mTwitterManager;
     }
@@ -58,7 +59,7 @@ public class TwitterManager {
 
         TwitterFactory tf = new TwitterFactory(cb.build());
         mTwitter = tf.getInstance();
-        homeTimeline = new MutableLiveData<>();
+        homeTimeline = new MutableLiveData<ArrayList<Article>>();
     }
 
     public String getAuthorizationUrl() throws TwitterException {
@@ -114,31 +115,30 @@ public class TwitterManager {
         return homeTimeline;
     }
 
-    public void fetchTimeline(Paging paging) {
-        try {
-            ResponseList<Status> list = mTwitterManager.getTimeLine(paging);
-            ArrayList<Article> articleList = new ArrayList<Article>();
-            for (Status status : list) {
-                User user = status.getUser();
-                Article article = new Article(status.getId(), user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), null, status.getCreatedAt().getTime(), Constants.TWITTER);
-                URLEntity[] urls = status.getMediaEntities();
-                if (urls != null) {
-                    String[] strs = new String[urls.length];
-                    int i = 0;
-                    for (URLEntity url : urls) {
-                        strs[i] = url.getExpandedURL();
-                        i++;
-                        Log.i("URL", url.getDisplayURL() + "\n" + url.getExpandedURL() + "\n" + url.getURL() + "\n" + url.getText());
-                    }
-                    article.setImageUrls(strs);
-                }
-                articleList.add(article);
-            }
-            homeTimeline.postValue(articleList);
+    public void fetchTimeline(Paging paging) throws TwitterException {
 
-        } catch (TwitterException e) {
-            e.printStackTrace();
+        ResponseList<Status> list = getTimeLine(paging);
+        ArrayList<Article> articleList = new ArrayList<Article>();
+        int num = 0;
+        for (Status status : list) {
+            Log.i("timeline", num + ":" + status.getText());
+            num++;
+            User user = status.getUser();
+            Article article = new Article(status.getId(), user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), null, status.getCreatedAt().getTime(), Constants.TWITTER);
+            URLEntity[] urls = status.getMediaEntities();
+            if (urls != null) {
+                String[] strs = new String[urls.length];
+                int i = 0;
+                for (URLEntity url : urls) {
+                    strs[i] = url.getExpandedURL();
+                    i++;
+                    Log.i("URL", url.getDisplayURL() + "\n" + url.getExpandedURL() + "\n" + url.getURL() + "\n" + url.getText());
+                }
+                article.setImageUrls(strs);
+            }
+            articleList.add(article);
         }
+        homeTimeline.postValue(articleList);
     }
 
     public ResponseList<Status> getUserTimeline(long userId, Paging paging) throws TwitterException {

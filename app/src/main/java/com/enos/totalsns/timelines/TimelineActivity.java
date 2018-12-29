@@ -1,154 +1,110 @@
 package com.enos.totalsns.timelines;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.os.Handler;
-import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.accounts.AccountsActivity;
+import com.enos.totalsns.databinding.ActivityTimelineBinding;
 import com.enos.totalsns.timelinedetail.TimelineDetailActivity;
 import com.enos.totalsns.timelinedetail.TimelineDetailFragment;
 import com.enos.totalsns.timelinewrite.TimelineWriteActivity;
-import com.enos.totalsns.timelinewrite.TimelineWriteViewModel;
 import com.enos.totalsns.util.ViewModelFactory;
-
-import java.util.List;
+import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 public class TimelineActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    private ActivityTimelineBinding mDataBinding;
     private TimelineViewModel viewModel;
-
-    // TODO 하단 네비게이션 뷰 추가 및 각종 화면 구현
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = item -> {
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-
-        int menuType = Constants.DEFAULT_MENU;
-        boolean menuSelected = false;
-
-        switch (item.getItemId()) {
-            case R.id.navigation_timeline:
-                menuType = Constants.TIMELINE;
-                menuSelected = true;
-                break;
-            case R.id.navigation_search:
-                menuType = Constants.SEARCH;
-                menuSelected = true;
-                break;
-            case R.id.navigation_notificate:
-                menuType = Constants.NOTIFICATE;
-                menuSelected = true;
-                break;
-            case R.id.navigation_direct:
-                menuType = Constants.DIRECT_MSG;
-                menuSelected = true;
-                break;
-        }
-
-//        fragmentManager.beginTransaction().replace(R.id.main_frag_container, MainFragment.newInstance(menuType)).commit();
-
-        return menuSelected;
-    };
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline);
-        setTitle(R.string.title_activity_timeline);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(TimelineViewModel.class);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
-            Intent write = new Intent(this, TimelineWriteActivity.class);
-            startActivity(write);
-//            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-//                    .setAction("Action", null).show();
-//            toggleFab(fab);
-//            new Thread(() -> {
-//                try {
-//                    Status status = TwitterManager.getInstance().updateStatus(new Date().toString() + " 트윗 메시지 테스트");
-//                    runOnUiThread(() -> Toast.makeText(TimelineActivity.this, status.getText(), Toast.LENGTH_SHORT).show());
-//                } catch (TwitterException e) {
-//                    runOnUiThread(() -> Toast.makeText(TimelineActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show());
-//                    e.printStackTrace();
-//                }
-//            }).start();
-        });
-
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        NavigationView navigationView = findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
-
-        BottomNavigationView navigation = findViewById(R.id.timeline_navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        initFragment();
+        initUI();
     }
 
-    private void toggleFab(FloatingActionButton fab) {
-        if (fab.isShown()) {
-            fab.hide();
-            new Handler().postDelayed(() -> {
-                toggleFab(fab);
-            }, 1000);
-        } else {
-            fab.show();
-        }
-    }
+    private void initUI() {
+        setTitle(R.string.title_activity_timeline);
+        setSupportActionBar(mDataBinding.appBar.toolbar);
 
-    private void initFragment() {
-        RecyclerView rv = findViewById(R.id.timeline_recylerview);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        viewModel.getHomeTimeline().observe(this, articleList -> {
-            if (articleList != null) {
-                TimelineAdapter adapter = new TimelineAdapter(articleList, (mItem, position) -> {
-                    Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
-                    intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-                    startActivity(intent);
-//                    Toast.makeText(getBaseContext(), mItem.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-                rv.setAdapter(adapter);
-            } else {
-                Toast.makeText(TimelineActivity.this, "timeline fetch failed", Toast.LENGTH_SHORT).show();
-
+        mDataBinding.appBar.content.swipeContainer.setOnRefreshListener(direction -> {
+            if (direction == SwipyRefreshLayoutDirection.TOP) {
+                viewModel.fetchRecentTimeline();
+            } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                viewModel.fetchPastTimeline();
             }
         });
+
+        mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this, mDataBinding.drawerLayout, mDataBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDataBinding.drawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+
+        mDataBinding.navView.setNavigationItemSelectedListener(this);
+
+        mDataBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+        LinearLayoutManager manager = new LinearLayoutManager(this);
+        mDataBinding.appBar.content.tlRv.setLayoutManager(manager);
+        TimelineAdapter adapter = new TimelineAdapter(null, (mItem, position) -> startTimelineDetailActivity(mItem));
+        mDataBinding.appBar.content.tlRv.setAdapter(adapter);
+
+        viewModel.getHomeTimeline().observe(this, articleList -> {
+            if (articleList != null) {
+                int currentPosFirst = manager.findFirstVisibleItemPosition();
+
+                adapter.swapTimelineList(articleList);
+
+                if (currentPosFirst == 0)
+                    mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
+            } else {
+                Toast.makeText(TimelineActivity.this, "timeline fetch failed", Toast.LENGTH_SHORT).show();
+            }
+        });
+        viewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.appBar.content.swipeContainer.setRefreshing(refresh));
+    }
+
+    private void startTimelineWriteActivity() {
+        Intent write = new Intent(this, TimelineWriteActivity.class);
+        startActivity(write);
+    }
+
+    private void startTimelineDetailActivity(Article mItem) {
+        Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
+        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+        startActivity(intent);
+    }
+
+    private void signOut() {
+        viewModel.signOut();
+        finish();
+        startActivity(new Intent(this, AccountsActivity.class));
     }
 
     @Override
     public void onBackPressed() {
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        if (drawer.isDrawerOpen(GravityCompat.START) || drawer.isDrawerVisible(GravityCompat.END)) {
-            drawer.closeDrawer(GravityCompat.START);
+        if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
+            mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -176,7 +132,6 @@ public class TimelineActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -203,14 +158,35 @@ public class TimelineActivity extends AppCompatActivity
             signOut();
         }
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
+        mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        return menuSelected;
     }
 
-    private void signOut() {
-        viewModel.signOut();
-        finish();
-        startActivity(new Intent(this, AccountsActivity.class));
-    }
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = item -> {
+
+        int menuType = Constants.DEFAULT_MENU;
+        boolean menuSelected = false;
+
+        switch (item.getItemId()) {
+            case R.id.navigation_timeline:
+                menuType = Constants.TIMELINE;
+                menuSelected = true;
+                break;
+            case R.id.navigation_search:
+                menuType = Constants.SEARCH;
+                menuSelected = true;
+                break;
+            case R.id.navigation_notificate:
+                menuType = Constants.NOTIFICATE;
+                menuSelected = true;
+                break;
+            case R.id.navigation_direct:
+                menuType = Constants.DIRECT_MSG;
+                menuSelected = true;
+                break;
+        }
+
+        return menuSelected;
+    };
 }

@@ -13,7 +13,7 @@ import java.util.List;
 
 @Dao
 public interface ArticleDao {
-    @Query("SELECT * FROM article")
+    @Query("SELECT * FROM article ORDER by postedAt DESC")
     LiveData<List<Article>> loadArticles();
 
     @Query("SELECT * FROM article")
@@ -27,6 +27,15 @@ public interface ArticleDao {
 
     @Query("SELECT * FROM article where snsType =:sns")
     LiveData<List<Article>> loadArticlesBySns(int sns);
+
+    @Query("SELECT * FROM article ORDER by postedAt DESC LIMIT 1")
+    LiveData<Article> loadLastArticle();
+
+    @Query("SELECT * FROM article ORDER by postedAt DESC LIMIT 1")
+    Article getLastArticle();
+
+    @Query("SELECT * FROM article ORDER by postedAt ASC LIMIT 1")
+    Article getFirstArticle();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertArticles(List<Article> articles);

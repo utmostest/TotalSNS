@@ -3,8 +3,6 @@ package com.enos.totalsns.data.source;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.database.Observable;
-import android.databinding.ObservableField;
 import android.util.Log;
 
 import com.enos.totalsns.data.Account;
@@ -14,21 +12,13 @@ import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.login.OnTwitterInitListener;
-import com.enos.totalsns.login.OnTwitterLoginListener;
-import com.enos.totalsns.timelines.OnTimelineResult;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.SingleLiveEvent;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import twitter4j.Paging;
-import twitter4j.ResponseList;
-import twitter4j.Status;
 import twitter4j.TwitterException;
-import twitter4j.URLEntity;
-import twitter4j.User;
 
 /**
  * Repository handling the work with products and comments.
@@ -40,6 +30,8 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Account>> mObservableAccounts;
 
+    private MediatorLiveData<List<Article>> mObservableTimelines;
+
     private TwitterManager mTwitterManager;
 
     private AppExecutors mAppExecutors;
@@ -47,22 +39,33 @@ public class TotalSnsRepository {
 
     private SingleLiveEvent<LoginResult> loginResult;
 
+    private SingleLiveEvent<Boolean> isSnsNetworkOnUse;
+
+    private static final Object LOCK = new Object();
+
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
         mTwitterManager = twitterManager;
         mObservableAccounts = new MediatorLiveData<>();
+        mObservableTimelines = new MediatorLiveData<>();
+        mAppExecutors = new AppExecutors();
+        loginResult = new SingleLiveEvent<LoginResult>();
+        isSnsNetworkOnUse = new SingleLiveEvent<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
 
-        mAppExecutors = new AppExecutors();
-
-        loginResult = new SingleLiveEvent<LoginResult>();
+        mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(),
+                timeline ->
+                {
+                    Log.i("timeline", timeline.size() + "");
+                    mObservableTimelines.postValue(timeline);
+                });
     }
 
-    public static TotalSnsRepository getInstance(final TotalSnsDatabase database, final TwitterManager twitterManager) {
+    public synchronized static TotalSnsRepository getInstance(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         if (sInstance == null) {
-            synchronized (TotalSnsRepository.class) {
+            synchronized (LOCK) {
                 if (sInstance == null) {
                     sInstance = new TotalSnsRepository(database, twitterManager);
                 }
@@ -80,6 +83,7 @@ public class TotalSnsRepository {
 
     public void init() {
         mAppExecutors.networkIO().execute(() -> {
+            isSnsNetworkOnUse.postValue(true);
             mTwitterManager.init();
             LoginResult oldResult = loginResult.getValue();
             if (oldResult == null) oldResult = new LoginResult();
@@ -87,10 +91,12 @@ public class TotalSnsRepository {
             String url = null;
             try {
                 url = mTwitterManager.getAuthorizationUrl();
+                isSnsNetworkOnUse.postValue(false);
                 oldResult.setLoginStatus(LoginResult.STATUS_LOGIN_SUCCEED);
                 oldResult.setAuthorizationUrl(url);
                 loginResult.postValue(oldResult);
             } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
                 oldResult.setLoginStatus(LoginResult.STATUS_LOGIN_FAILED);
                 oldResult.setMessage(e.getMessage());
                 loginResult.postValue(oldResult);
@@ -100,6 +106,7 @@ public class TotalSnsRepository {
 
     public void signInTwitterWithSaved(boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
+            isSnsNetworkOnUse.postValue(true);
             mTwitterManager.init();
             Account current = mDatabase.accountDao().getCurrentAccountsBySns(Constants.TWITTER);
             if (current != null) {
@@ -107,6 +114,7 @@ public class TotalSnsRepository {
                 oauthToken.setIsAccessToken(true);
                 signInTwitterWithOauthToken(oauthToken, isEnableUpdate);
             } else {
+                isSnsNetworkOnUse.postValue(false);
                 LoginResult oldResult = loginResult.getValue();
                 if (oldResult == null) oldResult = new LoginResult();
                 oldResult.setLoginStep(LoginResult.STEP3_ENTIRELOGIN);
@@ -122,6 +130,7 @@ public class TotalSnsRepository {
     }
 
     public void signInTwitterWithOauthToken(OauthToken token, boolean isEnableUpdate) {
+        isSnsNetworkOnUse.postValue(true);
         mAppExecutors.networkIO().execute(() -> {
             LoginResult oldResult = loginResult.getValue();
             if (oldResult == null) oldResult = new LoginResult();
@@ -129,6 +138,7 @@ public class TotalSnsRepository {
 
             try {
                 if (token == null || token.getToken() == null || token.getSecret() == null) {
+                    isSnsNetworkOnUse.postValue(false);
                     oldResult.setMessage("oauth isn't valid");
                     loginResult.postValue(oldResult);
                     return;
@@ -138,11 +148,13 @@ public class TotalSnsRepository {
                 if (isEnableUpdate) {
                     mAppExecutors.diskIO().execute(() -> mDatabase.updateCurrentUser(account, Constants.TWITTER));
                 }
+                isSnsNetworkOnUse.postValue(false);
                 oldResult.setLoginStatus(LoginResult.STATUS_LOGIN_SUCCEED);
                 loginResult.postValue(oldResult);
                 return;
 
             } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
                 oldResult.setLoginStatus(LoginResult.STATUS_LOGIN_FAILED);
                 oldResult.setMessage(e.getMessage());
                 loginResult.postValue(oldResult);
@@ -153,20 +165,70 @@ public class TotalSnsRepository {
     public void signOut() {
         mAppExecutors.networkIO().execute(() -> {
             mDatabase.accountDao().updateSignOutBySns(Constants.TWITTER);
+            isSnsNetworkOnUse.postValue(true);
             mTwitterManager.signOut();
+            isSnsNetworkOnUse.postValue(false);
         });
     }
 
-    public LiveData<ArrayList<Article>> getHomeTimeline(Paging paging) {
+    public LiveData<List<Article>> getHomeTimeline(Paging paging) {
         fetchTimeline(paging);
-        return mTwitterManager.getHomeTimeline();
+        return mObservableTimelines;
     }
 
-    public void fetchTimeline(Paging paging) {
-        mAppExecutors.networkIO().execute(() -> mTwitterManager.fetchTimeline(paging));
+    public synchronized void fetchTimeline(Paging paging) {
+        isSnsNetworkOnUse.postValue(true);
+        try {
+            mObservableTimelines.addSource(mTwitterManager.getHomeTimeline(),
+                    timeline ->
+                    {
+                        isSnsNetworkOnUse.postValue(false);
+                        Log.i("timeline", timeline.size() + "");
+                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
+                    });
+            //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchTimeline(paging);
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                e.printStackTrace();
+            }
+        });
     }
 
     public MutableLiveData<LoginResult> getLoginResult() {
         return loginResult;
+    }
+
+    public LiveData<Boolean> isSnsNetworkOnUse() {
+        return isSnsNetworkOnUse;
+    }
+
+    public LiveData<Article> getLastArticle() {
+        return mDatabase.articleDao().loadLastArticle();
+    }
+
+    public void fetchRecentTimeline() {
+        mAppExecutors.diskIO().execute(() -> {
+            Paging paging = new Paging().count(Constants.PAGE_CNT);
+            Article last = mDatabase.articleDao().getLastArticle();
+            Log.i("timeline", last.getMessage());
+            paging.sinceId(last.getArticleId());
+            fetchTimeline(paging);
+        });
+    }
+
+    public void fetchPastTimeline() {
+        mAppExecutors.diskIO().execute(() -> {
+            Paging paging = new Paging().count(Constants.PAGE_CNT);
+            Article first = mDatabase.articleDao().getFirstArticle();
+            Log.i("timeline", first.getMessage());
+            paging.setMaxId(first.getArticleId());
+            fetchTimeline(paging);
+        });
     }
 }

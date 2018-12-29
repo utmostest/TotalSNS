@@ -15,5 +15,7 @@ public class Constants {
 
     public static final int DEFAULT_SNS = TWITTER;
 
+    public static final int PAGE_CNT = 50;
+
     public static final boolean IS_DEBUG = true;
 }
