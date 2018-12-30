@@ -17,6 +17,8 @@ import com.enos.totalsns.timelines.TimelineActivity;
 import com.enos.totalsns.databinding.ActivityIntroBinding;
 import com.enos.totalsns.util.ViewModelFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
@@ -52,6 +54,8 @@ public class IntroActivity extends AppCompatActivity {
 
     private final Handler mActivityHandler = new Handler(Looper.myLooper());
     private final Runnable mStartActivityRunnalbe = this::attemptLogin;
+
+    private AtomicBoolean mHasActivityStarted = new AtomicBoolean(false);
 
     private IntroViewModel viewModel;
 
@@ -107,11 +111,9 @@ public class IntroActivity extends AppCompatActivity {
     private void attemptLogin() {
         viewModel.getLoginResult().observe(this, result -> {
             if (result != null) {
-//                viewModel.getLoginResult().removeObservers(this);
                 if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
                     finishAndStartActivity(TimelineActivity.class);
                 } else {
-                    Toast.makeText(IntroActivity.this, result.getMessage(), Toast.LENGTH_SHORT).show();
                     finishAndStartActivity(AccountsActivity.class);
                 }
             }
@@ -124,8 +126,10 @@ public class IntroActivity extends AppCompatActivity {
     }
 
     private void finishAndStartActivity(Class<?> activity) {
-        finish();
-        Intent intent = new Intent(this, activity);
-        startActivity(intent);
+        if (mHasActivityStarted.compareAndSet(false, true)) {
+            finish();
+            Intent intent = new Intent(this, activity);
+            startActivity(intent);
+        }
     }
 }

@@ -9,15 +9,126 @@
         android:layout_height="match_parent"
         tools:context=".timelinewrite.TimelineWriteFragment">
 
-        <TextView
-            android:id="@+id/message"
+        <ImageButton
+            android:id="@+id/tl_write_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="ArticleWriteFragment"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_close_black_48dp"
+            app:layout_constraintBottom_toTopOf="@+id/textInputLayout"
+            app:layout_constraintEnd_toStartOf="@+id/tl_write_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
+        <TextView
+            android:id="@+id/tl_write_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="@string/title_write_timeline"
+            android:textColor="@color/text_black"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
+            app:layout_constraintEnd_toStartOf="@+id/tl_write_post"
+            app:layout_constraintStart_toEndOf="@+id/tl_write_close"
+            app:layout_constraintTop_toTopOf="@+id/tl_write_close" />
+
+        <Button
+            android:id="@+id/tl_write_post"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/rounded_btn"
+            android:text="트윗"
+            android:textColor="@color/batang_white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tl_write_title"
+            app:layout_constraintTop_toTopOf="@+id/tl_write_close" />
+
+        <ImageButton
+            android:id="@+id/tl_write_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_account_circle_black_48dp"
+            app:layout_constraintEnd_toStartOf="@+id/tl_write_title"
+            app:layout_constraintStart_toStartOf="@+id/tl_write_close"
+            app:layout_constraintTop_toBottomOf="@+id/tl_write_close" />
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="16dp"
+            app:layout_constraintBottom_toTopOf="@+id/tl_write_location"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHeight_default="spread"
+            app:layout_constraintStart_toEndOf="@+id/tl_write_account"
+            app:layout_constraintTop_toTopOf="@+id/tl_write_account">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tl_write_edit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="top"
+                android:hint="@string/write_hint" />
+        </android.support.design.widget.TextInputLayout>
+
+        <ImageButton
+            android:id="@+id/tl_write_picture"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginBottom="16dp"
+            android:background="@android:color/transparent"
+            android:scaleType="fitEnd"
+            android:src="@drawable/ic_menu_gallery"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/tl_write_location"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout"
+            app:layout_constraintVertical_bias="1.0"
+            app:layout_constraintWidth_default="spread" />
+
+        <ImageButton
+            android:id="@+id/tl_write_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@android:color/transparent"
+            android:src="@drawable/ic_menu_manage"
+            app:layout_constraintBottom_toBottomOf="@+id/tl_write_picture"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/tl_write_picture"
+            app:layout_constraintTop_toTopOf="@+id/tl_write_picture"
+            app:layout_constraintVertical_bias="1.0" />
     </android.support.constraint.ConstraintLayout>
 </layout>

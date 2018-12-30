@@ -1,29 +1,24 @@
 package com.enos.totalsns.timelinedetail;
 
-import android.app.Activity;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
-import android.support.v4.content.ContextCompat;
-import android.text.format.DateFormat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.util.ConverUtils;
 import com.enos.totalsns.util.ViewModelFactory;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
-
-import java.util.Date;
 
 /**
  * A fragment representing a single Item detail screen.
@@ -56,20 +51,7 @@ public class TimelineDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments().containsKey(ITEM_ARTICLE)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-
             mArticle = getArguments().getParcelable(ITEM_ARTICLE);
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
-            if (appBarLayout != null && mArticle != null) {
-                appBarLayout.setTitle(mArticle.getUserName());
-            }
-            final long articleId = mArticle.getArticleId();
-//            viewModel.getArticle(articleId).observe(this, article -> {
-//                mArticle = article;
-//            });
         }
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(TimelineDetailViewModel.class);
@@ -88,48 +70,30 @@ public class TimelineDetailFragment extends Fragment {
 
     private void updateUI() {
         if (mArticle != null) {
+            CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
+            if (appBarLayout != null && mArticle != null) {
+                appBarLayout.setTitle(getString(R.string.title_timeline_detail));
+            }
+
+            Glide.with(getContext())
+                    .load(mArticle.getProfileImg())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(100)
+                    )
+                    .into(mDataBinding.tldProfileImg);
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
-            Date date = new Date();
-            date.setTime(mArticle.getPostedAt());
-            CharSequence dateStr = DateFormat.format("yyyy.M.d h:m a", date);
-
-            mDataBinding.tldTime.setText(mArticle.getPostedAt() == 0 ? "" : dateStr);
+            mDataBinding.tldTime.setText(ConverUtils.getDateString(mArticle.getPostedAt()));
             mDataBinding.tldUserName.setText(mArticle.getUserName());
 
-            mDataBinding.tldMessage.addAutoLinkMode(
-                    AutoLinkMode.MODE_HASHTAG,
-                    AutoLinkMode.MODE_PHONE,
-                    AutoLinkMode.MODE_URL,
-                    AutoLinkMode.MODE_MENTION,
-                    AutoLinkMode.MODE_CUSTOM);
-            //step1 required add auto link mode
-            mDataBinding.tldMessage.setCustomRegex("\\sutmostest\\b");
-            //step1 optional add custom regex
-
-            Context th = this.getContext();
-            mDataBinding.tldMessage.setHashtagModeColor(ContextCompat.getColor(th, R.color.red)); //setColor
-            mDataBinding.tldMessage.setPhoneModeColor(ContextCompat.getColor(th, R.color.text_yellow));
-            mDataBinding.tldMessage.setCustomModeColor(ContextCompat.getColor(th, R.color.green));
-            mDataBinding.tldMessage.setUrlModeColor(ContextCompat.getColor(th, R.color.blue));
-            mDataBinding.tldMessage.setMentionModeColor(ContextCompat.getColor(th, R.color.orange));
-            mDataBinding.tldMessage.setEmailModeColor(ContextCompat.getColor(th, R.color.gray));
-            mDataBinding.tldMessage.setSelectedStateColor(ContextCompat.getColor(th, R.color.batang_white)); //clickedColor
-            mDataBinding.tldMessage.setBoldAutoLinkModes(
-                    AutoLinkMode.MODE_HASHTAG,
-                    AutoLinkMode.MODE_PHONE,
-                    AutoLinkMode.MODE_URL,
-                    AutoLinkMode.MODE_EMAIL,
-                    AutoLinkMode.MODE_MENTION
-            ); //bold
-            mDataBinding.tldMessage.enableUnderLine(); //underline
-            // step2 optional set mode color, selected color, bold, underline
-
-            mDataBinding.tldMessage.setText(mArticle.getMessage());
-            //step3 required settext
-
-            mDataBinding.tldMessage.setAutoLinkOnClickListener((autoLinkMode, matchedText) -> Toast.makeText(this.getContext(), autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show());
-            //step4 required set on click listener
+            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle);
         }
     }
 }

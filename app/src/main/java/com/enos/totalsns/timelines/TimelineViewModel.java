@@ -12,6 +12,7 @@ import com.enos.totalsns.data.source.TotalSnsRepository;
 import java.util.List;
 
 import twitter4j.Paging;
+import twitter4j.User;
 
 public class TimelineViewModel extends ViewModel {
     private Context mContext;
@@ -44,5 +45,9 @@ public class TimelineViewModel extends ViewModel {
 
     public void fetchPastTimeline() {
         mRepository.fetchPastTimeline();
+    }
+
+    public LiveData<User> getLoggedInUser() {
+        return mRepository.getLoggedInUser();
     }
 }

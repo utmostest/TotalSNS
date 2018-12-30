@@ -9,11 +9,17 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
@@ -66,22 +72,54 @@ public class TimelineActivity extends AppCompatActivity
 
         LinearLayoutManager manager = new LinearLayoutManager(this);
         mDataBinding.appBar.content.tlRv.setLayoutManager(manager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
+                manager.getOrientation());
+        mDataBinding.appBar.content.tlRv.addItemDecoration(dividerItemDecoration);
         TimelineAdapter adapter = new TimelineAdapter(null, (mItem, position) -> startTimelineDetailActivity(mItem));
         mDataBinding.appBar.content.tlRv.setAdapter(adapter);
 
         viewModel.getHomeTimeline().observe(this, articleList -> {
             if (articleList != null) {
-                int currentPosFirst = manager.findFirstVisibleItemPosition();
+//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.appBar.content.tlRv.getLayoutManager();
+//                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
                 adapter.swapTimelineList(articleList);
 
-                if (currentPosFirst == 0)
-                    mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
-            } else {
-                Toast.makeText(TimelineActivity.this, "timeline fetch failed", Toast.LENGTH_SHORT).show();
+//                if (currentPosFirst == 0)
+//                    mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
             }
         });
         viewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.appBar.content.swipeContainer.setRefreshing(refresh));
+
+        View header = mDataBinding.navView.getHeaderView(0);
+        final TextView headerEmail = header.findViewById(R.id.header_email);
+        final TextView headerName = header.findViewById(R.id.header_name);
+        final ImageView headerProfile = header.findViewById(R.id.header_profile);
+        final TextView followingNum = header.findViewById(R.id.header_following_num);
+        final TextView followerNum = header.findViewById(R.id.header_follower_num);
+
+        viewModel.getLoggedInUser().observe(this, user -> {
+            if (user == null) return;
+
+            headerEmail.setText(user.getEmail());
+            headerName.setText(user.getName());
+            followerNum.setText(String.valueOf(user.getFollowersCount()));
+            followingNum.setText(String.valueOf(user.getFriendsCount()));
+
+            Glide.with(this)
+                    .load(user.get400x400ProfileImageURL())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(100)
+                    )
+                    .into(headerProfile);
+        });
     }
 
     private void startTimelineWriteActivity() {
@@ -171,6 +209,7 @@ public class TimelineActivity extends AppCompatActivity
         switch (item.getItemId()) {
             case R.id.navigation_timeline:
                 menuType = Constants.TIMELINE;
+                mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
                 menuSelected = true;
                 break;
             case R.id.navigation_search:

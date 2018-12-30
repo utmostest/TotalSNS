@@ -7,6 +7,7 @@ import android.content.Context;
 
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.util.AppExecutors;
+import com.enos.totalsns.util.SingleLiveEvent;
 
 public class IntroViewModel extends ViewModel {
 
@@ -15,13 +16,12 @@ public class IntroViewModel extends ViewModel {
     private AppExecutors mAppExecutors = new AppExecutors();
     private TotalSnsRepository mRepository;
     private Context mContext;
-    private MutableLiveData<LoginResult> loginResultMutableLiveData;
+    private SingleLiveEvent<LoginResult> loginResultMutableLiveData;
 
     public IntroViewModel(Context application, TotalSnsRepository repository) {
         mContext = application;
         mRepository = repository;
         loginResultMutableLiveData = mRepository.getLoginResult();
-
     }
 
     public LiveData<LoginResult> getLoginResult() {

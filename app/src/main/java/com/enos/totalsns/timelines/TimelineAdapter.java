@@ -1,23 +1,23 @@
 package com.enos.totalsns.timelines;
 
 
-import android.content.Context;
 import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
+import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.util.ConverUtils;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 
@@ -81,7 +81,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                             Arrays.equals(oldArticle.getImageUrls(), newArticle.getImageUrls()) &&
                             oldArticle.getMessage().equals(newArticle.getMessage());
                 }
-            },true);
+            }, true);
             mFilteredList = list;
             result.dispatchUpdatesTo(this);
         }
@@ -111,48 +111,33 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
         public void bind(final int position) {
             if (mFilteredList == null || mFilteredList.size() <= position) return;
-            Article article = mFilteredList.get(position);
+            final Article article = mFilteredList.get(position);
             mItem = article;
+            Glide.with(binding.getRoot().getContext())
+                    .load(article.getProfileImg())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(100)
+                    )
+                    .into(binding.tlProfileImg);
             binding.tlUserId.setText(article.getUserId());
-            binding.tlMessage.addAutoLinkMode(
-                    AutoLinkMode.MODE_HASHTAG,
-                    AutoLinkMode.MODE_PHONE,
-                    AutoLinkMode.MODE_URL,
-                    AutoLinkMode.MODE_MENTION,
-                    AutoLinkMode.MODE_CUSTOM);
-            //step1 required add auto link mode
-            binding.tlMessage.setCustomRegex("\\sutmostest\\b");
-            //step1 optional add custom regex
 
-            Context th = binding.getRoot().getContext();
-            binding.tlMessage.setHashtagModeColor(ContextCompat.getColor(th, R.color.red)); //setColor
-            binding.tlMessage.setPhoneModeColor(ContextCompat.getColor(th, R.color.text_yellow));
-            binding.tlMessage.setCustomModeColor(ContextCompat.getColor(th, R.color.green));
-            binding.tlMessage.setUrlModeColor(ContextCompat.getColor(th, R.color.blue));
-            binding.tlMessage.setMentionModeColor(ContextCompat.getColor(th, R.color.orange));
-            binding.tlMessage.setEmailModeColor(ContextCompat.getColor(th, R.color.gray));
-            binding.tlMessage.setSelectedStateColor(ContextCompat.getColor(th, R.color.batang_white)); //clickedColor
-            binding.tlMessage.setBoldAutoLinkModes(
-                    AutoLinkMode.MODE_HASHTAG,
-                    AutoLinkMode.MODE_PHONE,
-                    AutoLinkMode.MODE_URL,
-                    AutoLinkMode.MODE_EMAIL,
-                    AutoLinkMode.MODE_MENTION
-            ); //bold
-            binding.tlMessage.enableUnderLine(); //underline
-            // step2 optional set mode color, selected color, bold, underline
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, article);
 
-            binding.tlMessage.setText(article.getMessage());
-            //step3 required settext
-
-            binding.tlMessage.setAutoLinkOnClickListener((autoLinkMode, matchedText) -> Toast.makeText(th, autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show());
-            //step4 required set on click listener
-
-            Date date = new Date();
-            date.setTime(article.getPostedAt());
-            CharSequence dateStr = DateFormat.format("yyyy.M.d h:m a", date);
-            binding.tlTime.setText(article.getPostedAt() == 0 ? "" : dateStr);
+            binding.tlTime.setText(ConverUtils.getDateString(article.getPostedAt()));
             binding.tlUserName.setText(article.getUserName());
+            if (article.getUrlMap() != null) {
+                Log.i("url", article.getUrlMap().keySet() + "\n" + article.getUrlMap().values());
+                for (String key : article.getUrlMap().keySet()) {
+                    Log.i("url", key + "\n" + article.getUrlMap().get(key));
+                }
+            }
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {

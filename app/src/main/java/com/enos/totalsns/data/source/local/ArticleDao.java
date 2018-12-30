@@ -13,29 +13,32 @@ import java.util.List;
 
 @Dao
 public interface ArticleDao {
-    @Query("SELECT * FROM article ORDER by postedAt DESC")
-    LiveData<List<Article>> loadArticles();
+    @Query("SELECT * FROM article where tableUserId=:tableId ORDER by postedAt DESC")
+    LiveData<List<Article>> loadArticles(long tableId);
 
-    @Query("SELECT * FROM article")
-    List<Article> getArticles();
+    @Query("SELECT * FROM article where tableUserId=:tableId")
+    List<Article> getArticles(long tableId);
 
-    @Query("select * from article where articleId = :articleId")
-    LiveData<Article> loadArticleById(long articleId);
+    @Query("SELECT * FROM article where tableUserId=:tableId and userId=:userId")
+    List<Article> getArticlesByUserId(long tableId, long userId);
 
-    @Query("select * from article where articleId = :articleId")
-    Article getArticleById(long articleId);
+    @Query("select * from article where tableUserId=:tableId and articleId = :articleId")
+    LiveData<Article> loadArticleById(long tableId, long articleId);
 
-    @Query("SELECT * FROM article where snsType =:sns")
-    LiveData<List<Article>> loadArticlesBySns(int sns);
+    @Query("select * from article where articleId = :articleId and tableUserId=:tableId ")
+    Article getArticleById(long tableId, long articleId);
 
-    @Query("SELECT * FROM article ORDER by postedAt DESC LIMIT 1")
-    LiveData<Article> loadLastArticle();
+    @Query("SELECT * FROM article where snsType =:sns and tableUserId=:tableId ")
+    LiveData<List<Article>> loadArticlesBySns(long tableId, int sns);
 
-    @Query("SELECT * FROM article ORDER by postedAt DESC LIMIT 1")
-    Article getLastArticle();
+    @Query("SELECT * FROM article where tableUserId=:tableId ORDER by postedAt DESC LIMIT 1")
+    LiveData<Article> loadLastArticle(long tableId);
 
-    @Query("SELECT * FROM article ORDER by postedAt ASC LIMIT 1")
-    Article getFirstArticle();
+    @Query("SELECT * FROM article where tableUserId=:tableId ORDER by postedAt DESC LIMIT 1")
+    Article getLastArticle(long tableId);
+
+    @Query("SELECT * FROM article where tableUserId=:tableId ORDER by postedAt ASC LIMIT 1")
+    Article getFirstArticle(long tableId);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertArticles(List<Article> articles);
@@ -49,9 +52,9 @@ public interface ArticleDao {
     @Update
     int updateArticles(List<Article> articles);
 
-    @Query("DELETE FROM article WHERE articleId = :articleId")
-    int deleteArticleById(long articleId);
+    @Query("DELETE FROM article WHERE tableUserId= :tableId and articleId = :articleId")
+    int deleteArticleById(long tableId, long articleId);
 
-    @Query("DELETE FROM article")
-    void deleteArticles();
+    @Query("DELETE FROM article where tableUserId= :tableId")
+    void deleteArticles(long tableId);
 }

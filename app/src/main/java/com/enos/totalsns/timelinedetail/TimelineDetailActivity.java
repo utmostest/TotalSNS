@@ -2,6 +2,7 @@ package com.enos.totalsns.timelinedetail;
 
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
 import com.enos.totalsns.timelines.TimelineActivity;
 import com.enos.totalsns.timelines.TimelineViewModel;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -24,20 +26,18 @@ import com.enos.totalsns.util.ViewModelFactory;
  */
 public class TimelineDetailActivity extends AppCompatActivity {
 
+    ActivityTimelineDetailBinding mDataBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_timeline_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
-        setSupportActionBar(toolbar);
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
+        setSupportActionBar(mDataBinding.detailToolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
+
+        mDataBinding.fab.setOnClickListener(view -> {
+            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
+                    .setAction("Action", null).show();
         });
 
         // Show the Up button in the action bar.

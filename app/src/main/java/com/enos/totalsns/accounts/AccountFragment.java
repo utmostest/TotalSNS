@@ -5,6 +5,7 @@ import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -66,13 +67,12 @@ public class AccountFragment extends Fragment {
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
 
         Context context = mDataBinding.list.getContext();
-        mDataBinding.list.setLayoutManager(new LinearLayoutManager(context));
+        final LinearLayoutManager manager = new LinearLayoutManager(context);
+        mDataBinding.list.setLayoutManager(manager);
         final AccountsViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(AccountsViewModel.class);
         AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
-//        adapter.setEnableFooter(true, true, v -> {
-//            if (mListener != null) mListener.onNewAccountButtonClicked(mSnsType);
-//        });
-        adapter.swapAccountsList(viewModel.getAccounts().getValue());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), manager.getOrientation());
+        mDataBinding.list.addItemDecoration(dividerItemDecoration);
         mDataBinding.list.setAdapter(adapter);
         viewModel.getAccounts().observe(this, accounts -> adapter.swapAccountsList(getFilteredAccount(accounts)));
         return mDataBinding.getRoot();

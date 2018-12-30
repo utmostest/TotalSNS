@@ -7,6 +7,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
+import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
@@ -40,7 +44,6 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private int mSnsType = Constants.DEFAULT_SNS;
 
     public AccountsAdapter(Context context, int snsType, OnSnsAccountListener listener) {
-//        mContext = context;
         mSnsType = snsType;
         mListener = listener;
     }
@@ -185,6 +188,19 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             mItem = item;
             binding.accUserId.setText(item.getScreenName());
             binding.accUserName.setText(item.getName());
+            Glide.with(binding.getRoot().getContext())
+                    .load(item.getProfileImage())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(100)
+                    )
+                    .into(binding.accProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {

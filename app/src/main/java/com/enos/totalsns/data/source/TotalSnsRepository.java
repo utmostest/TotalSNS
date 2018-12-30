@@ -13,12 +13,18 @@ import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.util.AppExecutors;
+import com.enos.totalsns.util.ConverUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
+import twitter4j.MediaEntity;
 import twitter4j.Paging;
+import twitter4j.Status;
+import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
+import twitter4j.User;
 
 /**
  * Repository handling the work with products and comments.
@@ -41,7 +47,11 @@ public class TotalSnsRepository {
 
     private SingleLiveEvent<Boolean> isSnsNetworkOnUse;
 
+    private SingleLiveEvent<Article> currentUploadArticle;
+
     private static final Object LOCK = new Object();
+
+    private AtomicBoolean mHasSourceAdded = new AtomicBoolean(false);
 
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
@@ -51,16 +61,10 @@ public class TotalSnsRepository {
         mAppExecutors = new AppExecutors();
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
+        currentUploadArticle = new SingleLiveEvent<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
-
-        mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(),
-                timeline ->
-                {
-                    Log.i("timeline", timeline.size() + "");
-                    mObservableTimelines.postValue(timeline);
-                });
     }
 
     public synchronized static TotalSnsRepository getInstance(final TotalSnsDatabase database, final TwitterManager twitterManager) {
@@ -104,6 +108,31 @@ public class TotalSnsRepository {
         });
     }
 
+    private void addTimelineSource() {
+
+        //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
+        try {
+            mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(mTwitterManager.getCurrentUserId()),
+                    timeline ->
+                    {
+                        Log.i("timeline", "local : " + timeline.size());
+                        mObservableTimelines.postValue(timeline);
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        try {
+            mObservableTimelines.addSource(mTwitterManager.getHomeTimeline(),
+                    timeline ->
+                    {
+                        isSnsNetworkOnUse.postValue(false);
+                        Log.i("timeline", "remote : " + timeline.size());
+                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
     public void signInTwitterWithSaved(boolean isEnableUpdate) {
         mAppExecutors.networkIO().execute(() -> {
             isSnsNetworkOnUse.postValue(true);
@@ -145,6 +174,10 @@ public class TotalSnsRepository {
                 }
 
                 Account account = mTwitterManager.signInWithOauthToken(token);
+                if (mHasSourceAdded.compareAndSet(false, true)) {
+                    addTimelineSource();
+                }
+
                 if (isEnableUpdate) {
                     mAppExecutors.diskIO().execute(() -> mDatabase.updateCurrentUser(account, Constants.TWITTER));
                 }
@@ -163,7 +196,9 @@ public class TotalSnsRepository {
     }
 
     public void signOut() {
+        mHasSourceAdded.set(false);
         mAppExecutors.networkIO().execute(() -> {
+            mObservableTimelines.postValue(null);
             mDatabase.accountDao().updateSignOutBySns(Constants.TWITTER);
             isSnsNetworkOnUse.postValue(true);
             mTwitterManager.signOut();
@@ -178,17 +213,8 @@ public class TotalSnsRepository {
 
     public synchronized void fetchTimeline(Paging paging) {
         isSnsNetworkOnUse.postValue(true);
-        try {
-            mObservableTimelines.addSource(mTwitterManager.getHomeTimeline(),
-                    timeline ->
-                    {
-                        isSnsNetworkOnUse.postValue(false);
-                        Log.i("timeline", timeline.size() + "");
-                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
-                    });
-            //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
-        } catch (IllegalArgumentException ignored) {
-        }
+
+        addTimelineSource();
 
         mAppExecutors.networkIO().execute(() -> {
             try {
@@ -200,7 +226,7 @@ public class TotalSnsRepository {
         });
     }
 
-    public MutableLiveData<LoginResult> getLoginResult() {
+    public SingleLiveEvent<LoginResult> getLoginResult() {
         return loginResult;
     }
 
@@ -209,14 +235,14 @@ public class TotalSnsRepository {
     }
 
     public LiveData<Article> getLastArticle() {
-        return mDatabase.articleDao().loadLastArticle();
+        return mDatabase.articleDao().loadLastArticle(mTwitterManager.getCurrentUserId());
     }
 
     public void fetchRecentTimeline() {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
-            Article last = mDatabase.articleDao().getLastArticle();
-            Log.i("timeline", last.getMessage());
+            Article last = mDatabase.articleDao().getLastArticle(mTwitterManager.getCurrentUserId());
+            Log.i("timeline", "last : " + last.getMessage());
             paging.sinceId(last.getArticleId());
             fetchTimeline(paging);
         });
@@ -225,10 +251,65 @@ public class TotalSnsRepository {
     public void fetchPastTimeline() {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
-            Article first = mDatabase.articleDao().getFirstArticle();
-            Log.i("timeline", first.getMessage());
+            Article first = mDatabase.articleDao().getFirstArticle(mTwitterManager.getCurrentUserId());
+            Log.i("timeline", "first : " + first.getMessage());
             paging.setMaxId(first.getArticleId());
             fetchTimeline(paging);
         });
     }
+
+    public LiveData<User> getLoggedInUser() {
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                isSnsNetworkOnUse.postValue(true);
+                mTwitterManager.fetchLoggedInUser();
+                isSnsNetworkOnUse.postValue(false);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+        });
+        return mTwitterManager.getLoggedInUser();
+    }
+
+    public LiveData<Article> getCurrentUploadingArticle() {
+        return currentUploadArticle;
+    }
+
+    public void uploadStatus(String message) {
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                isSnsNetworkOnUse.postValue(true);
+                postUploadStatus(mTwitterManager.updateStatus(message));
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                currentUploadArticle.postValue(null);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void uploadStatus(StatusUpdate statusUpdate) {
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                postUploadStatus(mTwitterManager.updateStatus(statusUpdate));
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                currentUploadArticle.postValue(null);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void postUploadStatus(Status status) {
+        long currentUserId = mTwitterManager.getCurrentUserId();
+        Article article = ConverUtils.toArticle(status, currentUserId);
+        isSnsNetworkOnUse.postValue(false);
+        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticle(article));
+        currentUploadArticle.postValue(article);
+    }
+
+    public SingleLiveEvent<Article> getCurrentUploadArticle() {
+        return currentUploadArticle;
+    }
+
 }

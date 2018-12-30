@@ -1,11 +1,8 @@
 package com.enos.totalsns.login;
 
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
-import android.databinding.Observable;
-import android.databinding.ObservableField;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -13,12 +10,13 @@ import android.webkit.WebSettings;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.databinding.ActivityLoginBinding;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.timelines.TimelineActivity;
 import com.enos.totalsns.util.ViewModelFactory;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * A login screen that offers login via email/password.
@@ -33,6 +31,8 @@ public class LoginActivity extends AppCompatActivity {
     private LoginViewModel viewModel;
 
     private ActivityLoginBinding mDataBinding;
+
+    private AtomicBoolean mHasActivityStarted = new AtomicBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,7 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                     break;
                 case LoginResult.STEP3_ENTIRELOGIN:
                     if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
-                        entireLoginSucceed(result.getMessage());
+                        entireLoginSucceed();
                     } else {
                         loginFailed(result.getMessage());
                     }
@@ -109,12 +109,16 @@ public class LoginActivity extends AppCompatActivity {
         viewModel.signInTwitterWithOauthToken(oauthToken, true);
     }
 
-    private void entireLoginSucceed(String message) {
-//        viewModel.getLoginResult().removeObservers(this);
-        finish();
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(LoginActivity.this, TimelineActivity.class);
-        startActivity(intent);
+    private void entireLoginSucceed() {
+        finishAndstartTimelineActivity();
+    }
+
+    private void finishAndstartTimelineActivity() {
+        if (mHasActivityStarted.compareAndSet(false, true)) {
+            finish();
+            Intent intent = new Intent(LoginActivity.this, TimelineActivity.class);
+            startActivity(intent);
+        }
     }
 
     @Override

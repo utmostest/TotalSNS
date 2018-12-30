@@ -5,11 +5,17 @@ import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
+
+import java.util.HashMap;
 
 @Entity(tableName = "article")
 public class Article implements Parcelable {
 
     @PrimaryKey
+    @NonNull
+    private String tablePlusArticleId;
+    private long tableUserId;
     private long articleId;
     private String userId;
     private String userName;
@@ -18,6 +24,7 @@ public class Article implements Parcelable {
     private String[] imageUrls;
     private long postedAt;
     private int snsType;
+    private HashMap<String, String> urlMap;
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
@@ -25,7 +32,9 @@ public class Article implements Parcelable {
     }
 
     @Ignore
-    public Article(long articleId, String id, String name, String msg, String profile, String[] imgUrls, long time, int snsType) {
+    public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile, String[] imgUrls, long time, int snsType, HashMap<String, String> urlMap) {
+        this.tablePlusArticleId = tablePlusArticleId;
+        this.tableUserId = tableId;
         this.articleId = articleId;
         this.userId = id;
         this.userName = name;
@@ -34,10 +43,13 @@ public class Article implements Parcelable {
         this.imageUrls = imgUrls;
         this.postedAt = time;
         this.snsType = snsType;
+        this.urlMap = urlMap;
     }
 
     @Ignore
     protected Article(Parcel in) {
+        tablePlusArticleId = in.readString();
+        tableUserId = in.readLong();
         articleId = in.readLong();
         profileImg = in.readString();
         userName = in.readString();
@@ -46,6 +58,7 @@ public class Article implements Parcelable {
         imageUrls = in.createStringArray();
         postedAt = in.readLong();
         snsType = in.readInt();
+        urlMap = in.readHashMap(String.class.getClassLoader());
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -67,7 +80,8 @@ public class Article implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-
+        dest.writeString(tablePlusArticleId);
+        dest.writeLong(tableUserId);
         dest.writeLong(articleId);
         dest.writeString(profileImg);
         dest.writeString(userName);
@@ -76,6 +90,23 @@ public class Article implements Parcelable {
         dest.writeStringArray(imageUrls);
         dest.writeLong(postedAt);
         dest.writeInt(snsType);
+        dest.writeMap(urlMap);
+    }
+
+    public void setTablePlusArticleId(String tablePlusArticleId) {
+        this.tablePlusArticleId = tablePlusArticleId;
+    }
+
+    public String getTablePlusArticleId() {
+        return tablePlusArticleId;
+    }
+
+    public long getTableUserId() {
+        return tableUserId;
+    }
+
+    public void setTableUserId(long tableUserId) {
+        this.tableUserId = tableUserId;
     }
 
     public String[] getImageUrls() {
@@ -140,5 +171,13 @@ public class Article implements Parcelable {
 
     public void setSnsType(int snsType) {
         this.snsType = snsType;
+    }
+
+    public HashMap<String, String> getUrlMap() {
+        return urlMap;
+    }
+
+    public void setUrlMap(HashMap<String, String> urlMap) {
+        this.urlMap = urlMap;
     }
 }

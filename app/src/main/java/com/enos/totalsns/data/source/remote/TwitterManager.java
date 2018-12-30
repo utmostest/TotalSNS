@@ -8,13 +8,14 @@ import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.util.ConverUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
 import twitter4j.GeoQuery;
+import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.Place;
 import twitter4j.Query;
@@ -32,20 +33,25 @@ import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterManager {
 
+    public static final long INVALID_ID = -1;
     private static TwitterManager mTwitterManager = null;
 
     private Twitter mTwitter = null;
 
     private MutableLiveData<ArrayList<Article>> homeTimeline;
 
+    private MutableLiveData<User> loggedInUser;
+
     private TwitterManager() {
         init();
     }
 
+    private long currentUserId = INVALID_ID;
+
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
             mTwitterManager = new TwitterManager();
-            Log.i("tweet","tweet constructor called");
+            Log.i("tweet", "tweet constructor called");
         }
         return mTwitterManager;
     }
@@ -55,11 +61,13 @@ public class TwitterManager {
         ConfigurationBuilder cb = new ConfigurationBuilder();
         cb.setDebugEnabled(Constants.IS_DEBUG)
                 .setOAuthConsumerKey(BuildConfig.CONSUMER_KEY)
-                .setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET);
+                .setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET)
+                .setIncludeEmailEnabled(true);
 
         TwitterFactory tf = new TwitterFactory(cb.build());
         mTwitter = tf.getInstance();
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
+        loggedInUser = new MutableLiveData<>();
     }
 
     public String getAuthorizationUrl() throws TwitterException {
@@ -74,7 +82,8 @@ public class TwitterManager {
                 .setOAuthConsumerKey(BuildConfig.CONSUMER_KEY)
                 .setOAuthConsumerSecret(BuildConfig.CONSUMER_SECRET)
                 .setOAuthAccessToken(token.getToken())
-                .setOAuthAccessTokenSecret(token.getSecret());
+                .setOAuthAccessTokenSecret(token.getSecret())
+                .setIncludeEmailEnabled(true);
         TwitterFactory tf = new TwitterFactory(cb.build());
         mTwitter = tf.getInstance();
 
@@ -89,6 +98,7 @@ public class TwitterManager {
         String profileImg = credential.get400x400ProfileImageURL();
         String screenName = credential.getScreenName();
         String name = credential.getName();
+        currentUserId = userId;
 
         return new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, name, Constants.TWITTER, true);
     }
@@ -119,23 +129,12 @@ public class TwitterManager {
 
         ResponseList<Status> list = getTimeLine(paging);
         ArrayList<Article> articleList = new ArrayList<Article>();
+        long currentUserId = getCurrentUserId();
         int num = 0;
         for (Status status : list) {
-            Log.i("timeline", num + ":" + status.getText());
             num++;
-            User user = status.getUser();
-            Article article = new Article(status.getId(), user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(), null, status.getCreatedAt().getTime(), Constants.TWITTER);
-            URLEntity[] urls = status.getMediaEntities();
-            if (urls != null) {
-                String[] strs = new String[urls.length];
-                int i = 0;
-                for (URLEntity url : urls) {
-                    strs[i] = url.getExpandedURL();
-                    i++;
-                    Log.i("URL", url.getDisplayURL() + "\n" + url.getExpandedURL() + "\n" + url.getURL() + "\n" + url.getText());
-                }
-                article.setImageUrls(strs);
-            }
+            Log.i("timeline", num + ":" + status.getText());
+            Article article = ConverUtils.toArticle(status, currentUserId);
             articleList.add(article);
         }
         homeTimeline.postValue(articleList);
@@ -181,4 +180,17 @@ public class TwitterManager {
         mTwitter = TwitterFactory.getSingleton();
     }
 
+    public LiveData<User> getLoggedInUser() {
+        return loggedInUser;
+    }
+
+    public void fetchLoggedInUser() throws TwitterException {
+        User user = mTwitter.verifyCredentials();
+        loggedInUser.postValue(user);
+    }
+
+    public long getCurrentUserId() throws RuntimeException {
+        if (currentUserId <= INVALID_ID) throw new RuntimeException("twitter id is invalid");
+        return currentUserId;
+    }
 }
