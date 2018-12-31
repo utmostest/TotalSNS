@@ -88,7 +88,7 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
         AtomicBoolean atomicBoolean = new AtomicBoolean();
         atomicBoolean.set(true);
         mViewModel.isShouldClose().setValue(atomicBoolean);
-        Log.i("observer", "setValue : " + true);
+//        Log.i("observer", "setValue : " + true);
     }
 
     private void post() {

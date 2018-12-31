@@ -28,8 +28,11 @@ public class StringArrayConverter {
     public static String toString(String[] stringArray) {
         if (stringArray == null) return null;
         StringBuilder sb = new StringBuilder();
-        for (String s : stringArray) {
-            sb.append(s).append(";");
+        int size = stringArray.length;
+        int last = size - 1;
+        for (int i = 0; i < size; i++) {
+            sb.append(stringArray[i]);
+            if (i < last) sb.append(";");
         }
         return sb.toString();
     }

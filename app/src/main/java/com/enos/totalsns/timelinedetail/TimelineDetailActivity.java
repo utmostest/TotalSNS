@@ -1,22 +1,16 @@
 package com.enos.totalsns.timelinedetail;
 
-import android.arch.lifecycle.ViewModelProvider;
-import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
 import com.enos.totalsns.timelines.TimelineActivity;
-import com.enos.totalsns.timelines.TimelineViewModel;
-import com.enos.totalsns.util.ViewModelFactory;
+import com.enos.totalsns.util.AppCompatUtils;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -34,6 +28,7 @@ public class TimelineDetailActivity extends AppCompatActivity {
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
         setSupportActionBar(mDataBinding.detailToolbar);
 
+//        AppCompatUtils.setEnterCallback(this);
 
         mDataBinding.fab.setOnClickListener(view -> {
             Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)

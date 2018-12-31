@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -25,9 +26,11 @@ import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ActivityTimelineBinding;
+import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.timelinedetail.TimelineDetailActivity;
 import com.enos.totalsns.timelinedetail.TimelineDetailFragment;
 import com.enos.totalsns.timelinewrite.TimelineWriteActivity;
+import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -75,7 +78,13 @@ public class TimelineActivity extends AppCompatActivity
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
                 manager.getOrientation());
         mDataBinding.appBar.content.tlRv.addItemDecoration(dividerItemDecoration);
-        TimelineAdapter adapter = new TimelineAdapter(null, (mItem, position) -> startTimelineDetailActivity(mItem));
+        TimelineAdapter adapter = new TimelineAdapter(null, (binding, mItem, position)
+                -> {
+            boolean enableImage = false;
+            if (mItem.getImageUrls() != null && mItem.getImageUrls().length > 0) enableImage = true;
+            startTimelineDetailActivity(mItem);
+//            startTimelineDetailActivityWithImage(binding, mItem, enableImage);
+        });
         mDataBinding.appBar.content.tlRv.setAdapter(adapter);
 
         viewModel.getHomeTimeline().observe(this, articleList -> {
@@ -122,6 +131,27 @@ public class TimelineActivity extends AppCompatActivity
         });
     }
 
+    private void startTimelineDetailActivityWithImage(ItemArticleBinding binding, Article mItem, boolean enableImage) {
+        AppCompatUtils.setExitCallback(this);
+        if (enableImage) {
+            startTimelineDetailActivity(mItem,
+                    Pair.create(binding.tlProfileImg, getString(R.string.tran_profile_image)),
+                    Pair.create(binding.tlUserName, getString(R.string.tran_user_name)),
+                    Pair.create(binding.tlUserId, getString(R.string.tran_user_id)),
+                    Pair.create(binding.tlTime, getString(R.string.tran_created_at)),
+                    Pair.create(binding.tlMessage, getString(R.string.tran_message)),
+                    Pair.create(binding.imageContainer, getString(R.string.tran_image_container)));
+        } else {
+            startTimelineDetailActivity(mItem,
+                    Pair.create(binding.tlProfileImg, getString(R.string.tran_profile_image)),
+                    Pair.create(binding.tlUserName, getString(R.string.tran_user_name)),
+                    Pair.create(binding.tlUserId, getString(R.string.tran_user_id)),
+                    Pair.create(binding.tlTime, getString(R.string.tran_created_at)),
+                    Pair.create(binding.tlMessage, getString(R.string.tran_message))
+            );
+        }
+    }
+
     private void startTimelineWriteActivity() {
         Intent write = new Intent(this, TimelineWriteActivity.class);
         startActivity(write);
@@ -131,6 +161,12 @@ public class TimelineActivity extends AppCompatActivity
         Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
         startActivity(intent);
+    }
+
+    private void startTimelineDetailActivity(Article mItem, Pair<View, String>... pairs) {
+        Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
+        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+        AppCompatUtils.startActivityWithTransition(this, intent, pairs);
     }
 
     private void signOut() {

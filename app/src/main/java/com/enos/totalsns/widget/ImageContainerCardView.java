@@ -27,7 +27,7 @@ public class ImageContainerCardView extends CardView {
 
     private int imageCount;
 
-    private final int DEFAULT_IMAGE_COUNT = 1;
+    private final int DEFAULT_IMAGE_COUNT = 0;
 
     private WeakHashMap<Integer, ImageView> imageViewMap;
 

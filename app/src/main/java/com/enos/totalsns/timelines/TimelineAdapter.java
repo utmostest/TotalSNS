@@ -130,15 +130,14 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     )
                     .into(binding.tlProfileImg);
 
-            String[] imgUrls = article.getImageUrls();
-            int urlSize = imgUrls.length;
-            String firstImage = null;
-            if (imgUrls != null && urlSize > 0) firstImage = imgUrls[0];
-            boolean hasImage = firstImage != null && firstImage.length() > 0;
+            final String[] imgUrls = article.getImageUrls();
+            int urlSize = ConverUtils.getActualSize(imgUrls);
+            boolean hasImage = urlSize > 0;
             binding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             binding.imageContainer.setImageCount(urlSize);
+            Log.i("bind", "urlSize : " + urlSize + ", imgUrls : " + Arrays.toString(imgUrls));
             binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                Toast.makeText(iv.getContext(), imgUrls[pos], Toast.LENGTH_SHORT).show();
+                Toast.makeText(iv.getContext(), imgUrls[pos] + pos, Toast.LENGTH_SHORT).show();
             });
             if (hasImage) {
                 binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);
@@ -151,9 +150,9 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             binding.tlTime.setText(ConverUtils.getDateString(article.getPostedAt()));
             binding.tlUserName.setText(article.getUserName());
             if (article.getUrlMap() != null) {
-                Log.i("url", article.getUrlMap().keySet() + "\n" + article.getUrlMap().values());
+//                Log.i("url", article.getUrlMap().keySet() + "\n" + article.getUrlMap().values());
                 for (String key : article.getUrlMap().keySet()) {
-                    Log.i("url", key + "\n" + article.getUrlMap().get(key));
+//                    Log.i("url", key + "\n" + article.getUrlMap().get(key));
                 }
             }
 
@@ -161,7 +160,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onArticleClicked(mItem, position);
+                    mListener.onArticleClicked(binding, mItem, position);
                 }
             });
         }

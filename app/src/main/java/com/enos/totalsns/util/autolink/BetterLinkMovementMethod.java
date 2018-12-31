@@ -1,7 +1,7 @@
 package com.enos.totalsns.util.autolink;
 
-import android.app.Activity;
 import android.graphics.RectF;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -11,13 +11,11 @@ import android.text.style.BackgroundColorSpan;
 import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.text.util.Linkify;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.Window;
 import android.widget.TextView;
 
@@ -126,7 +124,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
      *                    {@link Linkify#WEB_URLS} and {@link Linkify#EMAIL_ADDRESSES}.
      * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
      */
-    public static BetterLinkMovementMethod linkify(int linkifyMask, Activity activity) {
+    public static BetterLinkMovementMethod linkify(int linkifyMask, AppCompatActivity activity) {
         // Find the layout passed to setContentView().
         ViewGroup activityLayout = ((ViewGroup) ((ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT)).getChildAt(0));
 
@@ -141,7 +139,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
      * @return The registered {@link BetterLinkMovementMethod} on the TextViews.
      */
     @SuppressWarnings("unused")
-    public static BetterLinkMovementMethod linkifyHtml(Activity activity) {
+    public static BetterLinkMovementMethod linkifyHtml(AppCompatActivity activity) {
         return linkify(LINKIFY_NONE, activity);
     }
 

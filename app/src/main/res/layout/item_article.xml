@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +16,8 @@
             android:id="@+id/tlProfileImg"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@drawable/ic_account_circle_black_48dp"
+            app:srcCompat="@drawable/ic_account_circle_black_48dp"
+            android:transitionName="@string/tran_profile_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -36,6 +38,7 @@
             android:textColor="@color/black_overlay"
             android:textSize="16sp"
             android:textStyle="bold"
+            android:transitionName="@string/tran_user_name"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tlUserId"
             app:layout_constraintHorizontal_bias="0.0"
@@ -55,6 +58,7 @@
             android:maxLines="1"
             android:textColor="@color/colorPrimary"
             android:textSize="16sp"
+            android:transitionName="@string/tran_user_id"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/tlTime"
@@ -72,6 +76,7 @@
             android:layout_marginLeft="8dp"
             android:textColor="@color/text_pink"
             android:textSize="12sp"
+            android:transitionName="@string/tran_created_at"
             app:layout_constraintBaseline_toBaselineOf="@+id/tlUserName"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -93,6 +98,7 @@
             android:focusable="false"
             android:textColor="@color/text_black"
             android:textSize="16sp"
+            android:transitionName="@string/tran_message"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
@@ -113,9 +119,10 @@
             android:layout_marginBottom="8dp"
             android:elevation="10dp"
             android:scaleType="fitCenter"
+            android:transitionName="@string/tran_image_container"
             android:visibility="gone"
             app:cardCornerRadius="20dp"
-            app:imageCount="1"
+            app:imageCount="0"
             app:imageOrientation="horizontal"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="16:9"

@@ -36,7 +36,7 @@ public class TimelineWriteActivity extends AppCompatActivity {
 
     private void initObserver() {
         mViewModel.isShouldClose().observe(this, shouldClose -> {
-            Log.i("observer", "isShouldClose onChanged called : " + shouldClose);
+//            Log.i("observer", "isShouldClose onChanged called : " + shouldClose);
             if (shouldClose.compareAndSet(true, false)) finish();
         });
         mViewModel.getUploadingArticle().observe(this, article -> {

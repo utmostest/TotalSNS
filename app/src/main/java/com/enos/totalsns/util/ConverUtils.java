@@ -25,8 +25,9 @@ public class ConverUtils {
         if (urls == null) return null;
 
         String[] strs = new String[urls.length];
+//        Log.i("array", strs.length + "," + urls.length);
         for (int i = 0; i < urls.length; i++) {
-            Log.i("url", "media : " + urls[i]);
+//            Log.i("url", "media : " + urls[i]);
             strs[i] = urls[i].getMediaURL();
         }
         return strs;
@@ -37,7 +38,7 @@ public class ConverUtils {
 
         HashMap<String, String> urlMap = new HashMap<>();
         for (URLEntity entity : urlEntities) {
-//            Log.i("url", entity.getText() + "\n" + entity.getExpandedURL());
+            Log.i("url", entity.getText() + "\n" + entity.getExpandedURL());
             urlMap.put(entity.getText(), entity.getExpandedURL());
         }
         return urlMap;
@@ -46,7 +47,7 @@ public class ConverUtils {
     public static Article toArticle(Status status, long currentUserId) {
         User user = status.getUser();
         long articleId = status.getId();
-        Log.i("status", status + "");
+//        Log.i("status", status + "");
 //        String simplifiedText = removeMediaUrl(status);
         Article article = new Article(
                 ConverUtils.getTableArticlePK(currentUserId, articleId), currentUserId, articleId,
@@ -69,5 +70,20 @@ public class ConverUtils {
         date.setTime(dateTime);
         CharSequence dateStr = DateFormat.format("yyyy.M.d h:m a", date);
         return dateTime == 0 ? "" : dateStr.toString();
+    }
+
+    public static int getActualSize(String[] strings) {
+        int size = 0;
+        if (strings == null) return size;
+
+        for (String str : strings) {
+            if (isStringValid(str)) size++;
+        }
+
+        return size;
+    }
+
+    public static boolean isStringValid(String string) {
+        return string != null && string.length() > 0;
     }
 }

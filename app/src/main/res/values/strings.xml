@@ -48,4 +48,10 @@
     <string name="title_follower">팔로워</string>
     <string name="title_write_timeline">게시물 작성하기</string>
     <string name="write_hint">작성할 게시물을 입력하세요</string>
+    <string name="tran_profile_image">profileImage</string>
+    <string name="tran_user_name">userName</string>
+    <string name="tran_user_id">userId</string>
+    <string name="tran_created_at">createdAt</string>
+    <string name="tran_message">message</string>
+    <string name="tran_image_container">imageContainer</string>
 </resources>

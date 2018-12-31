@@ -6,6 +6,7 @@ import android.arch.persistence.room.PrimaryKey;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 
 import java.util.HashMap;
 
@@ -21,9 +22,11 @@ public class Article implements Parcelable {
     private String userName;
     private String message;
     private String profileImg;
+    @Nullable
     private String[] imageUrls;
     private long postedAt;
     private int snsType;
+    @Nullable
     private HashMap<String, String> urlMap;
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
@@ -32,7 +35,7 @@ public class Article implements Parcelable {
     }
 
     @Ignore
-    public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile, String[] imgUrls, long time, int snsType, HashMap<String, String> urlMap) {
+    public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile, @Nullable String[] imgUrls, long time, int snsType, @Nullable HashMap<String, String> urlMap) {
         this.tablePlusArticleId = tablePlusArticleId;
         this.tableUserId = tableId;
         this.articleId = articleId;

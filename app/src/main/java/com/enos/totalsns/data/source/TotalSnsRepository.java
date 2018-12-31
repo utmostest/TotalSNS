@@ -115,7 +115,7 @@ public class TotalSnsRepository {
             mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(mTwitterManager.getCurrentUserId()),
                     timeline ->
                     {
-                        Log.i("timeline", "local : " + timeline.size());
+//                        Log.i("timeline", "local : " + timeline.size());
                         mObservableTimelines.postValue(timeline);
                     });
         } catch (IllegalArgumentException ignored) {
@@ -126,7 +126,7 @@ public class TotalSnsRepository {
                     timeline ->
                     {
                         isSnsNetworkOnUse.postValue(false);
-                        Log.i("timeline", "remote : " + timeline.size());
+//                        Log.i("timeline", "remote : " + timeline.size());
                         mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
                     });
         } catch (IllegalArgumentException ignored) {
@@ -242,7 +242,7 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
             Article last = mDatabase.articleDao().getLastArticle(mTwitterManager.getCurrentUserId());
-            Log.i("timeline", "last : " + last.getMessage());
+//            Log.i("timeline", "last : " + last.getMessage());
             paging.sinceId(last.getArticleId());
             fetchTimeline(paging);
         });
@@ -252,7 +252,7 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
             Article first = mDatabase.articleDao().getFirstArticle(mTwitterManager.getCurrentUserId());
-            Log.i("timeline", "first : " + first.getMessage());
+//            Log.i("timeline", "first : " + first.getMessage());
             paging.setMaxId(first.getArticleId());
             fetchTimeline(paging);
         });

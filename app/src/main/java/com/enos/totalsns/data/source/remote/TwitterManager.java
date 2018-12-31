@@ -51,7 +51,7 @@ public class TwitterManager {
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
             mTwitterManager = new TwitterManager();
-            Log.i("tweet", "tweet constructor called");
+//            Log.i("tweet", "tweet constructor called");
         }
         return mTwitterManager;
     }
@@ -133,7 +133,7 @@ public class TwitterManager {
         int num = 0;
         for (Status status : list) {
             num++;
-            Log.i("timeline", num + ":" + status.getText());
+//            Log.i("timeline", num + ":" + status.getText());
             Article article = ConverUtils.toArticle(status, currentUserId);
             articleList.add(article);
         }

@@ -80,7 +80,7 @@ public class ActivityUtils {
     }
 
     private static String getExpandedUrlFromMap(HashMap<String, String> urlMap, String matchedText) {
-        Log.i("url", matchedText);
+//        Log.i("url", matchedText);
         if (urlMap == null) return matchedText;
         String normalizedString;
         if (urlMap.containsKey(matchedText)) {
@@ -88,7 +88,7 @@ public class ActivityUtils {
         } else {
             normalizedString = matchedText;
         }
-        Log.i("url", normalizedString + "");
+//        Log.i("url", normalizedString + "");
 
         normalizedString = checkHttpSchemeAndInsertIfNotExist(normalizedString);
         return normalizedString;
