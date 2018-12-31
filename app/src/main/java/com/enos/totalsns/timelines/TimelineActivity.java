@@ -116,7 +116,7 @@ public class TimelineActivity extends AppCompatActivity
                     )
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade(100)
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(headerProfile);
         });

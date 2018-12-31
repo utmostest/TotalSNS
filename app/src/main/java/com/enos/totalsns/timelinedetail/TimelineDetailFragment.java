@@ -8,12 +8,14 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.timelines.TimelineActivity;
 import com.enos.totalsns.util.ActivityUtils;
@@ -85,13 +87,27 @@ public class TimelineDetailFragment extends Fragment {
                     )
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade(100)
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(mDataBinding.tldProfileImg);
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
             mDataBinding.tldTime.setText(ConverUtils.getDateString(mArticle.getPostedAt()));
             mDataBinding.tldUserName.setText(mArticle.getUserName());
+
+            String[] imgUrls = mArticle.getImageUrls();
+            int urlSize = imgUrls.length;
+            String firstImage = null;
+            if (imgUrls != null && urlSize > 0) firstImage = imgUrls[0];
+            boolean hasImage = firstImage != null && firstImage.length() > 0;
+            mDataBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
+            mDataBinding.imageContainer.setImageCount(urlSize);
+            mDataBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
+                Toast.makeText(iv.getContext(), imgUrls[pos], Toast.LENGTH_SHORT).show();
+            });
+            if (hasImage) {
+                mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);
+            }
 
             ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle);
         }

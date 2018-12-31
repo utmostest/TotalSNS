@@ -6,13 +6,16 @@ import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConverUtils;
@@ -123,9 +126,24 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     )
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade(100)
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(binding.tlProfileImg);
+
+            String[] imgUrls = article.getImageUrls();
+            int urlSize = imgUrls.length;
+            String firstImage = null;
+            if (imgUrls != null && urlSize > 0) firstImage = imgUrls[0];
+            boolean hasImage = firstImage != null && firstImage.length() > 0;
+            binding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
+            binding.imageContainer.setImageCount(urlSize);
+            binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
+                Toast.makeText(iv.getContext(), imgUrls[pos], Toast.LENGTH_SHORT).show();
+            });
+            if (hasImage) {
+                binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);
+            }
+
             binding.tlUserId.setText(article.getUserId());
 
             ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, article);

@@ -198,7 +198,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     )
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade(100)
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(binding.accProfileImg);
 

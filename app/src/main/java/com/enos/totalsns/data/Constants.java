@@ -18,4 +18,6 @@ public class Constants {
     public static final int PAGE_CNT = 50;
 
     public static final boolean IS_DEBUG = true;
+
+    public static final int CROSS_FADE_MILLI = 500;
 }

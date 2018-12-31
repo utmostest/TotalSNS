@@ -14,6 +14,7 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
+import com.enos.totalsns.data.Constants;
 
 import java.util.WeakHashMap;
 
@@ -29,6 +30,8 @@ public class ImageContainerCardView extends CardView {
     private final int DEFAULT_IMAGE_COUNT = 1;
 
     private WeakHashMap<Integer, ImageView> imageViewMap;
+
+    private ImageView.ScaleType imageViewScaleType = ImageView.ScaleType.CENTER_CROP;
 
     @Nullable
     private OnImageClickedListener onImageClickedListener = null;
@@ -76,7 +79,7 @@ public class ImageContainerCardView extends CardView {
 
         for (int i = 0; i < imageCount; i++) {
             ImageView imageView = new ImageView(getContext());
-            imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+            imageView.setScaleType(imageViewScaleType);
             imageView.setLayoutParams(layoutParams);
             imageContainer.addView(imageView);
             final int position = i;
@@ -129,9 +132,27 @@ public class ImageContainerCardView extends CardView {
                     )
                     .transition(
                             new DrawableTransitionOptions()
-                                    .crossFade(100)
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(iv);
+        }
+    }
+
+    public ImageView.ScaleType getImageViewScaleType() {
+        return imageViewScaleType;
+    }
+
+    public void setImageViewScaleType(ImageView.ScaleType imageViewScaleType) {
+        this.imageViewScaleType = imageViewScaleType;
+        updateImageViewScaleType(imageViewScaleType);
+    }
+
+    private void updateImageViewScaleType(ImageView.ScaleType scaleType) {
+        if (imageViewMap == null) return;
+        int size = imageViewMap.size();
+        for (int i = 0; i < size; i++) {
+            ImageView iv = imageViewMap.get(i);
+            iv.setScaleType(scaleType);
         }
     }
 }

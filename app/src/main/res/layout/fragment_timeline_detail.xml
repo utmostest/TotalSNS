@@ -46,9 +46,9 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:ellipsize="end"
-            android:textSize="18sp"
             android:maxLines="1"
             android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -92,5 +92,30 @@
             app:layout_constraintTop_toBottomOf="@+id/tldTime"
             app:layout_constraintVertical_bias="0.0"
             tools:text="소셜 네트워크 서비스에는 트위터, 페이스북, 인스타그램 등이 있으며 전세계의 수많은 사람과 소통할 수 있으며 컴퓨터나 모바일 기기 어디에서 사용할 수 있다." />
+
+        <com.enos.totalsns.widget.ImageContainerCardView
+            android:id="@+id/imageContainer"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginBottom="8dp"
+            android:elevation="10dp"
+            android:scaleType="fitCenter"
+            android:visibility="gone"
+            app:cardCornerRadius="20dp"
+            app:imageCount="1"
+            app:imageOrientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintDimensionRatio="16:9"
+            app:layout_constraintEnd_toEndOf="@+id/tldMessage"
+            app:layout_constraintStart_toStartOf="@+id/tldMessage"
+            app:layout_constraintTop_toBottomOf="@+id/tldMessage"
+            app:layout_constraintVertical_bias="0.0"
+            tools:targetApi="lollipop"
+            tools:visibility="visible"/>
     </android.support.constraint.ConstraintLayout>
 </layout>
