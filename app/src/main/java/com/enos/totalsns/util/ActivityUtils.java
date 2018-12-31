@@ -12,6 +12,8 @@ import com.enos.totalsns.data.Article;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.enos.totalsns.util.autolink.AutoLinkTextView;
 
+import java.util.HashMap;
+
 public class ActivityUtils {
     public static void setAutoLinkTextView(final Context context, final AutoLinkTextView autoLinkTextView, final Article article) {
         autoLinkTextView.addAutoLinkMode(
@@ -45,25 +47,16 @@ public class ActivityUtils {
         autoLinkTextView.setText(article.getMessage());
         //step3 required settext
 
-        autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, matchedText) -> {
+        autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, autoLinkText) -> {
+            String matchedText = removeUnnecessaryString(autoLinkText);
+
             Toast.makeText(context, autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show();
             Intent intent = new Intent();
             switch (autoLinkMode) {
                 case MODE_URL:
-                    Log.i("url", matchedText);
-                    String url;
-                    if (article.getUrlMap().containsKey(matchedText)) {
-                        url = article.getUrlMap().get(matchedText);
-                    } else {
-                        url = matchedText;
-                    }
-                    Log.i("url", url + "");
-                    if (url == null) url = matchedText;
-                    if (!matchedText.contains("http://") && !matchedText.contains("https://")) {
-                        url = "http://" + url;
-                    }
+                    String normalizedString = getExpandedUrlFromMap(article.getUrlMap(), matchedText);
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndNormalize(Uri.parse(url));
+                    intent.setDataAndNormalize(Uri.parse(normalizedString));
                     checkResolveAndStartActivity(intent, context);
                     return;
                 case MODE_PHONE:
@@ -84,6 +77,35 @@ public class ActivityUtils {
             }
         });
         //step4 required set on click listener
+    }
+
+    private static String getExpandedUrlFromMap(HashMap<String, String> urlMap, String matchedText) {
+        Log.i("url", matchedText);
+        if (urlMap == null) return matchedText;
+        String normalizedString;
+        if (urlMap.containsKey(matchedText)) {
+            normalizedString = urlMap.get(matchedText);
+        } else {
+            normalizedString = matchedText;
+        }
+        Log.i("url", normalizedString + "");
+
+        normalizedString = checkHttpSchemeAndInsertIfNotExist(normalizedString);
+        return normalizedString;
+    }
+
+    private static String checkHttpSchemeAndInsertIfNotExist(String matchedText) {
+        String normalizedString = matchedText;
+        if (!matchedText.contains("http://") && !matchedText.contains("https://")) {
+            normalizedString = "http://" + normalizedString;
+        }
+        return normalizedString;
+    }
+
+    private static String removeUnnecessaryString(String matchedText) {
+        if (matchedText == null) return null;
+        String result = matchedText.replaceAll(" ", "").replaceAll("\n", "");
+        return result;
     }
 
     private static void startActivity(Intent intent, Context context) {

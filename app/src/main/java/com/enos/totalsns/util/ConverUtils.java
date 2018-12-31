@@ -1,6 +1,7 @@
 package com.enos.totalsns.util;
 
 import android.text.format.DateFormat;
+import android.util.Log;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
@@ -25,7 +26,8 @@ public class ConverUtils {
 
         String[] strs = new String[urls.length];
         for (int i = 0; i < urls.length; i++) {
-            strs[i] = urls[i].getExpandedURL();
+            Log.i("url", "media : " + urls[i]);
+            strs[i] = urls[i].getMediaURL();
         }
         return strs;
     }
@@ -44,12 +46,22 @@ public class ConverUtils {
     public static Article toArticle(Status status, long currentUserId) {
         User user = status.getUser();
         long articleId = status.getId();
+        Log.i("status", status + "");
+//        String simplifiedText = removeMediaUrl(status);
         Article article = new Article(
                 ConverUtils.getTableArticlePK(currentUserId, articleId), currentUserId, articleId,
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()));
         return article;
+    }
+
+    private static String removeMediaUrl(Status status) {
+        String result = status.getText();
+        MediaEntity[] mediaEntities = status.getMediaEntities();
+        if (mediaEntities == null || mediaEntities.length <= 0) return result;
+        result.replace(mediaEntities[0].getURL(), "");
+        return result;
     }
 
     public static String getDateString(long dateTime) {
