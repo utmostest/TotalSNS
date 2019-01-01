@@ -51,6 +51,7 @@ public class ContentsActivity extends AppCompatActivity
     private ContentsViewModel viewModel;
     private int menuType = Constants.DEFAULT_MENU;
     private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
+    private AtomicBoolean mQuitOnce = new AtomicBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +61,7 @@ public class ContentsActivity extends AppCompatActivity
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
 
         initUI();
+        initObserver();
     }
 
     private void initUI() {
@@ -153,6 +155,24 @@ public class ContentsActivity extends AppCompatActivity
         mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
     }
 
+    private void initObserver() {
+        viewModel.isSignOutFinished().observe(this, (isFinished) -> {
+            if (isFinished) {
+                if (mSignOutOnce.compareAndSet(false, true)) {
+                    finish();
+                    startActivity(new Intent(this, AccountsActivity.class));
+                }
+            }
+        });
+        viewModel.sholudQuit().observe(this, (shouldQuit) -> {
+            if (shouldQuit) {
+                if (mQuitOnce.compareAndSet(false, true)) {
+                    finish();
+                }
+            }
+        });
+    }
+
     private void startTimelineDetailActivityWithImage(ItemArticleBinding binding, Article mItem, boolean enableImage) {
         AppCompatUtils.setExitCallback(this);
         if (enableImage) {
@@ -192,13 +212,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     private void signOut() {
-        if (mSignOutOnce.compareAndSet(false, true)) {
-            viewModel.signOut();
-            viewModel.isSignOutFinished().observe(this, (isFinished) -> {
-                finish();
-                startActivity(new Intent(this, AccountsActivity.class));
-            });
-        }
+        viewModel.signOut();
     }
 
     @Override
@@ -206,7 +220,8 @@ public class ContentsActivity extends AppCompatActivity
         if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
             mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
-            super.onBackPressed();
+            viewModel.onBackPressed();
+//            super.onBackPressed();
         }
     }
 

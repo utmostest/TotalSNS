@@ -202,4 +202,9 @@ public class ConvertUtils {
         dest.setTableUserId(source.getTableUserId());
         return dest;
     }
+
+    public static long getSecondsByMilli(long quitDelayMilli) {
+        long sec = quitDelayMilli / 1000;
+        return sec;
+    }
 }

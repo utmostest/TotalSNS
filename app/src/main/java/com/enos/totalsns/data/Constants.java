@@ -20,4 +20,5 @@ public class Constants {
     public static final boolean IS_DEBUG = true;
 
     public static final int CROSS_FADE_MILLI = 500;
+    public static final long QUIT_DELAY_MILLI = 3000;
 }
