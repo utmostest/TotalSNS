@@ -3,10 +3,10 @@ package com.enos.totalsns.util;
 import android.annotation.SuppressLint;
 import android.support.v4.util.ArraySet;
 import android.text.format.DateFormat;
-import android.util.Log;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 
 import java.util.ArrayList;
@@ -45,7 +45,7 @@ public class ConvertUtils {
 
         HashMap<String, String> urlMap = new HashMap<>();
         for (URLEntity entity : urlEntities) {
-            Log.i("url", entity.getText() + "\n" + entity.getExpandedURL());
+            //Log.i("url", entity.getText() + "\n" + entity.getExpandedURL());
             urlMap.put(entity.getText(), entity.getExpandedURL());
         }
         return urlMap;
@@ -70,6 +70,19 @@ public class ConvertUtils {
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()));
         return article;
+    }
+
+    public static Mention toMention(Status status, long currentUserId) {
+        User user = status.getUser();
+        long articleId = status.getId();
+//        Log.i("status", status + "");
+//        String simplifiedText = removeMediaUrl(status);
+        Mention mention = new Mention(
+                ConvertUtils.getUserNObjectPK(currentUserId, articleId), currentUserId, articleId,
+                user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
+                toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
+                toStringHashMap(status.getURLEntities()));
+        return mention;
     }
 
     private static String removeMediaUrl(Status status) {
@@ -154,5 +167,39 @@ public class ConvertUtils {
             userHashMap.put(user.getId(), user);
         }
         return userHashMap;
+    }
+
+    public static Article toArticle(Mention source) {
+        if (source == null) return null;
+        Article dest = new Article();
+        dest.setSnsType(source.getSnsType());
+        dest.setImageUrls(source.getImageUrls());
+        dest.setMessage(source.getMessage());
+        dest.setUserId(source.getUserId());
+        dest.setArticleId(source.getArticleId());
+        dest.setPostedAt(source.getPostedAt());
+        dest.setProfileImg(source.getProfileImg());
+        dest.setTablePlusArticleId(source.getTablePlusArticleId());
+        dest.setUrlMap(source.getUrlMap());
+        dest.setUserName(source.getUserName());
+        dest.setTableUserId(source.getTableUserId());
+        return dest;
+    }
+
+    public static Mention toMention(Article source) {
+        if (source == null) return null;
+        Mention dest = new Mention();
+        dest.setSnsType(source.getSnsType());
+        dest.setImageUrls(source.getImageUrls());
+        dest.setMessage(source.getMessage());
+        dest.setUserId(source.getUserId());
+        dest.setArticleId(source.getArticleId());
+        dest.setPostedAt(source.getPostedAt());
+        dest.setProfileImg(source.getProfileImg());
+        dest.setTablePlusArticleId(source.getTablePlusArticleId());
+        dest.setUrlMap(source.getUrlMap());
+        dest.setUserName(source.getUserName());
+        dest.setTableUserId(source.getTableUserId());
+        return dest;
     }
 }

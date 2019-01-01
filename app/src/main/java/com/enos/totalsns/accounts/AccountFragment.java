@@ -36,6 +36,8 @@ public class AccountFragment extends Fragment {
 
     private FragmentAccountBinding mDataBinding;
 
+    private AccountsViewModel viewModel;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -58,6 +60,7 @@ public class AccountFragment extends Fragment {
         if (getArguments() != null) {
             mSnsType = getArguments().getInt(ARG_SNS_TYPE);
         }
+        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(AccountsViewModel.class);
     }
 
     @Override
@@ -69,7 +72,7 @@ public class AccountFragment extends Fragment {
         Context context = mDataBinding.list.getContext();
         final LinearLayoutManager manager = new LinearLayoutManager(context);
         mDataBinding.list.setLayoutManager(manager);
-        final AccountsViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(AccountsViewModel.class);
+
         AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), manager.getOrientation());
         mDataBinding.list.addItemDecoration(dividerItemDecoration);

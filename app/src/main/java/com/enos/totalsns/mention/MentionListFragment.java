@@ -1,4 +1,4 @@
-package com.enos.totalsns.timeline.list;
+package com.enos.totalsns.mention;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -14,31 +14,38 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.databinding.FragmentTimelineListBinding;
+import com.enos.totalsns.databinding.FragmentMentionBinding;
+import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
-public class TimelineListFragment extends Fragment {
+/**
+ * A fragment representing a list of Items.
+ * <p/>
+ * Activities containing this fragment MUST implement the {@link OnArticleClickListener}
+ * interface.
+ */
+public class MentionListFragment extends Fragment {
 
-    private TimelineListViewModel mViewModel;
-    private FragmentTimelineListBinding mDataBinding;
+    private MentionListViewModel mViewModel;
+    private FragmentMentionBinding mDataBinding;
     private OnArticleClickListener mListener;
 
-    public static TimelineListFragment newInstance() {
-        return new TimelineListFragment();
+    public static MentionListFragment newInstance() {
+        return new MentionListFragment();
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(TimelineListViewModel.class);
-        mViewModel.fetchTimelineForStart();
+        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MentionListViewModel.class);
+        mViewModel.fetchMentionForStart();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_list, container, false);
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mention, container, false);
         //Log.i("list", "onCreateView");
         return mDataBinding.getRoot();
     }
@@ -66,26 +73,26 @@ public class TimelineListFragment extends Fragment {
 
         mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
-                mViewModel.fetchRecentTimeline();
+                mViewModel.fetchRecentMention();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
-                mViewModel.fetchPastTimeline();
+                mViewModel.fetchPastMention();
             }
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        mDataBinding.tlRv.setLayoutManager(manager);
+        mDataBinding.mentionRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        mDataBinding.tlRv.addItemDecoration(dividerItemDecoration);
-        TimelineAdapter adapter = new TimelineAdapter(null, mListener);
-        mDataBinding.tlRv.setAdapter(adapter);
+        mDataBinding.mentionRv.addItemDecoration(dividerItemDecoration);
+        MentionAdapter adapter = new MentionAdapter(null, mListener);
+        mDataBinding.mentionRv.setAdapter(adapter);
 
-        mViewModel.getHomeTimeline().observe(this, articleList -> {
+        mViewModel.getMention().observe(this, articleList -> {
             if (articleList != null) {
 //                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
-                adapter.swapTimelineList(articleList);
+                adapter.swapMentionList(articleList);
 
 //                if (currentPosFirst == 0)
 //                    mDataBinding.tlRv.smoothScrollToPosition(0);

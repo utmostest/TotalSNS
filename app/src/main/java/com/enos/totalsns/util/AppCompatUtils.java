@@ -33,7 +33,7 @@ public class AppCompatUtils {
             @Override
             public void onSharedElementEnd(List<String> names, List<View> elements, List<View> snapshots) {
                 super.onSharedElementEnd(names, elements, snapshots);
-                Log.i("End", "setExitCallback");
+                //Log.i("End", "setExitCallback");
                 if (elements.size() > 0) {
                     try {
                         ImageContainerCardView containerCardView = ((ViewGroup) elements.get(0).getParent()).findViewById(R.id.imageContainer);
@@ -63,7 +63,7 @@ public class AppCompatUtils {
                                            List<View> elements,
                                            List<View> snapshots) {
                 super.onSharedElementEnd(names, elements, snapshots);
-                Log.i("End", "setEnterCallback");
+                //Log.i("End", "setEnterCallback");
                 if (elements.size() > 0) {
                     try {
                         ImageContainerCardView containerCardView = ((ViewGroup) elements.get(0).getParent()).findViewById(R.id.imageContainer);

@@ -6,7 +6,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -70,7 +69,7 @@ public class ImageContainerCardView extends CardView {
 
     private void clearLayoutAndFillImageView(int imageCount) {
         if (imageContainer == null) return;
-        Log.i("image", "orientation : " + imageOrientation + ", imagecount : " + imageCount);
+        //Log.i("image", "orientation : " + imageOrientation + ", imagecount : " + imageCount);
 
         imageViewMap.clear();
         imageContainer.removeAllViews();

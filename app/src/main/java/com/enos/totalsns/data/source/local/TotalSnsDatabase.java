@@ -27,16 +27,15 @@ import android.support.annotation.VisibleForTesting;
 
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.util.AppExecutors;
 
-@Database(entities = {Account.class, Article.class, Message.class}, version = 1)
+@Database(entities = {Account.class, Article.class, Message.class, Mention.class}, version = 1)
 @TypeConverters({DateConverter.class, StringArrayConverter.class, HashMapStringConverter.class})
 public abstract class TotalSnsDatabase extends RoomDatabase {
 
     private static volatile TotalSnsDatabase sInstance;
     private static final Object LOCK = new Object();
-    private AppExecutors mAppExecutors;
 
     @VisibleForTesting
     public static final String DATABASE_NAME = "total-sns-db";
@@ -46,6 +45,8 @@ public abstract class TotalSnsDatabase extends RoomDatabase {
     public abstract ArticleDao articleDao();
 
     public abstract MessageDao messageDao();
+
+    public abstract MentionDao mentionDao();
 
     public static TotalSnsDatabase getInstance(final Context context) {
         if (sInstance == null) {

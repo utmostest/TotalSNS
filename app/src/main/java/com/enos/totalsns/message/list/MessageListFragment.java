@@ -58,20 +58,21 @@ public class MessageListFragment extends Fragment {
         if (getArguments() != null) {
             mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
         }
+        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
+        mViewModel.fetchDirectMessage();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message, container, false);
-        Log.i("list", "onCreateView");
+        //Log.i("list", "onCreateView");
         return mDataBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
         initUI();
     }
 

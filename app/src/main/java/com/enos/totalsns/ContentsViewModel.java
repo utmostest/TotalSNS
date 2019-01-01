@@ -32,7 +32,7 @@ public class ContentsViewModel extends ViewModel {
     }
 
     public LiveData<List<Article>> getHomeTimeline() {
-        return mRepository.getHomeTimeline(new Paging().count(Constants.PAGE_CNT));
+        return mRepository.getHomeTimeline();
     }
 
     public LiveData<Boolean> isNetworkOnUse() {

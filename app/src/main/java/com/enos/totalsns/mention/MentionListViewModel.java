@@ -1,25 +1,24 @@
-package com.enos.totalsns.message.list;
+package com.enos.totalsns.mention;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
-import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.List;
 
 import twitter4j.Paging;
 
-public class MessageListViewModel extends ViewModel {
+public class MentionListViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isNetworkOnUse;
 
-    public MessageListViewModel(Context application, TotalSnsRepository repository) {
+    public MentionListViewModel(Context application, TotalSnsRepository repository) {
 
         mContext = application;
         mRepository = repository;
@@ -27,23 +26,24 @@ public class MessageListViewModel extends ViewModel {
         isNetworkOnUse.addSource(mRepository.isSnsNetworkOnUse(), (onUse) -> isNetworkOnUse.postValue(onUse));
     }
 
+    public LiveData<List<Mention>> getMention() {
+        return mRepository.getMention();
+    }
+
     public LiveData<Boolean> isNetworkOnUse() {
         return isNetworkOnUse;
     }
 
-    public void fetchRecentTimeline() {
-        mRepository.fetchRecentDirectMessage();
+    public void fetchRecentMention() {
+        mRepository.fetchRecentMention();
     }
 
-    public void fetchPastTimeline() {
-        mRepository.fetchPastDirectMessage();
+    public void fetchPastMention() {
+        mRepository.fetchPastMention();
     }
 
-    public LiveData<List<Message>> getMessageList() {
-        return mRepository.getDirectMessage();
-    }
 
-    public void fetchDirectMessage() {
-        mRepository.fetchDirectMessage(Constants.PAGE_CNT, null);
+    public void fetchMentionForStart() {
+        mRepository.fetchMentionForStart(new Paging().count(Constants.PAGE_CNT));
     }
 }

@@ -27,7 +27,7 @@ public class TimelineListViewModel extends ViewModel {
     }
 
     public LiveData<List<Article>> getHomeTimeline() {
-        return mRepository.getHomeTimeline(new Paging().count(Constants.PAGE_CNT));
+        return mRepository.getHomeTimeline();
     }
 
     public LiveData<Boolean> isNetworkOnUse() {
@@ -40,5 +40,9 @@ public class TimelineListViewModel extends ViewModel {
 
     public void fetchPastTimeline() {
         mRepository.fetchPastTimeline();
+    }
+
+    public void fetchTimelineForStart() {
+        mRepository.fetchTimelineForStart(new Paging().count(Constants.PAGE_CNT));
     }
 }

@@ -6,6 +6,7 @@ import android.arch.lifecycle.MediatorLiveData;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
@@ -14,6 +15,7 @@ import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.util.SingletonToast;
 
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -38,6 +40,8 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Message>> mObservableDirectMessage;
 
+    private MediatorLiveData<List<Mention>> mObservableMention;
+
     private TwitterManager mTwitterManager;
 
     private AppExecutors mAppExecutors;
@@ -59,6 +63,7 @@ public class TotalSnsRepository {
         mObservableAccounts = new MediatorLiveData<>();
         mObservableTimelines = new MediatorLiveData<>();
         mObservableDirectMessage = new MediatorLiveData<>();
+        mObservableMention = new MediatorLiveData<>();
         mAppExecutors = new AppExecutors();
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
@@ -153,6 +158,7 @@ public class TotalSnsRepository {
                 if (mHasSourceAdded.compareAndSet(false, true)) {
                     addTimelineSource();
                     addDirectMessageSource();
+                    addMentionSource();
                 }
 
                 if (isEnableUpdate) {
@@ -179,7 +185,7 @@ public class TotalSnsRepository {
             mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(mTwitterManager.getCurrentUserId()),
                     timeline ->
                     {
-//                        Log.i("timeline", "local : " + timeline.size());
+                        SingletonToast.getInstance().log("timeline", timeline.toString());
                         mObservableTimelines.postValue(timeline);
                     });
         } catch (IllegalArgumentException ignored) {
@@ -190,16 +196,27 @@ public class TotalSnsRepository {
                     timeline ->
                     {
                         isSnsNetworkOnUse.postValue(false);
-//                        Log.i("timeline", "remote : " + timeline.size());
+                        SingletonToast.getInstance().log("timeline", timeline.toString());
                         mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
                     });
         } catch (IllegalArgumentException ignored) {
         }
     }
 
-    public LiveData<List<Article>> getHomeTimeline(Paging paging) {
-        fetchTimeline(paging);
+    public LiveData<List<Article>> getHomeTimeline() {
+//        fetchTimeline(paging);
         return mObservableTimelines;
+    }
+
+    public void fetchTimelineForStart(Paging paging) {
+        mAppExecutors.diskIO().execute(() -> {
+            Article article = mDatabase.articleDao().getLastArticle(mTwitterManager.getCurrentUserId());
+            mAppExecutors.networkIO().execute(() -> {
+                if (article != null && article.getArticleId() > 0)
+                    fetchTimeline(paging.sinceId(article.getArticleId()));
+                else fetchTimeline(paging);
+            });
+        });
     }
 
     public synchronized void fetchTimeline(Paging paging) {
@@ -266,8 +283,8 @@ public class TotalSnsRepository {
         }
     }
 
-    public LiveData<List<Message>> getDirectMessage(int count) {
-        fetchDirectMessage(count, null);
+    public LiveData<List<Message>> getDirectMessage() {
+//        fetchDirectMessage(count, null);
         return mObservableDirectMessage;
     }
 
@@ -286,10 +303,6 @@ public class TotalSnsRepository {
         });
     }
 
-    public LiveData<Article> getLastDirectMessage() {
-        return mDatabase.articleDao().loadLastArticle(mTwitterManager.getCurrentUserId());
-    }
-
     public void fetchRecentDirectMessage() {
         mAppExecutors.diskIO().execute(() -> {
             fetchDirectMessage(Constants.PAGE_CNT, null);
@@ -301,6 +314,88 @@ public class TotalSnsRepository {
             fetchDirectMessage(Constants.PAGE_CNT, mTwitterManager.getDmCursor());
         });
     }
+
+    // Start of mention
+    private void addMentionSource() {
+
+        //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
+        try {
+            mObservableMention.addSource(mDatabase.mentionDao().loadMentions(mTwitterManager.getCurrentUserId()),
+                    timeline ->
+                    {
+                        SingletonToast.getInstance().log("mention", timeline + "");
+                        mObservableMention.postValue(timeline);
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        try {
+            mObservableMention.addSource(mTwitterManager.getMention(),
+                    timeline ->
+                    {
+                        isSnsNetworkOnUse.postValue(false);
+                        SingletonToast.getInstance().log("mention", timeline + "");
+                        mAppExecutors.diskIO().execute(() -> mDatabase.mentionDao().insertMentions(timeline));
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    public LiveData<List<Mention>> getMention() {
+//        fetchMention(paging);
+        return mObservableMention;
+    }
+
+    public void fetchMentionForStart(Paging paging) {
+        mAppExecutors.diskIO().execute(() -> {
+            Mention article = mDatabase.mentionDao().getLastMention(mTwitterManager.getCurrentUserId());
+            mAppExecutors.networkIO().execute(() -> {
+                if (article != null && article.getArticleId() > 0)
+                    fetchMention(paging.sinceId(article.getArticleId()));
+                else fetchMention(paging);
+            });
+        });
+    }
+
+    public synchronized void fetchMention(Paging paging) {
+        isSnsNetworkOnUse.postValue(true);
+
+        addMentionSource();
+
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchMention(paging);
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public LiveData<Mention> getLastMention() {
+        return mDatabase.mentionDao().loadLastMention(mTwitterManager.getCurrentUserId());
+    }
+
+    public void fetchRecentMention() {
+        mAppExecutors.diskIO().execute(() -> {
+            Paging paging = new Paging().count(Constants.PAGE_CNT);
+            Mention last = mDatabase.mentionDao().getLastMention(mTwitterManager.getCurrentUserId());
+//            Log.i("timeline", "last : " + last.getMessage());
+            paging.sinceId(last.getArticleId());
+            fetchMention(paging);
+        });
+    }
+
+    public void fetchPastMention() {
+        mAppExecutors.diskIO().execute(() -> {
+            Paging paging = new Paging().count(Constants.PAGE_CNT);
+            Mention first = mDatabase.mentionDao().getFirstMention(mTwitterManager.getCurrentUserId());
+//            Log.i("timeline", "first : " + first.getMessage());
+            paging.setMaxId(first.getArticleId());
+            fetchMention(paging);
+        });
+    }
+    // End of mention
 
     public void signOut() {
         mHasSourceAdded.set(false);

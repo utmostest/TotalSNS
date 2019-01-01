@@ -28,9 +28,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.info.dummy.DummyContent;
-import com.enos.totalsns.info.list.InfoListFragment;
-import com.enos.totalsns.info.list.OnInfoClickListener;
+import com.enos.totalsns.mention.MentionListFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.list.OnMessageClickListener;
 import com.enos.totalsns.search.OnSearchClickListener;
@@ -45,7 +43,7 @@ import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class ContentsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnSearchClickListener, OnInfoClickListener, OnMessageClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnSearchClickListener, OnMessageClickListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
@@ -79,16 +77,20 @@ public class ContentsActivity extends AppCompatActivity
         Fragment current = fragmentManager.findFragmentByTag(clazz.getSimpleName());
         if (clazz.isAssignableFrom(TimelineListFragment.class)) {
             Fragment insert = current == null ? TimelineListFragment.newInstance() : current;
-            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
+                    .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
             Fragment insert = current == null ? SearchListFragment.newInstance(1) : current;
-            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
-        } else if (clazz.isAssignableFrom(InfoListFragment.class)) {
-            Fragment insert = current == null ? InfoListFragment.newInstance(1) : current;
-            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
+                    .addToBackStack(clazz.getSimpleName()).commit();
+        } else if (clazz.isAssignableFrom(MentionListFragment.class)) {
+            Fragment insert = current == null ? MentionListFragment.newInstance() : current;
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
+                    .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(MessageListFragment.class)) {
             Fragment insert = current == null ? MessageListFragment.newInstance(1) : current;
-            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
+                    .addToBackStack(clazz.getSimpleName()).commit();
         } else {
             throw new IllegalArgumentException(clazz.getSimpleName() + " doesn't exist in changeFragment");
         }
@@ -273,7 +275,7 @@ public class ContentsActivity extends AppCompatActivity
             case R.id.navigation_notificate:
                 menuType = Constants.INFO;
                 menuSelected = true;
-                clazz = InfoListFragment.class;
+                clazz = MentionListFragment.class;
                 break;
             case R.id.navigation_direct:
                 menuType = Constants.DIRECT_MSG;
@@ -290,7 +292,7 @@ public class ContentsActivity extends AppCompatActivity
     };
 
     @Override
-    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+    public void onArticleClicked(Article mItem, int position) {
 //            boolean enableImage = false;
 //            if (mItem.getImageUrls() != null && mItem.getImageUrls().length > 0) enableImage = true;
         startTimelineDetailActivity(mItem);
@@ -302,11 +304,6 @@ public class ContentsActivity extends AppCompatActivity
         if (article != null) {
             SingletonToast.getInstance().show(article.getImageUrls()[position] + position, Toast.LENGTH_SHORT);
         }
-    }
-
-    @Override
-    public void onInfoClicked(DummyContent.DummyItem item) {
-        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
     }
 
     @Override

@@ -7,6 +7,7 @@ import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -41,6 +42,8 @@ public class TwitterManager {
 
     private MutableLiveData<ArrayList<Message>> directMessage;
 
+    private MutableLiveData<ArrayList<Mention>> mentionList;
+
     private MutableLiveData<User> loggedInUser;
 
     private TwitterManager() {
@@ -71,6 +74,7 @@ public class TwitterManager {
         mTwitter = tf.getInstance();
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
         directMessage = new MutableLiveData<ArrayList<Message>>();
+        mentionList = new MutableLiveData<ArrayList<Mention>>();
         loggedInUser = new MutableLiveData<>();
     }
 
@@ -119,6 +123,7 @@ public class TwitterManager {
         return mTwitter.updateStatus(status);
     }
 
+    // Start of home timeline
     public ResponseList<Status> getTimeLine(Paging paging) throws TwitterException {
         if (mTwitter == null) return null;
 
@@ -137,19 +142,52 @@ public class TwitterManager {
         int num = 0;
         for (Status status : list) {
             num++;
-//            Log.i("timeline", num + ":" + status.getText());
+            SingletonToast.getInstance().log("timeline", status.toString());
             Article article = ConvertUtils.toArticle(status, currentUserId);
             articleList.add(article);
         }
         homeTimeline.postValue(articleList);
     }
+    // End of home timeline
 
+    // Start of mention timeline
+    public ResponseList<Status> getMention(Paging paging) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.getMentionsTimeline(paging);
+    }
+
+    public LiveData<ArrayList<Mention>> getMention() {
+        return mentionList;
+    }
+
+    public void fetchMention(Paging paging) throws TwitterException {
+
+        ResponseList<Status> list = getMention(paging);
+        SingletonToast.getInstance().log("mention",list + "");
+        ArrayList<Mention> articleList = new ArrayList<Mention>();
+        long currentUserId = getCurrentUserId();
+        int num = 0;
+        for (Status status : list) {
+            num++;
+//            Log.i("timeline", num + ":" + status.getText());
+            SingletonToast.getInstance().log("mention",status + "");
+            Mention mention = ConvertUtils.toMention(status, currentUserId);
+            articleList.add(mention);
+        }
+        mentionList.postValue(articleList);
+    }
+    // End of mention timeline
+
+    // Start of User timeline
     public ResponseList<Status> getUserTimeline(long userId, Paging paging) throws TwitterException {
         if (mTwitter == null) return null;
 
         return mTwitter.getUserTimeline(userId, paging);
     }
+    // End of User timeline
 
+    // Start of Direct Message
     public String getDmCursor() {
         return mDmCursor;
     }
@@ -161,7 +199,7 @@ public class TwitterManager {
     public void fetchDirectMessage(int count, String cursor) throws TwitterException {
 
         DirectMessageList list = getDirectMessage(count, cursor);
-        SingletonToast.getInstance().log("size:" + list.size() + "\n" + list);
+
         mDmCursor = list.getNextCursor();
 
         long[] userSet = ConvertUtils.getUserIdSet(list, getCurrentUserId());
@@ -176,6 +214,7 @@ public class TwitterManager {
         return (cursor == null || cursor.length() <= 0) ? mTwitter.getDirectMessages(count) :
                 mTwitter.getDirectMessages(count, cursor);
     }
+    // End of Direct Message
 
     public DirectMessage sendDirectMessage(long userId, String message, long mediaId) throws TwitterException {
         if (mTwitter == null) return null;
