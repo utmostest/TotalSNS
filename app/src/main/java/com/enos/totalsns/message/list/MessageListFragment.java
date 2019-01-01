@@ -1,17 +1,22 @@
 package com.enos.totalsns.message.list;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.message.list.dummy.DummyContent;
+import com.enos.totalsns.databinding.FragmentMessageBinding;
+import com.enos.totalsns.util.ViewModelFactory;
+import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 /**
  * A fragment representing a list of Items.
@@ -26,6 +31,8 @@ public class MessageListFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnMessageClickListener mListener;
+    private MessageListViewModel mViewModel;
+    private FragmentMessageBinding mDataBinding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -56,22 +63,50 @@ public class MessageListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_messae, container, false);
-
-        // Set the adapter
-        if (view instanceof RecyclerView) {
-            Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MessageAdapter(DummyContent.ITEMS, mListener));
-        }
-        return view;
+        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message, container, false);
+        Log.i("list", "onCreateView");
+        return mDataBinding.getRoot();
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
+        initUI();
+    }
+
+    private void initUI() {
+        if (mDataBinding == null) return;
+
+        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+            if (direction == SwipyRefreshLayoutDirection.TOP) {
+                mViewModel.fetchRecentTimeline();
+            } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
+                mViewModel.fetchPastTimeline();
+            }
+        });
+
+        LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        mDataBinding.msgRv.setLayoutManager(manager);
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
+                manager.getOrientation());
+        mDataBinding.msgRv.addItemDecoration(dividerItemDecoration);
+        MessageAdapter adapter = new MessageAdapter(null, mListener);
+        mDataBinding.msgRv.setAdapter(adapter);
+
+        mViewModel.getMessageList().observe(this, articleList -> {
+            if (articleList != null) {
+//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
+//                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
+
+                adapter.swapMessageList(articleList);
+
+//                if (currentPosFirst == 0)
+//                    mDataBinding.tlRv.smoothScrollToPosition(0);
+            }
+        });
+        mViewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.swipeContainer.setRefreshing(refresh));
+    }
 
     @Override
     public void onAttach(Context context) {

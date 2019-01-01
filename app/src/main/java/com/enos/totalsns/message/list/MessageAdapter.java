@@ -1,77 +1,136 @@
 package com.enos.totalsns.message.list;
 
+import android.databinding.DataBindingUtil;
+import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
-import com.enos.totalsns.message.list.dummy.DummyContent.DummyItem;
+import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.Message;
+import com.enos.totalsns.databinding.ItemMessageBinding;
+import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.util.ConvertUtils;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Message} and makes a call to the
  * specified {@link OnMessageClickListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private List<Message> mValues;
     private final OnMessageClickListener mListener;
 
-    public MessageAdapter(List<DummyItem> items, OnMessageClickListener listener) {
+    public MessageAdapter(List<Message> items, OnMessageClickListener listener) {
         mValues = items;
         mListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.fragment_messae_item, parent, false);
-        return new ViewHolder(view);
+        ItemMessageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_message, parent, false);
+        return new ViewHolder(binding);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
+        if (mValues == null) return;
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
-
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onMessageClicked(holder.mItem);
-                }
-            }
-        });
+        holder.bind();
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues == null ? 0 : mValues.size();
+    }
+
+    public void swapMessageList(List<Message> list) {
+        if (mValues == null) {
+            mValues = list;
+            notifyDataSetChanged();
+        } else {
+            DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
+
+                @Override
+                public int getOldListSize() {
+                    return mValues.size();
+                }
+
+                @Override
+                public int getNewListSize() {
+                    return list.size();
+                }
+
+                @Override
+                public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+                    return mValues.get(oldItemPosition).getUserDmId().equals(list.get(newItemPosition).getUserDmId());
+                }
+
+                @Override
+                public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+                    Message oldMessage = mValues.get(oldItemPosition);
+                    Message newMessage = list.get(newItemPosition);
+                    return oldMessage.getCreatedAt() == newMessage.getCreatedAt() &&
+                            oldMessage.getSnsType() == newMessage.getSnsType() &&
+                            oldMessage.getMessageId() == newMessage.getMessageId() &&
+                            oldMessage.getReceiverId() == newMessage.getReceiverId() &&
+                            oldMessage.getSenderId() == newMessage.getSenderId() &&
+                            oldMessage.getTableUserId() == newMessage.getTableUserId() &&
+                            oldMessage.getMessage().equals(newMessage.getMessage()) &&
+                            oldMessage.getSenderName().equals(newMessage.getSenderName()) &&
+                            oldMessage.getSenderScreenId().equals(newMessage.getSenderScreenId()) &&
+                            oldMessage.getSenderProfile().equals(newMessage.getSenderProfile()) &&
+                            oldMessage.getUserDmId().equals(newMessage.getUserDmId());
+                }
+            });
+            mValues = list;
+            result.dispatchUpdatesTo(this);
+        }
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final ItemMessageBinding binding;
+        private Message mItem;
 
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+        ViewHolder(ItemMessageBinding view) {
+            super(view.getRoot());
+            binding = view;
         }
 
-        @Override
-        public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+        public void bind() {
+            binding.mUserId.setText(mItem.getSenderScreenId());
+            binding.mUserName.setText(mItem.getSenderName());
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.mMessage, mItem);
+            binding.mMessage.setText(mItem.getMessage());
+            binding.mTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+            Glide.with(binding.getRoot().getContext())
+                    .load(mItem.getSenderProfile())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
+                    )
+                    .into(binding.mProfileImg);
+
+            binding.getRoot().setOnClickListener(v -> {
+                if (null != mListener) {
+                    // Notify the active callbacks interface (the activity, if the
+                    // fragment is attached to one) that an item has been selected.
+                    mListener.onMessageClicked(mItem);
+                }
+            });
         }
     }
 }

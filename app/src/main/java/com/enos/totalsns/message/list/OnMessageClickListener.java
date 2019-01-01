@@ -1,7 +1,7 @@
 package com.enos.totalsns.message.list;
 
-import com.enos.totalsns.message.list.dummy.DummyContent;
+import com.enos.totalsns.data.Message;
 
 public interface OnMessageClickListener {
-    void onMessageClicked(DummyContent.DummyItem item);
+    void onMessageClicked(Message message);
 }

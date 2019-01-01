@@ -2,20 +2,20 @@ package com.enos.totalsns.data.source.remote;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
-import android.util.Log;
 
 import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.util.ConverUtils;
+import com.enos.totalsns.data.Message;
+import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.SingletonToast;
 
 import java.util.ArrayList;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
 import twitter4j.GeoQuery;
-import twitter4j.MediaEntity;
 import twitter4j.Paging;
 import twitter4j.Place;
 import twitter4j.Query;
@@ -26,7 +26,6 @@ import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
-import twitter4j.URLEntity;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
@@ -40,6 +39,8 @@ public class TwitterManager {
 
     private MutableLiveData<ArrayList<Article>> homeTimeline;
 
+    private MutableLiveData<ArrayList<Message>> directMessage;
+
     private MutableLiveData<User> loggedInUser;
 
     private TwitterManager() {
@@ -47,6 +48,8 @@ public class TwitterManager {
     }
 
     private long currentUserId = INVALID_ID;
+
+    private String mDmCursor = null;
 
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
@@ -67,6 +70,7 @@ public class TwitterManager {
         TwitterFactory tf = new TwitterFactory(cb.build());
         mTwitter = tf.getInstance();
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
+        directMessage = new MutableLiveData<ArrayList<Message>>();
         loggedInUser = new MutableLiveData<>();
     }
 
@@ -134,7 +138,7 @@ public class TwitterManager {
         for (Status status : list) {
             num++;
 //            Log.i("timeline", num + ":" + status.getText());
-            Article article = ConverUtils.toArticle(status, currentUserId);
+            Article article = ConvertUtils.toArticle(status, currentUserId);
             articleList.add(article);
         }
         homeTimeline.postValue(articleList);
@@ -146,15 +150,35 @@ public class TwitterManager {
         return mTwitter.getUserTimeline(userId, paging);
     }
 
+    public String getDmCursor() {
+        return mDmCursor;
+    }
+
+    public LiveData<ArrayList<Message>> getDirectMessage() {
+        return directMessage;
+    }
+
+    public void fetchDirectMessage(int count, String cursor) throws TwitterException {
+
+        DirectMessageList list = getDirectMessage(count, cursor);
+        SingletonToast.getInstance().log("size:" + list.size() + "\n" + list);
+        mDmCursor = list.getNextCursor();
+
+        long[] userSet = ConvertUtils.getUserIdSet(list, getCurrentUserId());
+
+        ResponseList<User> userList = mTwitter.lookupUsers(userSet);
+
+        directMessage.postValue(ConvertUtils.toMessageList(list, getCurrentUserId(), ConvertUtils.getUserIdMap(userList)));
+    }
+
     public DirectMessageList getDirectMessage(int count, String cursor) throws TwitterException {
         if (mTwitter == null) return null;
-
-        return mTwitter.getDirectMessages(count, cursor);
+        return (cursor == null || cursor.length() <= 0) ? mTwitter.getDirectMessages(count) :
+                mTwitter.getDirectMessages(count, cursor);
     }
 
     public DirectMessage sendDirectMessage(long userId, String message, long mediaId) throws TwitterException {
         if (mTwitter == null) return null;
-
         return mTwitter.sendDirectMessage(userId, message, mediaId);
     }
 

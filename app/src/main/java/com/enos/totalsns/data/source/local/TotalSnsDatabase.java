@@ -27,9 +27,10 @@ import android.support.annotation.VisibleForTesting;
 
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Message;
 import com.enos.totalsns.util.AppExecutors;
 
-@Database(entities = {Account.class, Article.class}, version = 1)
+@Database(entities = {Account.class, Article.class, Message.class}, version = 1)
 @TypeConverters({DateConverter.class, StringArrayConverter.class, HashMapStringConverter.class})
 public abstract class TotalSnsDatabase extends RoomDatabase {
 
@@ -43,6 +44,8 @@ public abstract class TotalSnsDatabase extends RoomDatabase {
     public abstract AccountDao accountDao();
 
     public abstract ArticleDao articleDao();
+
+    public abstract MessageDao messageDao();
 
     public static TotalSnsDatabase getInstance(final Context context) {
         if (sInstance == null) {

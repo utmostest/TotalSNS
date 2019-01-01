@@ -8,13 +8,14 @@ import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Post;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.enos.totalsns.util.autolink.AutoLinkTextView;
 
 import java.util.HashMap;
 
 public class ActivityUtils {
-    public static void setAutoLinkTextView(final Context context, final AutoLinkTextView autoLinkTextView, final Article article) {
+    public static void setAutoLinkTextView(final Context context, final AutoLinkTextView autoLinkTextView, final Post article) {
         autoLinkTextView.addAutoLinkMode(
                 AutoLinkMode.MODE_HASHTAG,
                 AutoLinkMode.MODE_MENTION,

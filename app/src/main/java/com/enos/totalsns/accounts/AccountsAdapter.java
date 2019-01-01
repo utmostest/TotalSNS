@@ -77,7 +77,8 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             if (position < 0) return;
 
             ItemViewHolder holder = (ItemViewHolder) vh;
-            holder.bind(mValues.get(position));
+            holder.mItem = mValues.get(position);
+            holder.bind();
         }
     }
 
@@ -177,19 +178,18 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
         public final ItemAccountBinding binding;
-        public Account mItem;
+        private Account mItem;
 
         ItemViewHolder(ItemAccountBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind(final Account item) {
-            mItem = item;
-            binding.accUserId.setText(item.getScreenName());
-            binding.accUserName.setText(item.getName());
+        public void bind() {
+            binding.accUserId.setText(mItem.getScreenName());
+            binding.accUserName.setText(mItem.getName());
             Glide.with(binding.getRoot().getContext())
-                    .load(item.getProfileImage())
+                    .load(mItem.getProfileImage())
                     .apply(
                             new RequestOptions()
                                     .placeholder(R.drawable.ic_account_circle_black_48dp)
@@ -206,7 +206,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onAccountClicked(item);
+                    mListener.onAccountClicked(mItem);
                 }
             });
         }

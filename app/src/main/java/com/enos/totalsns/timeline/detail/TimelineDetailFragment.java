@@ -19,7 +19,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.ConverUtils;
+import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -93,7 +93,7 @@ public class TimelineDetailFragment extends Fragment {
                     .into(mDataBinding.tldProfileImg);
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
-            mDataBinding.tldTime.setText(ConverUtils.getDateString(mArticle.getPostedAt()));
+            mDataBinding.tldTime.setText(ConvertUtils.getDateString(mArticle.getPostedAt()));
             mDataBinding.tldUserName.setText(mArticle.getUserName());
 
             String[] imgUrls = mArticle.getImageUrls();

@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 
 @Entity(tableName = "article")
-public class Article implements Parcelable {
+public class Article implements Parcelable, Post {
 
     @PrimaryKey
     @NonNull
@@ -35,7 +35,8 @@ public class Article implements Parcelable {
     }
 
     @Ignore
-    public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile, @Nullable String[] imgUrls, long time, int snsType, @Nullable HashMap<String, String> urlMap) {
+    public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile,
+                   @Nullable String[] imgUrls, long time, int snsType, @Nullable HashMap<String, String> urlMap) {
         this.tablePlusArticleId = tablePlusArticleId;
         this.tableUserId = tableId;
         this.articleId = articleId;

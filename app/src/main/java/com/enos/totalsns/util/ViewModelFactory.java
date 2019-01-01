@@ -26,6 +26,7 @@ import com.enos.totalsns.accounts.AccountsViewModel;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.intro.IntroViewModel;
 import com.enos.totalsns.login.LoginViewModel;
+import com.enos.totalsns.message.list.MessageListViewModel;
 import com.enos.totalsns.timeline.detail.TimelineDetailViewModel;
 import com.enos.totalsns.timeline.list.TimelineListViewModel;
 import com.enos.totalsns.ContentsViewModel;
@@ -92,6 +93,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
         } else if (modelClass.isAssignableFrom(TimelineListViewModel.class)) {
             //noinspection unchecked
             return (T) new TimelineListViewModel(mContext, totalSnsRepository);
+        } else if (modelClass.isAssignableFrom(MessageListViewModel.class)) {
+            //noinspection unchecked
+            return (T) new MessageListViewModel(mContext, totalSnsRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

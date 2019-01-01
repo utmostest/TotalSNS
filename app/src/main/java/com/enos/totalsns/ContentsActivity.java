@@ -25,6 +25,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.info.dummy.DummyContent;
@@ -309,8 +310,8 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onMessageClicked(com.enos.totalsns.message.list.dummy.DummyContent.DummyItem item) {
-        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
+    public void onMessageClicked(Message item) {
+        SingletonToast.getInstance().show(item + "", Toast.LENGTH_SHORT);
     }
 
     @Override
