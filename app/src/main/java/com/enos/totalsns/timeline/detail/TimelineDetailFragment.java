@@ -20,6 +20,7 @@ import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConverUtils;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 /**
@@ -103,7 +104,7 @@ public class TimelineDetailFragment extends Fragment {
             mDataBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             mDataBinding.imageContainer.setImageCount(urlSize);
             mDataBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                Toast.makeText(iv.getContext(), imgUrls[pos], Toast.LENGTH_SHORT).show();
+                SingletonToast.getInstance().show(imgUrls[pos], Toast.LENGTH_SHORT);
             });
             if (hasImage) {
                 mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);

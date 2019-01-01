@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
@@ -50,13 +49,13 @@ public class ActivityUtils {
         autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, autoLinkText) -> {
             String matchedText = removeUnnecessaryString(autoLinkText);
 
-            Toast.makeText(context, autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT).show();
+            SingletonToast.getInstance().show(autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT);
             Intent intent = new Intent();
             switch (autoLinkMode) {
                 case MODE_URL:
                     String normalizedString = getExpandedUrlFromMap(article.getUrlMap(), matchedText);
                     intent.setAction(Intent.ACTION_VIEW);
-                    intent.setDataAndNormalize(Uri.parse(normalizedString));
+                    intent.setData(Uri.parse(normalizedString));
                     checkResolveAndStartActivity(intent, context);
                     return;
                 case MODE_PHONE:

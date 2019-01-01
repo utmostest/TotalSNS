@@ -14,6 +14,7 @@ import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.databinding.ActivityLoginBinding;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.ContentsActivity;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,7 +44,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent data = getIntent();
         if (data != null) {
             int snsType = data.getIntExtra(SNS_TYPE_KEY, -1);
-            Toast.makeText(this, "SNS Type : " + snsType, Toast.LENGTH_SHORT).show();
+            SingletonToast.getInstance().show("SNS Type : " + snsType, Toast.LENGTH_SHORT);
         }
 
         setupUI();
@@ -93,12 +94,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginCanceled(String message) {
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+        SingletonToast.getInstance().show(message, Toast.LENGTH_SHORT);
         viewModel.signInFirstStep();
     }
 
     private void loginFailed(String message) {
-        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_SHORT).show();
+        SingletonToast.getInstance().show(message, Toast.LENGTH_SHORT);
         viewModel.signOut();
         viewModel.signInFirstStep();
     }

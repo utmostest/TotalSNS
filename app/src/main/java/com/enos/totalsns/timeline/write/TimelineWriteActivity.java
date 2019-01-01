@@ -8,6 +8,7 @@ import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineWriteBinding;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineWriteActivity extends AppCompatActivity {
@@ -40,9 +41,9 @@ public class TimelineWriteActivity extends AppCompatActivity {
         });
         mViewModel.getUploadingArticle().observe(this, article -> {
             if (article == null) {
-                Toast.makeText(this, "포스팅 실패", Toast.LENGTH_SHORT).show();
+                SingletonToast.getInstance().show("포스팅 실패", Toast.LENGTH_SHORT);
             } else {
-                Toast.makeText(this, "포스팅 성공", Toast.LENGTH_SHORT).show();
+                SingletonToast.getInstance().show("포스팅 성공", Toast.LENGTH_SHORT);
                 finish();
             }
         });
