@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelinedetail;
+package com.enos.totalsns.timeline.detail;
 
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -9,14 +9,13 @@ import android.view.MenuItem;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
-import com.enos.totalsns.timelines.TimelineActivity;
-import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.ContentsActivity;
 
 /**
  * An activity representing a single Item detail screen. This
  * activity is only used on narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link TimelineActivity}.
+ * in a {@link ContentsActivity}.
  */
 public class TimelineDetailActivity extends AppCompatActivity {
 
@@ -74,7 +73,7 @@ public class TimelineDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-//            navigateUpTo(new Intent(this, TimelineActivity.class));
+//            navigateUpTo(new Intent(this, ContentsActivity.class));
             finish();
             return true;
         }

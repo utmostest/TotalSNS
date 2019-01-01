@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelines;
+package com.enos.totalsns;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
@@ -6,99 +6,106 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestOptions;
-import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.databinding.ActivityTimelineBinding;
+import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.timelinedetail.TimelineDetailActivity;
-import com.enos.totalsns.timelinedetail.TimelineDetailFragment;
-import com.enos.totalsns.timelinewrite.TimelineWriteActivity;
+import com.enos.totalsns.info.dummy.DummyContent;
+import com.enos.totalsns.info.list.InfoListFragment;
+import com.enos.totalsns.info.list.OnInfoClickListener;
+import com.enos.totalsns.message.list.MessageListFragment;
+import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.search.OnSearchClickListener;
+import com.enos.totalsns.search.SearchListFragment;
+import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
+import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
+import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.timeline.list.TimelineListFragment;
+import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.ViewModelFactory;
-import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
-public class TimelineActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+public class ContentsActivity extends AppCompatActivity
+        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnSearchClickListener, OnInfoClickListener, OnMessageClickListener {
 
-    private ActivityTimelineBinding mDataBinding;
-    private TimelineViewModel viewModel;
+    private ActivityContentsBinding mDataBinding;
+    private ContentsViewModel viewModel;
+    private int menuType = Constants.DEFAULT_MENU;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline);
 
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(TimelineViewModel.class);
+        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_contents);
+        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
 
         initUI();
     }
 
     private void initUI() {
+        initToolbar();
+        initFab();
+        initActionBar();
+        initNavigation();
+        initBottomNavigation();
+        initFragment();
+    }
+
+    private void initFragment() {
+        getSupportFragmentManager().beginTransaction().add(R.id.timeline_frag_container, TimelineListFragment.newInstance()).commit();
+    }
+
+    private void changeFragment(Class<?> clazz) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        Fragment current = fragmentManager.findFragmentByTag(clazz.getSimpleName());
+        if (clazz.isAssignableFrom(TimelineListFragment.class)) {
+            Fragment insert = current == null ? TimelineListFragment.newInstance() : current;
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+        } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
+            Fragment insert = current == null ? SearchListFragment.newInstance(1) : current;
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+        } else if (clazz.isAssignableFrom(InfoListFragment.class)) {
+            Fragment insert = current == null ? InfoListFragment.newInstance(1) : current;
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+        } else if (clazz.isAssignableFrom(MessageListFragment.class)) {
+            Fragment insert = current == null ? MessageListFragment.newInstance(1) : current;
+            fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName()).commit();
+        } else {
+            throw new IllegalArgumentException(clazz.getSimpleName() + " doesn't exist in changeFragment");
+        }
+    }
+
+    private void initToolbar() {
         setTitle(R.string.title_activity_timeline);
         setSupportActionBar(mDataBinding.appBar.toolbar);
+    }
 
-        mDataBinding.appBar.content.swipeContainer.setOnRefreshListener(direction -> {
-            if (direction == SwipyRefreshLayoutDirection.TOP) {
-                viewModel.fetchRecentTimeline();
-            } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
-                viewModel.fetchPastTimeline();
-            }
-        });
-
-        mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
-
+    private void initActionBar() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDataBinding.drawerLayout, mDataBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         mDataBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
+    }
 
+    private void initNavigation() {
         mDataBinding.navView.setNavigationItemSelectedListener(this);
-
-        mDataBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        mDataBinding.appBar.content.tlRv.setLayoutManager(manager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(this,
-                manager.getOrientation());
-        mDataBinding.appBar.content.tlRv.addItemDecoration(dividerItemDecoration);
-        TimelineAdapter adapter = new TimelineAdapter(null, (binding, mItem, position)
-                -> {
-            boolean enableImage = false;
-            if (mItem.getImageUrls() != null && mItem.getImageUrls().length > 0) enableImage = true;
-            startTimelineDetailActivity(mItem);
-//            startTimelineDetailActivityWithImage(binding, mItem, enableImage);
-        });
-        mDataBinding.appBar.content.tlRv.setAdapter(adapter);
-
-        viewModel.getHomeTimeline().observe(this, articleList -> {
-            if (articleList != null) {
-//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.appBar.content.tlRv.getLayoutManager();
-//                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
-
-                adapter.swapTimelineList(articleList);
-
-//                if (currentPosFirst == 0)
-//                    mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
-            }
-        });
-        viewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.appBar.content.swipeContainer.setRefreshing(refresh));
 
         View header = mDataBinding.navView.getHeaderView(0);
         final TextView headerEmail = header.findViewById(R.id.header_email);
@@ -131,6 +138,14 @@ public class TimelineActivity extends AppCompatActivity
         });
     }
 
+    private void initBottomNavigation() {
+        mDataBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    private void initFab() {
+        mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+    }
+
     private void startTimelineDetailActivityWithImage(ItemArticleBinding binding, Article mItem, boolean enableImage) {
         AppCompatUtils.setExitCallback(this);
         if (enableImage) {
@@ -158,13 +173,13 @@ public class TimelineActivity extends AppCompatActivity
     }
 
     private void startTimelineDetailActivity(Article mItem) {
-        Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
+        Intent intent = new Intent(ContentsActivity.this, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
         startActivity(intent);
     }
 
     private void startTimelineDetailActivity(Article mItem, Pair<View, String>... pairs) {
-        Intent intent = new Intent(TimelineActivity.this, TimelineDetailActivity.class);
+        Intent intent = new Intent(ContentsActivity.this, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
         AppCompatUtils.startActivityWithTransition(this, intent, pairs);
     }
@@ -239,29 +254,59 @@ public class TimelineActivity extends AppCompatActivity
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
 
-        int menuType = Constants.DEFAULT_MENU;
         boolean menuSelected = false;
+        Class<?> clazz = null;
 
         switch (item.getItemId()) {
             case R.id.navigation_timeline:
                 menuType = Constants.TIMELINE;
-                mDataBinding.appBar.content.tlRv.smoothScrollToPosition(0);
                 menuSelected = true;
+                clazz = TimelineListFragment.class;
                 break;
             case R.id.navigation_search:
                 menuType = Constants.SEARCH;
                 menuSelected = true;
+                clazz = SearchListFragment.class;
                 break;
             case R.id.navigation_notificate:
-                menuType = Constants.NOTIFICATE;
+                menuType = Constants.INFO;
                 menuSelected = true;
+                clazz = InfoListFragment.class;
                 break;
             case R.id.navigation_direct:
                 menuType = Constants.DIRECT_MSG;
                 menuSelected = true;
+                clazz = MessageListFragment.class;
                 break;
+        }
+
+        if (menuSelected && clazz != null) {
+            changeFragment(clazz);
         }
 
         return menuSelected;
     };
+
+    @Override
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+//            boolean enableImage = false;
+//            if (mItem.getImageUrls() != null && mItem.getImageUrls().length > 0) enableImage = true;
+        startTimelineDetailActivity(mItem);
+//            startTimelineDetailActivityWithImage(binding, mItem, enableImage);
+    }
+
+    @Override
+    public void onInfoClicked(DummyContent.DummyItem item) {
+        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onMessageClicked(com.enos.totalsns.message.list.dummy.DummyContent.DummyItem item) {
+        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onSearchItemClicked(com.enos.totalsns.search.dummy.DummyContent.DummyItem item) {
+        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+    }
 }

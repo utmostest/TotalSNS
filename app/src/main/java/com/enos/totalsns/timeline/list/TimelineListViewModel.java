@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelines;
+package com.enos.totalsns.timeline.list;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
@@ -12,23 +12,18 @@ import com.enos.totalsns.data.source.TotalSnsRepository;
 import java.util.List;
 
 import twitter4j.Paging;
-import twitter4j.User;
 
-public class TimelineViewModel extends ViewModel {
+public class TimelineListViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isNetworkOnUse;
 
-    public TimelineViewModel(Context application, TotalSnsRepository repository) {
+    public TimelineListViewModel(Context application, TotalSnsRepository repository) {
 
         mContext = application;
         mRepository = repository;
         isNetworkOnUse = new MediatorLiveData<>();
         isNetworkOnUse.addSource(mRepository.isSnsNetworkOnUse(), (onUse) -> isNetworkOnUse.postValue(onUse));
-    }
-
-    public void signOut() {
-        mRepository.signOut();
     }
 
     public LiveData<List<Article>> getHomeTimeline() {
@@ -45,9 +40,5 @@ public class TimelineViewModel extends ViewModel {
 
     public void fetchPastTimeline() {
         mRepository.fetchPastTimeline();
-    }
-
-    public LiveData<User> getLoggedInUser() {
-        return mRepository.getLoggedInUser();
     }
 }

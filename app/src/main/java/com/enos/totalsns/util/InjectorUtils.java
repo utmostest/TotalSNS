@@ -34,7 +34,7 @@ public class InjectorUtils {
     }
 
     public static TotalSnsDatabase provideDatabase(Context context) {
-        return TotalSnsDatabase.getInstance(context);
+        return TotalSnsDatabase.getInstance(context.getApplicationContext());
     }
 
     public static TwitterManager provideNetworkDataSource() {

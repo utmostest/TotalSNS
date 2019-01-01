@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelinedetail;
+package com.enos.totalsns.timeline.detail;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;

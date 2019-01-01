@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelines;
+package com.enos.totalsns.timeline.list;
 
 
 import android.support.annotation.NonNull;

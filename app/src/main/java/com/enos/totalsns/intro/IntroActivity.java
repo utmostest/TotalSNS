@@ -9,11 +9,10 @@ import android.os.Looper;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
-import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.databinding.ActivityIntroBinding;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -112,7 +111,7 @@ public class IntroActivity extends AppCompatActivity {
         viewModel.getLoginResult().observe(this, result -> {
             if (result != null) {
                 if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
-                    finishAndStartActivity(TimelineActivity.class);
+                    finishAndStartActivity(ContentsActivity.class);
                 } else {
                     finishAndStartActivity(AccountsActivity.class);
                 }

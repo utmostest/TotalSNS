@@ -15,10 +15,6 @@
         android:theme="@style/AppTheme"
         tools:ignore="GoogleAppIndexingWarning">
         <activity
-            android:name=".timelines.TimelineActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".login.LoginActivity" />
-        <activity
             android:name=".intro.IntroActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:theme="@style/FullscreenTheme">
@@ -31,19 +27,27 @@
         <activity
             android:name=".accounts.AccountsActivity"
             android:label="@string/title_activity_accounts" />
+        <activity android:name=".login.LoginActivity" />
         <activity
-            android:name=".timelinedetail.TimelineDetailActivity"
+            android:name=".ContentsActivity"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".timeline.detail.TimelineDetailActivity"
             android:label="@string/title_timeline_detail"
-            android:parentActivityName=".timelines.TimelineActivity"
+            android:parentActivityName=".ContentsActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.enos.totalsns.timelines.TimelineActivity" />
+                android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
-        <activity android:name=".timelinewrite.TimelineWriteActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".timeline.write.TimelineWriteActivity"
+            android:parentActivityName=".ContentsActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
     </application>
-
 </manifest>

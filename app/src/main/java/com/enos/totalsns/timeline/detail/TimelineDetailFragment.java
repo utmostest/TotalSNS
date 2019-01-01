@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelinedetail;
+package com.enos.totalsns.timeline.detail;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
@@ -17,14 +17,14 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
-import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConverUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 /**
  * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link TimelineActivity}
+ * This fragment is either contained in a {@link ContentsActivity}
  * in two-pane mode (on tablets) or a {@link TimelineDetailActivity}
  * on handsets.
  */

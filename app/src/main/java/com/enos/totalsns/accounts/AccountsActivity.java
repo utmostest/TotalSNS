@@ -18,7 +18,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ActivityAccountsBinding;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.login.LoginActivity;
-import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -86,7 +86,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     }
 
     private void onLoginSucceed(Account account) {
-        finishAndStartActivity(TimelineActivity.class);
+        finishAndStartActivity(ContentsActivity.class);
     }
 
     @Override

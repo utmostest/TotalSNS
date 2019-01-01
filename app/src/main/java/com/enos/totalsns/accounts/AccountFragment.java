@@ -96,7 +96,7 @@ public class AccountFragment extends Fragment {
             mListener = (OnSnsAccountListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnSnsAccountListener");
         }
     }
 

@@ -13,7 +13,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.databinding.ActivityLoginBinding;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.timelines.TimelineActivity;
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -116,7 +116,7 @@ public class LoginActivity extends AppCompatActivity {
     private void finishAndstartTimelineActivity() {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             finish();
-            Intent intent = new Intent(LoginActivity.this, TimelineActivity.class);
+            Intent intent = new Intent(LoginActivity.this, ContentsActivity.class);
             startActivity(intent);
         }
     }

@@ -8,7 +8,7 @@ public class Constants {
 
     public static final int TIMELINE = 11;
     public static final int SEARCH = 12;
-    public static final int NOTIFICATE = 13;
+    public static final int INFO = 13;
     public static final int DIRECT_MSG = 14;
 
     public static final int DEFAULT_MENU = TIMELINE;

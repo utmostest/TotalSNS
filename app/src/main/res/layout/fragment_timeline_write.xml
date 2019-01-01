@@ -7,7 +7,7 @@
         android:id="@+id/articlewrite"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".timelinewrite.TimelineWriteFragment">
+        tools:context=".timeline.write.TimelineWriteFragment">
 
         <ImageButton
             android:id="@+id/tl_write_close"

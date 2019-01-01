@@ -1,10 +1,9 @@
-package com.enos.totalsns.timelinewrite;
+package com.enos.totalsns.timeline.write;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;

@@ -12,7 +12,7 @@
 
         <include
             android:id="@+id/app_bar"
-            layout="@layout/app_bar_timeline"
+            layout="@layout/app_bar_contents"
             android:layout_width="match_parent"
             android:layout_height="match_parent" />
 

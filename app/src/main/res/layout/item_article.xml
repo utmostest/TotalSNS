@@ -10,7 +10,7 @@
         android:background="@color/batang_white"
         android:paddingHorizontal="16dp"
         android:paddingVertical="16dp"
-        tools:context=".timelines.TimelineActivity">
+        tools:context=".ContentsActivity">
 
         <ImageView
             android:id="@+id/tlProfileImg"

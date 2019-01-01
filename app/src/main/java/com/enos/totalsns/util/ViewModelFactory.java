@@ -17,7 +17,6 @@
 package com.enos.totalsns.util;
 
 import android.annotation.SuppressLint;
-import android.app.Application;
 import android.arch.lifecycle.ViewModel;
 import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
@@ -27,9 +26,10 @@ import com.enos.totalsns.accounts.AccountsViewModel;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.intro.IntroViewModel;
 import com.enos.totalsns.login.LoginViewModel;
-import com.enos.totalsns.timelinedetail.TimelineDetailViewModel;
-import com.enos.totalsns.timelines.TimelineViewModel;
-import com.enos.totalsns.timelinewrite.TimelineWriteViewModel;
+import com.enos.totalsns.timeline.detail.TimelineDetailViewModel;
+import com.enos.totalsns.timeline.list.TimelineListViewModel;
+import com.enos.totalsns.ContentsViewModel;
+import com.enos.totalsns.timeline.write.TimelineWriteViewModel;
 
 /**
  * A creator is used to inject the product ID into the ViewModel
@@ -83,12 +83,15 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
         } else if (modelClass.isAssignableFrom(TimelineWriteViewModel.class)) {
             //noinspection unchecked
             return (T) new TimelineWriteViewModel(mContext, totalSnsRepository);
-        } else if (modelClass.isAssignableFrom(TimelineViewModel.class)) {
+        } else if (modelClass.isAssignableFrom(ContentsViewModel.class)) {
             //noinspection unchecked
-            return (T) new TimelineViewModel(mContext, totalSnsRepository);
+            return (T) new ContentsViewModel(mContext, totalSnsRepository);
         } else if (modelClass.isAssignableFrom(TimelineDetailViewModel.class)) {
             //noinspection unchecked
             return (T) new TimelineDetailViewModel(mContext, totalSnsRepository);
+        } else if (modelClass.isAssignableFrom(TimelineListViewModel.class)) {
+            //noinspection unchecked
+            return (T) new TimelineListViewModel(mContext, totalSnsRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

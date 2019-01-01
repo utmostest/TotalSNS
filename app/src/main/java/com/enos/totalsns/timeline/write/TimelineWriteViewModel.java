@@ -1,4 +1,4 @@
-package com.enos.totalsns.timelinewrite;
+package com.enos.totalsns.timeline.write;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
