@@ -137,7 +137,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             binding.imageContainer.setImageCount(urlSize);
             Log.i("bind", "urlSize : " + urlSize + ", imgUrls : " + Arrays.toString(imgUrls));
             binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                Toast.makeText(iv.getContext(), imgUrls[pos] + pos, Toast.LENGTH_SHORT).show();
+                if (mListener != null) mListener.onArticleImageClicked(iv, article, pos);
             });
             if (hasImage) {
                 binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);

@@ -40,6 +40,7 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class ContentsActivity extends AppCompatActivity
@@ -296,17 +297,24 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
+    public void onArticleImageClicked(ImageView iv, Article article, int position) {
+        if (article != null) {
+            SingletonToast.getInstance().show(article.getImageUrls()[position] + position, Toast.LENGTH_SHORT);
+        }
+    }
+
+    @Override
     public void onInfoClicked(DummyContent.DummyItem item) {
-        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
     }
 
     @Override
     public void onMessageClicked(com.enos.totalsns.message.list.dummy.DummyContent.DummyItem item) {
-        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
     }
 
     @Override
     public void onSearchItemClicked(com.enos.totalsns.search.dummy.DummyContent.DummyItem item) {
-        Toast.makeText(this, item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT).show();
+        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
     }
 }
