@@ -42,12 +42,15 @@ import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public class ContentsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnSearchClickListener, OnMessageClickListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
     private int menuType = Constants.DEFAULT_MENU;
+    private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -189,9 +192,13 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     private void signOut() {
-        viewModel.signOut();
-        finish();
-        startActivity(new Intent(this, AccountsActivity.class));
+        if (mSignOutOnce.compareAndSet(false, true)) {
+            viewModel.signOut();
+            viewModel.isSignOutFinished().observe(this, (isFinished) -> {
+                finish();
+                startActivity(new Intent(this, AccountsActivity.class));
+            });
+        }
     }
 
     @Override

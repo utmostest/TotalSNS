@@ -53,6 +53,8 @@ public class TotalSnsRepository {
 
     private SingleLiveEvent<Article> currentUploadArticle;
 
+    private SingleLiveEvent<Boolean> isSignOutFinished;
+
     private static final Object LOCK = new Object();
 
     private AtomicBoolean mHasSourceAdded = new AtomicBoolean(false);
@@ -68,6 +70,7 @@ public class TotalSnsRepository {
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
         currentUploadArticle = new SingleLiveEvent<>();
+        isSignOutFinished = new SingleLiveEvent<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
@@ -381,7 +384,7 @@ public class TotalSnsRepository {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
             Mention last = mDatabase.mentionDao().getLastMention(mTwitterManager.getCurrentUserId());
 //            Log.i("timeline", "last : " + last.getMessage());
-            paging.sinceId(last.getArticleId());
+            if (last != null) paging.sinceId(last.getArticleId());
             fetchMention(paging);
         });
     }
@@ -398,6 +401,7 @@ public class TotalSnsRepository {
     // End of mention
 
     public void signOut() {
+        isSignOutFinished.postValue(false);
         mHasSourceAdded.set(false);
         mAppExecutors.networkIO().execute(() -> {
             mObservableTimelines.postValue(null);
@@ -405,7 +409,12 @@ public class TotalSnsRepository {
             isSnsNetworkOnUse.postValue(true);
             mTwitterManager.signOut();
             isSnsNetworkOnUse.postValue(false);
+            isSignOutFinished.postValue(true);
         });
+    }
+
+    public LiveData<Boolean> isSignOutFinished() {
+        return isSignOutFinished;
     }
 
     public LiveData<Boolean> isSnsNetworkOnUse() {

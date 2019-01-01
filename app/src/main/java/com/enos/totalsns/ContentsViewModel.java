@@ -50,4 +50,8 @@ public class ContentsViewModel extends ViewModel {
     public LiveData<User> getLoggedInUser() {
         return mRepository.getLoggedInUser();
     }
+
+    public LiveData<Boolean> isSignOutFinished() {
+        return mRepository.isSignOutFinished();
+    }
 }
