@@ -1,6 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,6 +10,7 @@
         android:id="@+id/header_background"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:scaleType="fitCenter"
         android:contentDescription="@string/nav_header_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,13 +65,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/title_following"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_num"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
         app:layout_constraintTop_toBottomOf="@+id/header_email"
-        app:layout_constraintWidth_default="wrap" />
+        app:layout_constrainedWidth="true" />
 
     <TextView
         android:id="@+id/header_following_num"
@@ -80,12 +78,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_label"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_label"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
-        app:layout_constraintWidth_default="wrap"
+        app:layout_constrainedWidth="true"
         tools:text="0" />
 
 
@@ -101,7 +100,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_num"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
-        app:layout_constraintWidth_default="wrap" />
+        app:layout_constrainedWidth="true" />
 
     <TextView
         android:id="@+id/header_follower_num"

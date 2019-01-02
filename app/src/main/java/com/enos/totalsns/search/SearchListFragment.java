@@ -3,7 +3,6 @@ package com.enos.totalsns.search;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,7 +10,6 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.search.dummy.DummyContent;
 
 /**
  * A fragment representing a list of Items.
@@ -22,9 +20,9 @@ import com.enos.totalsns.search.dummy.DummyContent;
 public class SearchListFragment extends Fragment {
 
     // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
+    private static final String ARG_AUTO_SEARCH = "auto-search";
     // TODO: Customize parameters
-    private int mColumnCount = 1;
+    private boolean isAutoSearch = true;
     private OnSearchClickListener mListener;
 
     /**
@@ -36,10 +34,10 @@ public class SearchListFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static SearchListFragment newInstance(int columnCount) {
+    public static SearchListFragment newInstance(boolean isAutoSearch) {
         SearchListFragment fragment = new SearchListFragment();
         Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
+        args.putBoolean(ARG_AUTO_SEARCH, isAutoSearch);
         fragment.setArguments(args);
         return fragment;
     }
@@ -49,7 +47,7 @@ public class SearchListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+            isAutoSearch = getArguments().getBoolean(ARG_AUTO_SEARCH, true);
         }
     }
 
@@ -62,12 +60,8 @@ public class SearchListFragment extends Fragment {
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new SearchAdapter(DummyContent.ITEMS, mListener));
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+            recyclerView.setAdapter(new SearchAdapter(null, mListener));
         }
         return view;
     }
@@ -80,7 +74,7 @@ public class SearchListFragment extends Fragment {
             mListener = (OnSearchClickListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnSearchClickListener");
         }
     }
 

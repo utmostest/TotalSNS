@@ -34,6 +34,7 @@ import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.list.OnMessageClickListener;
 import com.enos.totalsns.search.OnSearchClickListener;
+import com.enos.totalsns.search.Search;
 import com.enos.totalsns.search.SearchListFragment;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
@@ -43,6 +44,7 @@ import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
+import com.ferfalk.simplesearchview.SimpleSearchView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -54,6 +56,8 @@ public class ContentsActivity extends AppCompatActivity
     private int menuType = Constants.DEFAULT_MENU;
     private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
     private AtomicBoolean mQuitOnce = new AtomicBoolean(false);
+
+    private boolean userClickSearchView = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +72,7 @@ public class ContentsActivity extends AppCompatActivity
 
     private void initUI() {
         initToolbar();
+        initSearchView();
         initFab();
         initActionBar();
         initNavigation();
@@ -87,7 +92,7 @@ public class ContentsActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
-            Fragment insert = current == null ? SearchListFragment.newInstance(1) : current;
+            Fragment insert = current == null ? SearchListFragment.newInstance(!userClickSearchView) : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(MentionListFragment.class)) {
@@ -108,6 +113,47 @@ public class ContentsActivity extends AppCompatActivity
         setSupportActionBar(mDataBinding.appBar.toolbar);
     }
 
+    private void initSearchView() {
+        mDataBinding.appBar.searchView.setOnQueryTextListener(new SimpleSearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextCleared() {
+                return false;
+            }
+        });
+
+        mDataBinding.appBar.searchView.setOnSearchViewListener(new SimpleSearchView.SearchViewListener() {
+            @Override
+            public void onSearchViewShown() {
+                if (mDataBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
+                    mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+                    userClickSearchView = true;
+                }
+            }
+
+            @Override
+            public void onSearchViewClosed() {
+            }
+
+            @Override
+            public void onSearchViewShownAnimation() {
+            }
+
+            @Override
+            public void onSearchViewClosedAnimation() {
+            }
+        });
+    }
+
     private void initActionBar() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mDataBinding.drawerLayout, mDataBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -124,6 +170,7 @@ public class ContentsActivity extends AppCompatActivity
         final ImageView headerProfile = header.findViewById(R.id.header_profile);
         final TextView followingNum = header.findViewById(R.id.header_following_num);
         final TextView followerNum = header.findViewById(R.id.header_follower_num);
+        final ImageView headerBackground = header.findViewById(R.id.header_background);
 
         viewModel.getLoggedInUser().observe(this, user -> {
             if (user == null) return;
@@ -225,7 +272,9 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
+        if (mDataBinding.appBar.searchView.onBackPressed()) {
+            return;
+        } else if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
             mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         } else {
             viewModel.onBackPressed();
@@ -237,6 +286,11 @@ public class ContentsActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.timeline, menu);
+
+        MenuItem item = menu.findItem(R.id.action_search);
+        if (mDataBinding != null)
+            mDataBinding.appBar.searchView.setMenuItem(item);
+
         return true;
     }
 
@@ -248,7 +302,7 @@ public class ContentsActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_search) {
             return true;
         }
 
@@ -295,6 +349,7 @@ public class ContentsActivity extends AppCompatActivity
             case R.id.navigation_timeline:
                 menuType = Constants.TIMELINE;
                 menuSelected = true;
+                userClickSearchView = false;
                 clazz = TimelineListFragment.class;
                 break;
             case R.id.navigation_search:
@@ -305,11 +360,13 @@ public class ContentsActivity extends AppCompatActivity
             case R.id.navigation_notificate:
                 menuType = Constants.INFO;
                 menuSelected = true;
+                userClickSearchView = false;
                 clazz = MentionListFragment.class;
                 break;
             case R.id.navigation_direct:
                 menuType = Constants.DIRECT_MSG;
                 menuSelected = true;
+                userClickSearchView = false;
                 clazz = MessageListFragment.class;
                 break;
         }
@@ -342,7 +399,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSearchItemClicked(com.enos.totalsns.search.dummy.DummyContent.DummyItem item) {
-        SingletonToast.getInstance().show(item.id + "" + item.content + "\n" + item.details, Toast.LENGTH_SHORT);
+    public void onSearchItemClicked(Search item) {
+        SingletonToast.getInstance().show(item.getUserId() + "" + item.getUserName() + "\n" + item.getMessage(), Toast.LENGTH_SHORT);
     }
 }
