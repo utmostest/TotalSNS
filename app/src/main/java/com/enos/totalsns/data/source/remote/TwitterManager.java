@@ -7,7 +7,6 @@ import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -42,7 +41,7 @@ public class TwitterManager {
 
     private MutableLiveData<ArrayList<Message>> directMessage;
 
-    private MutableLiveData<ArrayList<Mention>> mentionList;
+    private MutableLiveData<ArrayList<Article>> mentionList;
 
     private MutableLiveData<User> loggedInUser;
 
@@ -74,7 +73,7 @@ public class TwitterManager {
         mTwitter = tf.getInstance();
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
         directMessage = new MutableLiveData<ArrayList<Message>>();
-        mentionList = new MutableLiveData<ArrayList<Mention>>();
+        mentionList = new MutableLiveData<ArrayList<Article>>();
         loggedInUser = new MutableLiveData<>();
     }
 
@@ -157,7 +156,7 @@ public class TwitterManager {
         return mTwitter.getMentionsTimeline(paging);
     }
 
-    public LiveData<ArrayList<Mention>> getMention() {
+    public LiveData<ArrayList<Article>> getMention() {
         return mentionList;
     }
 
@@ -165,14 +164,14 @@ public class TwitterManager {
 
         ResponseList<Status> list = getMention(paging);
         SingletonToast.getInstance().log("mention", list + "");
-        ArrayList<Mention> articleList = new ArrayList<Mention>();
+        ArrayList<Article> articleList = new ArrayList<Article>();
         long currentUserId = getCurrentUserId();
         int num = 0;
         for (Status status : list) {
             num++;
 //            Log.i("timeline", num + ":" + status.getText());
             SingletonToast.getInstance().log("mention", status + "");
-            Mention mention = ConvertUtils.toMention(status, currentUserId);
+            Article mention = ConvertUtils.toMention(status, currentUserId);
             articleList.add(mention);
         }
         mentionList.postValue(articleList);

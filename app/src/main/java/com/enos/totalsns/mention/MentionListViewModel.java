@@ -5,8 +5,8 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public class MentionListViewModel extends ViewModel {
         isNetworkOnUse.addSource(mRepository.isSnsNetworkOnUse(), (onUse) -> isNetworkOnUse.postValue(onUse));
     }
 
-    public LiveData<List<Mention>> getMention() {
+    public LiveData<List<Article>> getMention() {
         return mRepository.getMention();
     }
 

@@ -57,4 +57,14 @@ public interface ArticleDao {
 
     @Query("DELETE FROM article where tableUserId= :tableId")
     void deleteArticles(long tableId);
+
+    // related mention article
+    @Query("SELECT * FROM article where tableUserId=:tableId AND isMention = 1 ORDER by postedAt DESC")
+    LiveData<List<Article>> loadMentions(long tableId);
+
+    @Query("SELECT * FROM article where tableUserId=:tableId AND isMention = 1 ORDER by postedAt DESC LIMIT 1")
+    Article getLastMention(long tableId);
+
+    @Query("SELECT * FROM article where tableUserId=:tableId  AND isMention = 1 ORDER by postedAt ASC LIMIT 1")
+    Article getFirstMention(long tableId);
 }

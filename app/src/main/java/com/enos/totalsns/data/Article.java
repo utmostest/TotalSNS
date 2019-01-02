@@ -8,10 +8,12 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.enos.totalsns.search.Search;
+
 import java.util.HashMap;
 
 @Entity(tableName = "article")
-public class Article implements Parcelable, Post {
+public class Article implements Parcelable, Post, Search {
 
     @PrimaryKey
     @NonNull
@@ -28,6 +30,7 @@ public class Article implements Parcelable, Post {
     private int snsType;
     @Nullable
     private HashMap<String, String> urlMap;
+    private boolean isMention;
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
@@ -48,6 +51,7 @@ public class Article implements Parcelable, Post {
         this.postedAt = time;
         this.snsType = snsType;
         this.urlMap = urlMap;
+        this.isMention = false;
     }
 
     @Ignore
@@ -63,6 +67,7 @@ public class Article implements Parcelable, Post {
         postedAt = in.readLong();
         snsType = in.readInt();
         urlMap = in.readHashMap(String.class.getClassLoader());
+        isMention = in.readByte() != 0;
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -95,6 +100,7 @@ public class Article implements Parcelable, Post {
         dest.writeLong(postedAt);
         dest.writeInt(snsType);
         dest.writeMap(urlMap);
+        dest.writeByte((byte) (isMention ? 1 : 0));
     }
 
     public void setTablePlusArticleId(String tablePlusArticleId) {
@@ -183,5 +189,13 @@ public class Article implements Parcelable, Post {
 
     public void setUrlMap(HashMap<String, String> urlMap) {
         this.urlMap = urlMap;
+    }
+
+    public boolean isMention() {
+        return isMention;
+    }
+
+    public void setMention(boolean mention) {
+        isMention = mention;
     }
 }

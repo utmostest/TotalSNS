@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.FragmentMentionBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.timeline.list.TimelineAdapter;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -84,7 +85,7 @@ public class MentionListFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
         mDataBinding.mentionRv.addItemDecoration(dividerItemDecoration);
-        MentionAdapter adapter = new MentionAdapter(null, mListener);
+        TimelineAdapter adapter = new TimelineAdapter(null, mListener);
         mDataBinding.mentionRv.setAdapter(adapter);
 
         mViewModel.getMention().observe(this, articleList -> {
@@ -92,7 +93,7 @@ public class MentionListFragment extends Fragment {
 //                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
-                adapter.swapMentionList(articleList);
+                adapter.swapTimelineList(articleList);
 
 //                if (currentPosFirst == 0)
 //                    mDataBinding.tlRv.smoothScrollToPosition(0);

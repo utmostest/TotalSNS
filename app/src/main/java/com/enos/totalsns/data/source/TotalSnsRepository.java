@@ -6,7 +6,6 @@ import android.arch.lifecycle.MediatorLiveData;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
@@ -43,7 +42,7 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Message>> mObservableDirectMessageDetail;
 
-    private MediatorLiveData<List<Mention>> mObservableMention;
+    private MediatorLiveData<List<Article>> mObservableMention;
 
     private TwitterManager mTwitterManager;
 
@@ -244,10 +243,6 @@ public class TotalSnsRepository {
         });
     }
 
-    public LiveData<Article> getLastArticle() {
-        return mDatabase.articleDao().loadLastArticle(mTwitterManager.getCurrentUserId());
-    }
-
     public void fetchRecentTimeline() {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
@@ -368,7 +363,7 @@ public class TotalSnsRepository {
 
         //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
         try {
-            mObservableMention.addSource(mDatabase.mentionDao().loadMentions(mTwitterManager.getCurrentUserId()),
+            mObservableMention.addSource(mDatabase.articleDao().loadMentions(mTwitterManager.getCurrentUserId()),
                     timeline ->
                     {
                         SingletonToast.getInstance().log("mention", timeline + "");
@@ -383,20 +378,20 @@ public class TotalSnsRepository {
                     {
                         isSnsNetworkOnUse.postValue(false);
                         SingletonToast.getInstance().log("mention", timeline + "");
-                        mAppExecutors.diskIO().execute(() -> mDatabase.mentionDao().insertMentions(timeline));
+                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
                     });
         } catch (IllegalArgumentException ignored) {
         }
     }
 
-    public LiveData<List<Mention>> getMention() {
+    public LiveData<List<Article>> getMention() {
 //        fetchMention(paging);
         return mObservableMention;
     }
 
     public void fetchMentionForStart(Paging paging) {
         mAppExecutors.diskIO().execute(() -> {
-            Mention article = mDatabase.mentionDao().getLastMention(mTwitterManager.getCurrentUserId());
+            Article article = mDatabase.articleDao().getLastMention(mTwitterManager.getCurrentUserId());
             mAppExecutors.networkIO().execute(() -> {
                 if (article != null && article.getArticleId() > 0)
                     fetchMention(paging.sinceId(article.getArticleId()));
@@ -420,14 +415,10 @@ public class TotalSnsRepository {
         });
     }
 
-    public LiveData<Mention> getLastMention() {
-        return mDatabase.mentionDao().loadLastMention(mTwitterManager.getCurrentUserId());
-    }
-
     public void fetchRecentMention() {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
-            Mention last = mDatabase.mentionDao().getLastMention(mTwitterManager.getCurrentUserId());
+            Article last = mDatabase.articleDao().getLastMention(mTwitterManager.getCurrentUserId());
 //            Log.i("timeline", "last : " + last.getMessage());
             if (last != null) paging.sinceId(last.getArticleId());
             fetchMention(paging);
@@ -437,7 +428,7 @@ public class TotalSnsRepository {
     public void fetchPastMention() {
         mAppExecutors.diskIO().execute(() -> {
             Paging paging = new Paging().count(Constants.PAGE_CNT);
-            Mention first = mDatabase.mentionDao().getFirstMention(mTwitterManager.getCurrentUserId());
+            Article first = mDatabase.articleDao().getFirstMention(mTwitterManager.getCurrentUserId());
 //            Log.i("timeline", "first : " + first.getMessage());
             paging.setMaxId(first.getArticleId());
             fetchMention(paging);

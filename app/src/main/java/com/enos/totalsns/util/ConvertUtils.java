@@ -7,7 +7,6 @@ import android.text.format.DateFormat;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Mention;
 import com.enos.totalsns.data.Message;
 
 import java.util.ArrayList;
@@ -70,6 +69,10 @@ public class ConvertUtils {
     }
 
     public static Article toArticle(Status status, long currentUserId) {
+        return toArticle(status, currentUserId, false);
+    }
+
+    public static Article toArticle(Status status, long currentUserId, boolean isMention) {
         User user = status.getUser();
         long articleId = status.getId();
 //        Log.i("status", status + "");
@@ -79,20 +82,12 @@ public class ConvertUtils {
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()));
+        article.setMention(isMention);
         return article;
     }
 
-    public static Mention toMention(Status status, long currentUserId) {
-        User user = status.getUser();
-        long articleId = status.getId();
-//        Log.i("status", status + "");
-//        String simplifiedText = removeMediaUrl(status);
-        Mention mention = new Mention(
-                ConvertUtils.getUserNObjectPK(currentUserId, articleId), currentUserId, articleId,
-                user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
-                toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
-                toStringHashMap(status.getURLEntities()));
-        return mention;
+    public static Article toMention(Status status, long currentUserId) {
+        return toArticle(status, currentUserId, true);
     }
 
     private static String removeMediaUrl(Status status) {
@@ -177,40 +172,6 @@ public class ConvertUtils {
             userHashMap.put(user.getId(), user);
         }
         return userHashMap;
-    }
-
-    public static Article toArticle(Mention source) {
-        if (source == null) return null;
-        Article dest = new Article();
-        dest.setSnsType(source.getSnsType());
-        dest.setImageUrls(source.getImageUrls());
-        dest.setMessage(source.getMessage());
-        dest.setUserId(source.getUserId());
-        dest.setArticleId(source.getArticleId());
-        dest.setPostedAt(source.getPostedAt());
-        dest.setProfileImg(source.getProfileImg());
-        dest.setTablePlusArticleId(source.getTablePlusArticleId());
-        dest.setUrlMap(source.getUrlMap());
-        dest.setUserName(source.getUserName());
-        dest.setTableUserId(source.getTableUserId());
-        return dest;
-    }
-
-    public static Mention toMention(Article source) {
-        if (source == null) return null;
-        Mention dest = new Mention();
-        dest.setSnsType(source.getSnsType());
-        dest.setImageUrls(source.getImageUrls());
-        dest.setMessage(source.getMessage());
-        dest.setUserId(source.getUserId());
-        dest.setArticleId(source.getArticleId());
-        dest.setPostedAt(source.getPostedAt());
-        dest.setProfileImg(source.getProfileImg());
-        dest.setTablePlusArticleId(source.getTablePlusArticleId());
-        dest.setUrlMap(source.getUrlMap());
-        dest.setUserName(source.getUserName());
-        dest.setTableUserId(source.getTableUserId());
-        return dest;
     }
 
     public static long getSecondsByMilli(long quitDelayMilli) {
