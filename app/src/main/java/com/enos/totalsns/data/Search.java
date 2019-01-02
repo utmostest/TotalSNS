@@ -1,4 +1,4 @@
-package com.enos.totalsns.search;
+package com.enos.totalsns.data;
 
 public interface Search {
     String getUserId();

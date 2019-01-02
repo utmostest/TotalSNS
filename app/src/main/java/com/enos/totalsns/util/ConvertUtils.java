@@ -13,14 +13,19 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.Search;
+import com.enos.totalsns.data.UserInfo;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
 import twitter4j.MediaEntity;
+import twitter4j.QueryResult;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.URLEntity;
@@ -213,5 +218,53 @@ public class ConvertUtils {
     public static Drawable bitmapToDrwable(Context context, Bitmap bitmap) {
         Drawable d = new BitmapDrawable(context.getResources(), bitmap);
         return d;
+    }
+
+    public static boolean isArticleSame(Article oldArticle, Article newArticle) {
+        return oldArticle.getTablePlusArticleId().equals(newArticle.getTablePlusArticleId()) &&
+                oldArticle.getProfileImg().equals(newArticle.getProfileImg()) &&
+                oldArticle.getUserName().equals(newArticle.getUserName()) &&
+                oldArticle.getUserId().equals(newArticle.getUserId()) &&
+                oldArticle.getMessage().equals(newArticle.getMessage()) &&
+                oldArticle.getTableUserId() == newArticle.getTableUserId() &&
+                oldArticle.getArticleId() == newArticle.getArticleId() &&
+                oldArticle.getSnsType() == newArticle.getSnsType() &&
+                oldArticle.getPostedAt() == newArticle.getPostedAt() &&
+                Arrays.equals(oldArticle.getImageUrls(), newArticle.getImageUrls()) &&
+                ConvertUtils.equalsHashMap(oldArticle.getUrlMap(), newArticle.getUrlMap());
+    }
+
+    public static boolean isUserInfoSame(UserInfo oldArticle, UserInfo newArticle) {
+        return oldArticle.getLongUserId() == newArticle.getLongUserId() &&
+                oldArticle.isFollowed() == newArticle.isFollowed() &&
+                oldArticle.getProfileImg().equals(newArticle.getProfileImg()) &&
+                oldArticle.getUserName().equals(newArticle.getUserName()) &&
+                oldArticle.getUserId().equals(newArticle.getUserId()) &&
+                oldArticle.getMessage().equals(newArticle.getMessage()) &&
+                oldArticle.getProfileBackColor().equals(newArticle.getProfileBackColor()) &&
+                oldArticle.getProfileBackImg().equals(newArticle.getProfileBackImg()) &&
+                oldArticle.getSnsType() == newArticle.getSnsType();
+    }
+
+    public static boolean isSearchSame(Search oldSearch, Search newSearch) {
+        if (oldSearch instanceof Article && newSearch instanceof Article) {
+            return isArticleSame((Article) oldSearch, (Article) newSearch);
+        } else if (oldSearch instanceof UserInfo && newSearch instanceof UserInfo) {
+            return isUserInfoSame((UserInfo) oldSearch, (UserInfo) newSearch);
+        } else {
+            return false;
+        }
+    }
+
+    public static ArrayList<Search> toSearchList(QueryResult list, long currentUser) {
+        if (list == null) return null;
+        List<Status> statuses = list.getTweets();
+        ArrayList<Search> searches = new ArrayList<>();
+
+        for (Status status : statuses) {
+            Search search = toArticle(status,currentUser);
+            searches.add(search);
+        }
+        return searches;
     }
 }

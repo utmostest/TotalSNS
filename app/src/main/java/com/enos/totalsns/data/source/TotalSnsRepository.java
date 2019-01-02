@@ -7,6 +7,7 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.Search;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import twitter4j.DirectMessage;
 import twitter4j.Paging;
+import twitter4j.Query;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
@@ -44,6 +46,8 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Article>> mObservableMention;
 
+    private MediatorLiveData<List<Search>> mObservableSearch;
+
     private TwitterManager mTwitterManager;
 
     private AppExecutors mAppExecutors;
@@ -63,6 +67,8 @@ public class TotalSnsRepository {
 
     private AtomicBoolean mHasSourceAdded = new AtomicBoolean(false);
 
+    private SingleLiveEvent<String> mSearchQuery;
+
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
         mTwitterManager = twitterManager;
@@ -71,12 +77,14 @@ public class TotalSnsRepository {
         mObservableDirectMessage = new MediatorLiveData<>();
         mObservableDirectMessageDetail = new MediatorLiveData<>();
         mObservableMention = new MediatorLiveData<>();
+        mObservableSearch = new MediatorLiveData<>();
         mAppExecutors = new AppExecutors();
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
         currentUploadArticle = new SingleLiveEvent<>();
         currentUploadDM = new SingleLiveEvent<>();
         isSignOutFinished = new SingleLiveEvent<>();
+        mSearchQuery = new SingleLiveEvent<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
@@ -535,4 +543,70 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessage(message));
         currentUploadDM.postValue(message);
     }
+
+    // start of search
+    private void addSearchSource() {
+        try {
+            mObservableSearch.addSource(mTwitterManager.getSearchList(),
+                    timeline ->
+                    {
+                        isSnsNetworkOnUse.postValue(false);
+                        SingletonToast.getInstance().log("search", timeline + "");
+                        mObservableSearch.postValue(timeline);
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+//        try {
+//            mObservableSearch.addSource(mTwitterManager.getSearchUserList(),
+//                    timeline ->
+//                    {
+//                        isSnsNetworkOnUse.postValue(false);
+//                        SingletonToast.getInstance().log("search", timeline + "");
+//                        mObservableSearch.postValue(timeline);
+//                    });
+//        } catch (IllegalArgumentException ignored) {
+//        }
+    }
+
+    public LiveData<List<Search>> getSearchList() {
+        return mObservableSearch;
+    }
+
+    public void fetchRecentSearch() {
+        Query query = new Query().count(Constants.PAGE_CNT).query(mTwitterManager.getLastSearchString()).sinceId(mTwitterManager.getSearchSinceId());
+        fetchSearch(query);
+    }
+
+    public void fetchPastSearch() {
+        Query query = new Query().count(Constants.PAGE_CNT).query(mTwitterManager.getLastSearchString()).maxId(mTwitterManager.getSearchMaxId());
+        fetchSearch(query);
+    }
+
+    public synchronized void fetchSearch(Query count) {
+        isSnsNetworkOnUse.postValue(true);
+
+        addSearchSource();
+
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchSearch(count);
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                e.printStackTrace();
+            }
+        });
+//        mAppExecutors.networkIO().execute(() -> {
+//            try {
+//                mTwitterManager.fetchSearchUser(count);
+//            } catch (TwitterException e) {
+//                isSnsNetworkOnUse.postValue(false);
+//                e.printStackTrace();
+//            }
+//        });
+    }
+
+    public SingleLiveEvent<String> getSearchQuery() {
+        return mSearchQuery;
+    }
+    // End of search
 }

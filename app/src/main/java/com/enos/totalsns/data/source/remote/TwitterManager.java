@@ -8,6 +8,7 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.Search;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 
@@ -43,7 +44,12 @@ public class TwitterManager {
 
     private MutableLiveData<ArrayList<Article>> mentionList;
 
+    private MutableLiveData<ArrayList<Search>> searchList;
+
     private MutableLiveData<User> loggedInUser;
+    private long mSearchSinceId;
+    private long mSearchMaxId;
+    private String mSearchKeyword;
 
     private TwitterManager() {
         init();
@@ -74,7 +80,10 @@ public class TwitterManager {
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
         directMessage = new MutableLiveData<ArrayList<Message>>();
         mentionList = new MutableLiveData<ArrayList<Article>>();
+        searchList = new MutableLiveData<ArrayList<Search>>();
         loggedInUser = new MutableLiveData<>();
+
+        initSearchVariable();
     }
 
     public String getAuthorizationUrl() throws TwitterException {
@@ -220,11 +229,47 @@ public class TwitterManager {
         return mediaId <= 0 ? mTwitter.sendDirectMessage(userId, message) : mTwitter.sendDirectMessage(userId, message, mediaId);
     }
 
+    // Start of search
+    private void initSearchVariable() {
+        mSearchMaxId = Long.MAX_VALUE;
+        mSearchSinceId = -1;
+        mSearchKeyword = null;
+    }
+
+    public long getSearchMaxId() {
+        return mSearchMaxId;
+    }
+
+    public long getSearchSinceId() {
+        return mSearchSinceId;
+    }
+
+    public String getLastSearchString() {
+        return mSearchKeyword;
+    }
+
+    public LiveData<ArrayList<Search>> getSearchList() {
+        return searchList;
+    }
+
+    public void fetchSearch(Query query) throws TwitterException {
+        if (query.getSinceId() <= 0 || query.getMaxId() <= 0) {
+            initSearchVariable();
+            mSearchKeyword = query.getQuery();
+        }
+        QueryResult list = search(query);
+        mSearchMaxId = Math.min(list.getMaxId(), mSearchMaxId);
+        mSearchSinceId = Math.max(list.getSinceId(), mSearchSinceId);
+
+        searchList.postValue(ConvertUtils.toSearchList(list, getCurrentUserId()));
+    }
+
     public QueryResult search(Query query) throws TwitterException {
         if (mTwitter == null) return null;
 
         return mTwitter.search(query);
     }
+    // End of search
 
     public ResponseList<Place> search(GeoQuery geoQuery) throws TwitterException {
         if (mTwitter == null) return null;

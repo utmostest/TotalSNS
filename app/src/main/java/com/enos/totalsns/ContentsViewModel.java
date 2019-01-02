@@ -12,6 +12,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.SingleLiveEvent;
 
 import twitter4j.User;
 
@@ -72,5 +73,9 @@ public class ContentsViewModel extends ViewModel {
 
     public LiveData<Boolean> sholudQuit() {
         return isShouldQuit;
+    }
+
+    public SingleLiveEvent<String> getSearchQuery() {
+        return mRepository.getSearchQuery();
     }
 }

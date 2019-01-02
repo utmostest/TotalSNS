@@ -3,7 +3,9 @@ package com.enos.totalsns;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.graphics.Palette;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +23,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.Target;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.mention.MentionListFragment;
@@ -33,8 +41,7 @@ import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.list.OnMessageClickListener;
-import com.enos.totalsns.search.OnSearchClickListener;
-import com.enos.totalsns.search.Search;
+import com.enos.totalsns.search.OnUserClickListener;
 import com.enos.totalsns.search.SearchListFragment;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
@@ -46,10 +53,11 @@ import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnSearchClickListener, OnMessageClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnUserClickListener, OnMessageClickListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
@@ -117,6 +125,7 @@ public class ContentsActivity extends AppCompatActivity
         mDataBinding.appBar.searchView.setOnQueryTextListener(new SimpleSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+                viewModel.getSearchQuery().postValue(query);
                 return false;
             }
 
@@ -170,6 +179,8 @@ public class ContentsActivity extends AppCompatActivity
         final ImageView headerProfile = header.findViewById(R.id.header_profile);
         final TextView followingNum = header.findViewById(R.id.header_following_num);
         final TextView followerNum = header.findViewById(R.id.header_follower_num);
+        final TextView followingLabel = header.findViewById(R.id.header_following_label);
+        final TextView followerLabel = header.findViewById(R.id.header_follower_label);
         final ImageView headerBackground = header.findViewById(R.id.header_background);
 
         viewModel.getLoggedInUser().observe(this, user -> {
@@ -193,6 +204,43 @@ public class ContentsActivity extends AppCompatActivity
                                     .crossFade(Constants.CROSS_FADE_MILLI)
                     )
                     .into(headerProfile);
+            String profileBackImg = user.getProfileBackgroundImageURL();
+            if (profileBackImg != null && profileBackImg.length() > 0) {
+                Glide.with(this)
+                        .asBitmap()
+                        .load(profileBackImg)
+                        .apply(
+                                new RequestOptions()
+                                        .placeholder(R.drawable.side_nav_bar)
+                                        .dontTransform()
+                                        .centerCrop()
+                        )
+                        .listener(new RequestListener<Bitmap>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                                if (resource != null) {
+                                    Palette p = Palette.from(resource).generate();
+                                    List<Palette.Swatch> swatches = p.getSwatches();
+                                    if (swatches != null && swatches.size() > 0) {
+                                        Palette.Swatch s = swatches.get(0);
+                                        headerEmail.setTextColor(s.getTitleTextColor());
+                                        headerName.setTextColor(s.getTitleTextColor());
+                                        followerNum.setTextColor(s.getBodyTextColor());
+                                        followingNum.setTextColor(s.getBodyTextColor());
+                                        followerLabel.setTextColor(s.getBodyTextColor());
+                                        followingLabel.setTextColor(s.getBodyTextColor());
+                                    }
+                                }
+                                return false;
+                            }
+                        })
+                        .into(headerBackground);
+            }
         });
     }
 
@@ -399,7 +447,14 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onSearchItemClicked(Search item) {
-        SingletonToast.getInstance().show(item.getUserId() + "" + item.getUserName() + "\n" + item.getMessage(), Toast.LENGTH_SHORT);
+    public void onUserItemClicked(UserInfo item) {
+        SingletonToast.getInstance().show("onUserItemClicked",
+                item.getUserId() + "" + item.getUserName() + "\n" + item.getMessage(), Toast.LENGTH_SHORT);
+    }
+
+    @Override
+    public void onFollowButtonClicked(UserInfo info) {
+        SingletonToast.getInstance().show("onFollowButtonClicked",
+                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage(), Toast.LENGTH_SHORT);
     }
 }
