@@ -22,9 +22,11 @@ public class Message implements Post {
     private String message;
     private long createdAt;
     private int snsType;
+    private long senderTableId;
+    private long maxCreatedAt;
 
     public Message(@NonNull String userDmId, long tableUserId, long messageId, long receiverId, long senderId,
-                   String senderName, String senderScreenId, String senderProfile, String message, long createdAt, int snsType) {
+                   String senderName, String senderScreenId, String senderProfile, String message, long createdAt, int snsType, long senderTableId) {
         this.userDmId = userDmId;
         this.tableUserId = tableUserId;
         this.messageId = messageId;
@@ -36,6 +38,7 @@ public class Message implements Post {
         this.message = message;
         this.createdAt = createdAt;
         this.snsType = snsType;
+        this.senderTableId = senderTableId;
     }
 
     @NonNull
@@ -130,5 +133,21 @@ public class Message implements Post {
 
     public void setSnsType(int snsType) {
         this.snsType = snsType;
+    }
+
+    public long getSenderTableId() {
+        return senderTableId;
+    }
+
+    public void setSenderTableId(long senderTableId) {
+        this.senderTableId = senderTableId;
+    }
+
+    public long getMaxCreatedAt() {
+        return maxCreatedAt;
+    }
+
+    public void setMaxCreatedAt(long maxCreatedAt) {
+        this.maxCreatedAt = maxCreatedAt;
     }
 }

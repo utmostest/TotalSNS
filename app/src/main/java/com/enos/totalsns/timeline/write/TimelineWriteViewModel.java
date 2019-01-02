@@ -10,6 +10,8 @@ import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import twitter4j.User;
+
 public class TimelineWriteViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
@@ -36,5 +38,9 @@ public class TimelineWriteViewModel extends ViewModel {
 
     public LiveData<Article> getUploadingArticle() {
         return mRepository.getCurrentUploadingArticle();
+    }
+
+    public LiveData<User> getCurrentUser() {
+        return mRepository.getLoggedInUser();
     }
 }

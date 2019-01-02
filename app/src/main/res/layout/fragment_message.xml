@@ -16,9 +16,7 @@
             android:layout_height="match_parent"
             app:srl_direction="both">
 
-            <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
+            <android.support.v7.widget.RecyclerView
                 android:id="@+id/msg_rv"
                 android:name="com.enos.totalsns.message.list.MessaeListFragment"
                 android:layout_width="0dp"

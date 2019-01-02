@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context=".message.detail.MessageDetailActivity"
+        tools:showIn="@layout/app_bar_contents">
+
+        <com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout
+            android:id="@+id/swipeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srl_direction="both">
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/msg_rv"
+                android:name="com.enos.totalsns.message.list.MessaeListFragment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layoutManager="LinearLayoutManager"
+                app:stackFromEnd="true"
+                tools:context=".message.detail.MessageDetailFragment"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_message_detail_out" />
+        </com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout>
+
+        <LinearLayout
+            android:id="@+id/container"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/swipeContainer">
+
+            <ImageButton
+                android:id="@+id/message_detail_image"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:background="@android:color/transparent"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_menu_gallery" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/message_detail_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/message_write_hint" />
+            </android.support.design.widget.TextInputLayout>
+
+            <ImageButton
+                android:id="@+id/message_detail_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:background="@android:color/transparent"
+                android:scaleType="center"
+                app:srcCompat="@drawable/ic_menu_send" />
+        </LinearLayout>
+
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

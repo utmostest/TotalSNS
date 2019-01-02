@@ -1,25 +1,21 @@
-package com.enos.totalsns.message.list;
+package com.enos.totalsns.message.detail;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
-import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.List;
 
-import twitter4j.Paging;
-
-public class MessageListViewModel extends ViewModel {
+public class MessageDetailViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isNetworkOnUse;
 
-    public MessageListViewModel(Context application, TotalSnsRepository repository) {
+    public MessageDetailViewModel(Context application, TotalSnsRepository repository) {
 
         mContext = application;
         mRepository = repository;
@@ -39,11 +35,19 @@ public class MessageListViewModel extends ViewModel {
         mRepository.fetchPastDirectMessage();
     }
 
-    public LiveData<List<Message>> getMessageList() {
-        return mRepository.getDirectMessage();
+    public LiveData<List<Message>> getDirectMessageDetail() {
+        return mRepository.getDirectMessageDetail();
     }
 
-    public void fetchDirectMessage() {
-        mRepository.fetchDirectMessage(Constants.PAGE_CNT, null);
+    public void fetchDirectMessageDetail(long dmId) {
+        mRepository.fetchDirectMessageDetail(dmId);
+    }
+
+    public void postDirectMessage(long receiverId, String message, Message sample) {
+        mRepository.sendDirectMessage(receiverId, message, sample);
+    }
+
+    public LiveData<Message> getCurrentUploadingDM() {
+        return mRepository.getCurrentUploadingDM();
     }
 }

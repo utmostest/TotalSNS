@@ -8,7 +8,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -81,9 +80,9 @@ public class MessageListFragment extends Fragment {
 
         mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
-                mViewModel.fetchRecentTimeline();
+                mViewModel.fetchRecentDirectMessage();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
-                mViewModel.fetchPastTimeline();
+                mViewModel.fetchPastDirectMessage();
             }
         });
 
@@ -116,7 +115,7 @@ public class MessageListFragment extends Fragment {
             mListener = (OnMessageClickListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnListFragmentInteractionListener");
+                    + " must implement OnMessageClickListener");
         }
     }
 

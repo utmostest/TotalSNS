@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.support.v4.util.ArraySet;
 import android.text.format.DateFormat;
 
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Mention;
@@ -55,7 +56,16 @@ public class ConvertUtils {
 
         Message message = new Message(ConvertUtils.getUserNObjectPK(currentUserId, dm.getId()), currentUserId, dm.getId(),
                 dm.getRecipientId(), dm.getSenderId(), sender.getName(), sender.getScreenName(), sender.get400x400ProfileImageURL(),
-                dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER);
+                dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
+        return message;
+    }
+
+
+    public static Message toMessage(DirectMessage dm, long currentUserId, Message sender) {
+
+        Message message = new Message(ConvertUtils.getUserNObjectPK(currentUserId, dm.getId()), currentUserId, dm.getId(),
+                dm.getRecipientId(), dm.getSenderId(), sender.getSenderName(), sender.getSenderScreenId(), sender.getSenderProfile(),
+                dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
         return message;
     }
 
@@ -206,5 +216,9 @@ public class ConvertUtils {
     public static long getSecondsByMilli(long quitDelayMilli) {
         long sec = quitDelayMilli / 1000;
         return sec;
+    }
+
+    public static Account toAccount(User user) {
+        return null;
     }
 }

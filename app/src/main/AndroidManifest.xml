@@ -17,6 +17,7 @@
         <activity
             android:name=".intro.IntroActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,15 +27,18 @@
         </activity>
         <activity
             android:name=".accounts.AccountsActivity"
-            android:label="@string/title_activity_accounts" />
+            android:label="@string/title_activity_accounts"
+            android:screenOrientation="portrait" />
         <activity android:name=".login.LoginActivity" />
         <activity
             android:name=".ContentsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".timeline.detail.TimelineDetailActivity"
             android:label="@string/title_timeline_detail"
             android:parentActivityName=".ContentsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -43,11 +47,22 @@
         <activity
             android:name=".timeline.write.TimelineWriteActivity"
             android:parentActivityName=".ContentsActivity"
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
+        <activity
+            android:name=".message.detail.MessageDetailActivity"
+            android:parentActivityName=".ContentsActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustResize">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enos.totalsns.ContentsActivity" />
+        </activity>
     </application>
+
 </manifest>

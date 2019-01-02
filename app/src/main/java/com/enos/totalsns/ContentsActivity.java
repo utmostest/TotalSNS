@@ -29,6 +29,8 @@ import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.mention.MentionListFragment;
+import com.enos.totalsns.message.detail.MessageDetailActivity;
+import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.list.OnMessageClickListener;
 import com.enos.totalsns.search.OnSearchClickListener;
@@ -211,6 +213,12 @@ public class ContentsActivity extends AppCompatActivity
         AppCompatUtils.startActivityWithTransition(this, intent, pairs);
     }
 
+    private void startDirectMessageDetailActivity(long senderId) {
+        Intent intent = new Intent(ContentsActivity.this, MessageDetailActivity.class);
+        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
+        startActivity(intent);
+    }
+
     private void signOut() {
         viewModel.signOut();
     }
@@ -330,7 +338,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onMessageClicked(Message item) {
-        SingletonToast.getInstance().show(item + "", Toast.LENGTH_SHORT);
+        startDirectMessageDetailActivity(item.getSenderTableId());
     }
 
     @Override

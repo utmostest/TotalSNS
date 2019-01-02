@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="8dp">
+
+        <ImageView
+            android:id="@+id/message_item_profile"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/message_item_msg"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_account_circle_black_36dp" />
+
+        <TextView
+            android:id="@+id/message_item_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:background="@drawable/message_out_bg"
+            android:maxWidth="240dp"
+            android:paddingLeft="15dp"
+            android:paddingBottom="15dp"
+            android:textColor="@android:color/black"
+            app:layout_constraintBottom_toTopOf="@+id/message_item_time"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/message_item_profile"
+            app:layout_constraintTop_toTopOf="@+id/message_item_profile"
+            app:layout_constraintVertical_bias="0.0"
+            tools:text="안녕하세요 테스트 중입니다." />
+
+        <TextView
+            android:id="@+id/message_item_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/colorPrimary"
+            android:textSize="10sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/message_item_msg"
+            app:layout_constraintTop_toBottomOf="@+id/message_item_msg"
+            tools:text="2019년 1월 2일 11시 25분 am" />
+    </android.support.constraint.ConstraintLayout>
+</layout>

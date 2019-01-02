@@ -164,14 +164,14 @@ public class TwitterManager {
     public void fetchMention(Paging paging) throws TwitterException {
 
         ResponseList<Status> list = getMention(paging);
-        SingletonToast.getInstance().log("mention",list + "");
+        SingletonToast.getInstance().log("mention", list + "");
         ArrayList<Mention> articleList = new ArrayList<Mention>();
         long currentUserId = getCurrentUserId();
         int num = 0;
         for (Status status : list) {
             num++;
 //            Log.i("timeline", num + ":" + status.getText());
-            SingletonToast.getInstance().log("mention",status + "");
+            SingletonToast.getInstance().log("mention", status + "");
             Mention mention = ConvertUtils.toMention(status, currentUserId);
             articleList.add(mention);
         }
@@ -218,7 +218,7 @@ public class TwitterManager {
 
     public DirectMessage sendDirectMessage(long userId, String message, long mediaId) throws TwitterException {
         if (mTwitter == null) return null;
-        return mTwitter.sendDirectMessage(userId, message, mediaId);
+        return mediaId <= 0 ? mTwitter.sendDirectMessage(userId, message) : mTwitter.sendDirectMessage(userId, message, mediaId);
     }
 
     public QueryResult search(Query query) throws TwitterException {

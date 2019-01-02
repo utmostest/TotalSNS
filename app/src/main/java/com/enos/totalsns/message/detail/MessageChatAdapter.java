@@ -1,4 +1,4 @@
-package com.enos.totalsns.message.list;
+package com.enos.totalsns.message.detail;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.util.DiffUtil;
@@ -12,43 +12,63 @@ import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.databinding.ItemMessageBinding;
-import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.databinding.ItemMessageDetailInBinding;
+import com.enos.totalsns.databinding.ItemMessageDetailOutBinding;
+import com.enos.totalsns.message.list.OnMessageClickListener;
 import com.enos.totalsns.util.ConvertUtils;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link Message} and makes a call to the
- * specified {@link OnMessageClickListener}.
- * TODO: Replace the implementation with code for your data type.
- */
-public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHolder> {
+public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Message> mValues;
     private final OnMessageClickListener mListener;
 
-    public MessageAdapter(List<Message> items, OnMessageClickListener listener) {
+    private final int VIEWTYPE_NONE = 0;
+    private final int VIEWTYPE_OUT = 1;
+    private final int VIEWTYPE_IN = 2;
+
+    public MessageChatAdapter(List<Message> items, OnMessageClickListener listener) {
         mValues = items;
         mListener = listener;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemMessageBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_message, parent, false);
-        return new ViewHolder(binding);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+
+        if (viewType == VIEWTYPE_OUT) {
+            ItemMessageDetailOutBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_message_detail_out, parent, false);
+            return new MessageChatAdapter.OutViewHolder(binding);
+        } else {
+            ItemMessageDetailInBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_message_detail_in, parent, false);
+            return new MessageChatAdapter.InViewHolder(binding);
+        }
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder holder, int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder vh, int position) {
         if (mValues == null) return;
-        holder.mItem = mValues.get(position);
-        holder.bind();
+        if (vh instanceof InViewHolder) {
+            InViewHolder holder = (InViewHolder)vh;
+            holder.mItem = mValues.get(position);
+            holder.bind();
+        } else if (vh instanceof OutViewHolder) {
+            OutViewHolder holder = (OutViewHolder)vh;
+            holder.mItem = mValues.get(position);
+            holder.bind();
+        }
     }
 
     @Override
     public int getItemCount() {
         return mValues == null ? 0 : mValues.size();
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (mValues == null || mValues.size() <= 0) return VIEWTYPE_NONE;
+        Message message = mValues.get(position);
+        return message.getTableUserId() == message.getSenderId() ? VIEWTYPE_IN : VIEWTYPE_OUT;
     }
 
     public void swapMessageList(List<Message> list) {
@@ -96,21 +116,33 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         }
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        public final ItemMessageBinding binding;
+    public class InViewHolder extends RecyclerView.ViewHolder {
+        public final ItemMessageDetailInBinding binding;
         private Message mItem;
 
-        ViewHolder(ItemMessageBinding view) {
+        InViewHolder(ItemMessageDetailInBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
         public void bind() {
-            binding.mUserId.setText(mItem.getSenderScreenId());
-            binding.mUserName.setText(mItem.getSenderName());
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.mMessage, mItem);
-            binding.mMessage.setText(mItem.getMessage());
-            binding.mTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+            binding.messageItemMsg.setText(mItem.getMessage());
+            binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+        }
+    }
+
+    public class OutViewHolder extends RecyclerView.ViewHolder {
+        private ItemMessageDetailOutBinding binding;
+        private Message mItem;
+
+        public OutViewHolder(ItemMessageDetailOutBinding binding) {
+            super(binding.getRoot());
+            this.binding = binding;
+        }
+
+        public void bind() {
+            binding.messageItemMsg.setText(mItem.getMessage());
+            binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
             Glide.with(binding.getRoot().getContext())
                     .load(mItem.getSenderProfile())
                     .apply(
@@ -123,15 +155,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                             new DrawableTransitionOptions()
                                     .crossFade(Constants.CROSS_FADE_MILLI)
                     )
-                    .into(binding.mProfileImg);
-
-            binding.getRoot().setOnClickListener(v -> {
-                if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
-                    mListener.onMessageClicked(mItem);
-                }
-            });
+                    .into(binding.messageItemProfile);
         }
     }
 }

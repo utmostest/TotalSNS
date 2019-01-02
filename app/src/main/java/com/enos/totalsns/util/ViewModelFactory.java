@@ -22,15 +22,16 @@ import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
 import android.support.annotation.VisibleForTesting;
 
+import com.enos.totalsns.ContentsViewModel;
 import com.enos.totalsns.accounts.AccountsViewModel;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.intro.IntroViewModel;
 import com.enos.totalsns.login.LoginViewModel;
 import com.enos.totalsns.mention.MentionListViewModel;
+import com.enos.totalsns.message.detail.MessageDetailViewModel;
 import com.enos.totalsns.message.list.MessageListViewModel;
 import com.enos.totalsns.timeline.detail.TimelineDetailViewModel;
 import com.enos.totalsns.timeline.list.TimelineListViewModel;
-import com.enos.totalsns.ContentsViewModel;
 import com.enos.totalsns.timeline.write.TimelineWriteViewModel;
 
 /**
@@ -100,6 +101,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
         } else if (modelClass.isAssignableFrom(MentionListViewModel.class)) {
             //noinspection unchecked
             return (T) new MentionListViewModel(mContext, totalSnsRepository);
+        } else if (modelClass.isAssignableFrom(MessageDetailViewModel.class)) {
+            //noinspection unchecked
+            return (T) new MessageDetailViewModel(mContext, totalSnsRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

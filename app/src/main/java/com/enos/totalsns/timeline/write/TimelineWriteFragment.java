@@ -11,6 +11,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
@@ -28,25 +31,43 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
         return new TimelineWriteFragment();
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        mViewModel = ViewModelProviders.of(getActivity(), ViewModelFactory.getInstance(getActivity())).get(TimelineWriteViewModel.class);
+    }
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_write, container, false);
-        initUI();
         return mDataBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(getActivity(), ViewModelFactory.getInstance(getActivity())).get(TimelineWriteViewModel.class);
-
+        initUI();
         initObserver();
-        mViewModel.testSignIn();
     }
 
     private void initObserver() {
+        mViewModel.getCurrentUser().observe(this, (user) -> {
+            Glide.with(getContext())
+                    .load(user.get400x400ProfileImageURL())
+                    .apply(
+                            new RequestOptions()
+                                    .placeholder(R.drawable.ic_account_circle_black_36dp)
+                                    .dontTransform()
+                                    .optionalCircleCrop()
+                    )
+                    .transition(
+                            new DrawableTransitionOptions()
+                                    .crossFade(Constants.CROSS_FADE_MILLI)
+                    )
+                    .into(mDataBinding.tlWriteAccount);
+        });
     }
 
     private void initUI() {

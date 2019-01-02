@@ -20,6 +20,7 @@ import com.enos.totalsns.util.SingletonToast;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import twitter4j.DirectMessage;
 import twitter4j.Paging;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -40,6 +41,8 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Message>> mObservableDirectMessage;
 
+    private MediatorLiveData<List<Message>> mObservableDirectMessageDetail;
+
     private MediatorLiveData<List<Mention>> mObservableMention;
 
     private TwitterManager mTwitterManager;
@@ -53,6 +56,8 @@ public class TotalSnsRepository {
 
     private SingleLiveEvent<Article> currentUploadArticle;
 
+    private SingleLiveEvent<Message> currentUploadDM;
+
     private SingleLiveEvent<Boolean> isSignOutFinished;
 
     private static final Object LOCK = new Object();
@@ -65,11 +70,13 @@ public class TotalSnsRepository {
         mObservableAccounts = new MediatorLiveData<>();
         mObservableTimelines = new MediatorLiveData<>();
         mObservableDirectMessage = new MediatorLiveData<>();
+        mObservableDirectMessageDetail = new MediatorLiveData<>();
         mObservableMention = new MediatorLiveData<>();
         mAppExecutors = new AppExecutors();
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
         currentUploadArticle = new SingleLiveEvent<>();
+        currentUploadDM = new SingleLiveEvent<>();
         isSignOutFinished = new SingleLiveEvent<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
@@ -261,6 +268,7 @@ public class TotalSnsRepository {
         });
     }
 
+    // start of direct message
     private void addDirectMessageSource() {
 
         //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
@@ -317,6 +325,43 @@ public class TotalSnsRepository {
             fetchDirectMessage(Constants.PAGE_CNT, mTwitterManager.getDmCursor());
         });
     }
+    // end of direct message
+
+    // start of direct message detail
+
+    private void addDirectMessageSourceDetail(long senderId) {
+
+        //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
+        try {
+            mObservableDirectMessageDetail.addSource(mDatabase.messageDao().loadMessagesBySenderId(mTwitterManager.getCurrentUserId(), senderId),
+                    dmlist ->
+                    {
+//                        Log.i("timeline", "local : " + timeline.size());
+                        mObservableDirectMessageDetail.postValue(dmlist);
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        try {
+            mObservableDirectMessageDetail.addSource(mTwitterManager.getDirectMessage(),
+                    dmlist ->
+                    {
+                        isSnsNetworkOnUse.postValue(false);
+//                        Log.i("timeline", "remote : " + timeline.size());
+                        mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist));
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    public LiveData<List<Message>> getDirectMessageDetail() {
+        return mObservableDirectMessageDetail;
+    }
+
+    public void fetchDirectMessageDetail(long senderTableId) {
+        addDirectMessageSourceDetail(senderTableId);
+    }
+    // end of direct message detail
 
     // Start of mention
     private void addMentionSource() {
@@ -473,5 +518,30 @@ public class TotalSnsRepository {
         isSnsNetworkOnUse.postValue(false);
         mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticle(article));
         currentUploadArticle.postValue(article);
+    }
+
+    public LiveData<Message> getCurrentUploadingDM() {
+        return currentUploadDM;
+    }
+
+    public void sendDirectMessage(long receiverId, String message, Message userInfo) {
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                isSnsNetworkOnUse.postValue(true);
+                postSendDM(mTwitterManager.sendDirectMessage(receiverId, message, -1), userInfo);
+            } catch (TwitterException e) {
+                isSnsNetworkOnUse.postValue(false);
+                currentUploadDM.postValue(null);
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private void postSendDM(DirectMessage dm, Message userInfo) {
+        long currentUserId = mTwitterManager.getCurrentUserId();
+        Message message = ConvertUtils.toMessage(dm, currentUserId, userInfo);
+        isSnsNetworkOnUse.postValue(false);
+        mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessage(message));
+        currentUploadDM.postValue(message);
     }
 }

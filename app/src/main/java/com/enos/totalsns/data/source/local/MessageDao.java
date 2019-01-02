@@ -13,8 +13,11 @@ import java.util.List;
 
 @Dao
 public interface MessageDao {
-    @Query("SELECT * FROM message where tableUserId=:tableId ORDER by createdAt DESC")
+    @Query("SELECT *, max(createdAt) AS maxCreatedAt FROM message where tableUserId=:tableId GROUP by senderTableId ORDER by createdAt DESC")
     LiveData<List<Message>> loadMessages(long tableId);
+
+    @Query("SELECT * FROM message where tableUserId=:tableId AND senderTableId=:sTableId ORDER by createdAt ASC")
+    LiveData<List<Message>> loadMessagesBySenderId(long tableId, long sTableId);
 
     @Query("SELECT * FROM message where tableUserId=:tableId")
     List<Message> getMessages(long tableId);
