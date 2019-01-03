@@ -4,6 +4,7 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
@@ -41,6 +42,8 @@ import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.profile.ProfileActivity;
+import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
 import com.enos.totalsns.search.SearchListFragment;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
@@ -49,6 +52,7 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.ferfalk.simplesearchview.SimpleSearchView;
@@ -64,8 +68,6 @@ public class ContentsActivity extends AppCompatActivity
     private int menuType = Constants.DEFAULT_MENU;
     private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
     private AtomicBoolean mQuitOnce = new AtomicBoolean(false);
-
-    private boolean userClickSearchView = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,7 +102,7 @@ public class ContentsActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
-            Fragment insert = current == null ? SearchListFragment.newInstance(!userClickSearchView) : current;
+            Fragment insert = current == null ? SearchListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(MentionListFragment.class)) {
@@ -125,7 +127,11 @@ public class ContentsActivity extends AppCompatActivity
         mDataBinding.appBar.searchView.setOnQueryTextListener(new SimpleSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                viewModel.getSearchQuery().postValue(query);
+                if (query != null && query.length() > 0) {
+                    viewModel.getSearchQuery().postValue(query);
+                } else {
+                    SingletonToast.getInstance().show("검색어를 입력하세요");
+                }
                 return false;
             }
 
@@ -145,7 +151,6 @@ public class ContentsActivity extends AppCompatActivity
             public void onSearchViewShown() {
                 if (mDataBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
                     mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
-                    userClickSearchView = true;
                 }
             }
 
@@ -205,7 +210,7 @@ public class ContentsActivity extends AppCompatActivity
                     )
                     .into(headerProfile);
             String profileBackImg = user.getProfileBackgroundImageURL();
-            if (profileBackImg != null && profileBackImg.length() > 0) {
+            if (ConvertUtils.isStringValid(profileBackImg)) {
                 Glide.with(this)
                         .asBitmap()
                         .load(profileBackImg)
@@ -240,6 +245,11 @@ public class ContentsActivity extends AppCompatActivity
                             }
                         })
                         .into(headerBackground);
+            } else if (ConvertUtils.isStringValid(user.getProfileBackgroundColor())) {
+                headerBackground.setImageDrawable(null);
+                headerBackground.setBackgroundColor(Color.parseColor("#" + user.getProfileBackgroundColor()));
+            } else {
+                headerBackground.setImageResource(R.drawable.side_nav_bar);
             }
         });
     }
@@ -311,6 +321,12 @@ public class ContentsActivity extends AppCompatActivity
     private void startDirectMessageDetailActivity(long senderId) {
         Intent intent = new Intent(ContentsActivity.this, MessageDetailActivity.class);
         intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
+        startActivity(intent);
+    }
+
+    private void startProfileActivity(long userId) {
+        Intent intent = new Intent(this, ProfileActivity.class);
+        intent.putExtra(ProfileFragment.ARG_USER_ID, userId);
         startActivity(intent);
     }
 
@@ -397,7 +413,6 @@ public class ContentsActivity extends AppCompatActivity
             case R.id.navigation_timeline:
                 menuType = Constants.TIMELINE;
                 menuSelected = true;
-                userClickSearchView = false;
                 clazz = TimelineListFragment.class;
                 break;
             case R.id.navigation_search:
@@ -408,13 +423,11 @@ public class ContentsActivity extends AppCompatActivity
             case R.id.navigation_notificate:
                 menuType = Constants.INFO;
                 menuSelected = true;
-                userClickSearchView = false;
                 clazz = MentionListFragment.class;
                 break;
             case R.id.navigation_direct:
                 menuType = Constants.DIRECT_MSG;
                 menuSelected = true;
-                userClickSearchView = false;
                 clazz = MessageListFragment.class;
                 break;
         }
@@ -428,16 +441,13 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleClicked(Article mItem, int position) {
-//            boolean enableImage = false;
-//            if (mItem.getImageUrls() != null && mItem.getImageUrls().length > 0) enableImage = true;
         startTimelineDetailActivity(mItem);
-//            startTimelineDetailActivityWithImage(binding, mItem, enableImage);
     }
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
         if (article != null) {
-            SingletonToast.getInstance().show(article.getImageUrls()[position] + position, Toast.LENGTH_SHORT);
+            startProfileActivity(article.getLongUserId());
         }
     }
 
@@ -448,8 +458,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onUserItemClicked(UserInfo item) {
-        SingletonToast.getInstance().show("onUserItemClicked",
-                item.getUserId() + "" + item.getUserName() + "\n" + item.getMessage(), Toast.LENGTH_SHORT);
+        startProfileActivity(item.getLongUserId());
     }
 
     @Override

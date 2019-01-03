@@ -2,11 +2,13 @@ package com.enos.totalsns.search;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.data.Search;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.List;
@@ -30,27 +32,21 @@ public class SearchViewModel extends ViewModel {
         return isNetworkOnUse;
     }
 
-    public LiveData<List<Search>> getSearchList() {
+    public MutableLiveData<List<Article>> getSearchList() {
         return mRepository.getSearchList();
     }
 
-    public void fetchRecentSearch() {
-        mRepository.fetchRecentSearch();
-    }
-
-    public void fetchPastSearch() {
-        mRepository.fetchPastSearch();
-    }
-
     public void fetchSearch(String query) {
-        mRepository.fetchSearch(new Query(query).count(Constants.PAGE_CNT));
-    }
-
-    public void fetchSearchForStart() {
-        fetchSearch(null);
+        getSearchList().setValue(null);
+        getSearchUserList().setValue(null);
+        mRepository.fetchSearchTotal(new Query(query).count(Constants.PAGE_CNT));
     }
 
     public LiveData<String> getSearchQuery() {
         return mRepository.getSearchQuery();
+    }
+
+    public MutableLiveData<List<UserInfo>> getSearchUserList() {
+        return mRepository.getSearchUserList();
     }
 }

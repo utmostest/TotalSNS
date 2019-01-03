@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <android.support.constraint.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp">
+
+                <ImageView
+                    android:id="@+id/item_user_profile_back"
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+                <ImageView
+                    android:id="@+id/item_user_profile"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:scaleType="centerCrop"
+                    app:layout_constraintBottom_toBottomOf="@+id/item_user_profile_back"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_profile_back"
+                    app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+
+                <Button
+                    android:id="@+id/item_user_follow_btn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:background="@drawable/rounded_btn"
+                    android:text="팔로우"
+                    android:textColor="@color/batang_white"
+                    android:textSize="16sp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_profile_back" />
+
+                <TextView
+                    android:id="@+id/item_user_screen_id"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginTop="8dp"
+                    android:textAppearance="?attr/textAppearanceListItem"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/item_user_profile"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_profile"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="userid" />
+
+                <TextView
+                    android:id="@+id/item_user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?attr/textAppearanceListItem"
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toStartOf="@+id/item_user_screen_id"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_screen_id"
+                    tools:text="이름이다" />
+
+                <TextView
+                    android:id="@+id/item_user_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textAppearance="?attr/textAppearanceListItem"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="@+id/item_user_screen_id"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_name"
+                    app:layout_constraintVertical_bias="0"
+                    tools:text="트위터 유저의 프로필입니다." />
+
+                <TextView
+                    android:id="@+id/profile_address"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="@+id/item_user_message"
+                    app:layout_constraintTop_toBottomOf="@+id/item_user_message"
+                    tools:text="대한민국 성남시" />
+
+                <TextView
+                    android:id="@+id/profile_created"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/profile_address"
+                    app:layout_constraintTop_toTopOf="@+id/profile_address"
+                    tools:text="2010년 5월 5일" />
+
+                <TextView
+                    android:id="@+id/profile_following_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="@string/title_following"
+                    app:layout_constraintStart_toStartOf="@+id/profile_address"
+                    app:layout_constraintTop_toBottomOf="@+id/profile_address" />
+
+                <TextView
+                    android:id="@+id/profile_following_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/profile_following_label"
+                    app:layout_constraintTop_toTopOf="@+id/profile_following_label"
+                    tools:text="33" />
+
+                <TextView
+                    android:id="@+id/profile_follower_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    android:text="@string/title_follower"
+                    app:layout_constraintStart_toEndOf="@+id/profile_following_num"
+                    app:layout_constraintTop_toTopOf="@+id/profile_following_label" />
+
+                <TextView
+                    android:id="@+id/profile_follower_num"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginLeft="8dp"
+                    app:layout_constraintStart_toEndOf="@+id/profile_follower_label"
+                    app:layout_constraintTop_toTopOf="@+id/profile_following_label"
+                    tools:text="10" />
+
+            </android.support.constraint.ConstraintLayout>
+
+            <include
+                android:id="@+id/profile_article"
+                layout="@layout/item_article"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </android.support.v4.widget.NestedScrollView>
+</layout>

@@ -4,10 +4,10 @@ package com.enos.totalsns.timeline.list;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -55,6 +55,11 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void swapTimelineList(List<Article> list) {
+        if (list == null) {
+            mFilteredList = null;
+            notifyDataSetChanged();
+            return;
+        }
         if (mFilteredList == null) {
             mFilteredList = list;
             notifyDataSetChanged();
@@ -161,6 +166,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     // fragment is attached to one) that an item has been selected.
                     mListener.onArticleClicked(mItem, position);
                 }
+            });
+            binding.tlProfileImg.setOnClickListener(v -> {
+                if (null != mListener)
+                    mListener.onArticleImageClicked((ImageView) v, mItem, position);
             });
         }
     }

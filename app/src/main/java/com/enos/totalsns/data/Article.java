@@ -29,6 +29,7 @@ public class Article implements Parcelable, Post, Search {
     @Nullable
     private HashMap<String, String> urlMap;
     private boolean isMention;
+    private long longUserId;
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
@@ -37,7 +38,7 @@ public class Article implements Parcelable, Post, Search {
 
     @Ignore
     public Article(String tablePlusArticleId, long tableId, long articleId, String id, String name, String msg, String profile,
-                   @Nullable String[] imgUrls, long time, int snsType, @Nullable HashMap<String, String> urlMap) {
+                   @Nullable String[] imgUrls, long time, int snsType, @Nullable HashMap<String, String> urlMap, long longUserId) {
         this.tablePlusArticleId = tablePlusArticleId;
         this.tableUserId = tableId;
         this.articleId = articleId;
@@ -50,6 +51,7 @@ public class Article implements Parcelable, Post, Search {
         this.snsType = snsType;
         this.urlMap = urlMap;
         this.isMention = false;
+        this.longUserId = longUserId;
     }
 
     @Ignore
@@ -66,6 +68,7 @@ public class Article implements Parcelable, Post, Search {
         snsType = in.readInt();
         urlMap = in.readHashMap(String.class.getClassLoader());
         isMention = in.readByte() != 0;
+        longUserId = in.readLong();
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -99,6 +102,7 @@ public class Article implements Parcelable, Post, Search {
         dest.writeInt(snsType);
         dest.writeMap(urlMap);
         dest.writeByte((byte) (isMention ? 1 : 0));
+        dest.writeLong(longUserId);
     }
 
     public void setTablePlusArticleId(String tablePlusArticleId) {
@@ -195,5 +199,18 @@ public class Article implements Parcelable, Post, Search {
 
     public void setMention(boolean mention) {
         isMention = mention;
+    }
+
+    public long getLongUserId() {
+        return longUserId;
+    }
+
+    public void setLongUserId(long longUserId) {
+        this.longUserId = longUserId;
+    }
+
+    @Override
+    public int hashCode() {
+        return tablePlusArticleId.hashCode();
     }
 }

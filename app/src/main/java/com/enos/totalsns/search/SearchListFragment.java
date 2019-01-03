@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.FragmentSearchBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.timeline.list.TimelineAdapter;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -26,10 +27,6 @@ import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirec
  */
 public class SearchListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_AUTO_SEARCH = "auto-search";
-    // TODO: Customize parameters
-    private boolean isAutoSearch = true;
     private OnUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
 
@@ -45,11 +42,8 @@ public class SearchListFragment extends Fragment {
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static SearchListFragment newInstance(boolean isAutoSearch) {
+    public static SearchListFragment newInstance() {
         SearchListFragment fragment = new SearchListFragment();
-        Bundle args = new Bundle();
-        args.putBoolean(ARG_AUTO_SEARCH, isAutoSearch);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -58,10 +52,8 @@ public class SearchListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null) {
-            isAutoSearch = getArguments().getBoolean(ARG_AUTO_SEARCH, true);
         }
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(SearchViewModel.class);
-        if (isAutoSearch) mViewModel.fetchSearchForStart();
     }
 
     @Override
@@ -81,33 +73,43 @@ public class SearchListFragment extends Fragment {
 
     private void initObserver() {
         mViewModel.getSearchQuery().observe(this, (query) -> {
-            mViewModel.fetchSearch(query);
+            if (query != null && query.length() > 0) {
+                ((TimelineAdapter) mDataBinding.searchArticleRv.getAdapter()).swapTimelineList(null);
+                ((UserAdapter) mDataBinding.searchRv.getAdapter()).swapUserList(null);
+                mViewModel.fetchSearch(query);
+            }
+        });
+        mViewModel.getSearchUserList().observe(this, (list) -> {
+            UserAdapter adapter = new UserAdapter(list, mListener);
+            mDataBinding.searchRv.setAdapter(adapter);
         });
         mViewModel.getSearchList().observe(this, (list) -> {
-            SearchAdapter searchAdapter = (SearchAdapter) mDataBinding.searchRv.getAdapter();
-            searchAdapter.swapTimelineList(list);
+            TimelineAdapter adapter = new TimelineAdapter(list, mArticleListener);
+            mDataBinding.searchArticleRv.setAdapter(adapter);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.swipeContainer.setRefreshing(refresh));
+        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+            mDataBinding.swipeContainer.setRefreshing(refresh);
+            if (!refresh) mDataBinding.swipeContainer.setEnabled(false);
+        });
     }
 
     private void initView() {
         if (mDataBinding == null) return;
 
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
-            if (direction == SwipyRefreshLayoutDirection.TOP) {
-                mViewModel.fetchRecentSearch();
-            } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
-                mViewModel.fetchPastSearch();
-            }
-        });
-
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
+        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         mDataBinding.searchRv.setLayoutManager(manager);
+        UserAdapter adapter = new UserAdapter(mViewModel.getSearchUserList().getValue(), mListener);
+        mDataBinding.searchRv.setAdapter(adapter);
+
+        LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
+        managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
+        managerVertical.setAutoMeasureEnabled(true);
+        TimelineAdapter timelineAdapter = new TimelineAdapter(mViewModel.getSearchList().getValue(), mArticleListener);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        mDataBinding.searchRv.addItemDecoration(dividerItemDecoration);
-        SearchAdapter adapter = new SearchAdapter(null, mArticleListener, mListener);
-        mDataBinding.searchRv.setAdapter(adapter);
+        mDataBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
+        mDataBinding.searchArticleRv.setAdapter(timelineAdapter);
     }
 
     @Override

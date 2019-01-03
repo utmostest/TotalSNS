@@ -12,12 +12,19 @@ public class UserInfo implements Search {
     private String profileBackColor;
     private int snsType;
     private boolean isFollowed;
+    private String location;
+    private long createdAt;
+    private String email;
+    private Article lastArticle;
+    private int followerCount;
+    private int followingCount;
 
     public UserInfo() {
     }
 
     public UserInfo(long longUserId, String userId, String userName, String message, String profileImg,
-                    String profileBackImg, String profileBackColor, boolean isFollowed, int snsType) {
+                    String profileBackImg, String profileBackColor, boolean isFollowed, int snsType,
+                    String location, long createdAt, String email, Article lastArticle, int followerCount, int followingCount) {
         this.longUserId = longUserId;
         this.userId = userId;
         this.userName = userName;
@@ -27,6 +34,12 @@ public class UserInfo implements Search {
         this.profileBackColor = profileBackColor;
         this.isFollowed = isFollowed;
         this.snsType = snsType;
+        this.location = location;
+        this.createdAt = createdAt;
+        this.email = email;
+        this.lastArticle = lastArticle;
+        this.followerCount = followerCount;
+        this.followingCount = followingCount;
     }
 
     @Override
@@ -104,5 +117,58 @@ public class UserInfo implements Search {
 
     public void setSnsType(int snsType) {
         this.snsType = snsType;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId.hashCode();
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public long getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(long createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public Article getLastArticle() {
+        return lastArticle;
+    }
+
+    public void setLastArticle(Article lastArticle) {
+        this.lastArticle = lastArticle;
+    }
+
+    public int getFollowerCount() {
+        return followerCount;
+    }
+
+    public void setFollowerCount(int followerCount) {
+        this.followerCount = followerCount;
+    }
+
+    public int getFollowingCount() {
+        return followingCount;
+    }
+
+    public void setFollowingCount(int followingCount) {
+        this.followingCount = followingCount;
     }
 }

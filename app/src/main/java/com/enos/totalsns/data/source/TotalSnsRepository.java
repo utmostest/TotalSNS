@@ -2,12 +2,15 @@ package com.enos.totalsns.data.source;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.data.Search;
+import com.enos.totalsns.data.SearchQuery;
+import com.enos.totalsns.data.SearchUserQuery;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
@@ -17,6 +20,9 @@ import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
 import com.enos.totalsns.util.SingletonToast;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,7 +52,9 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Article>> mObservableMention;
 
-    private MediatorLiveData<List<Search>> mObservableSearch;
+    private MediatorLiveData<List<Article>> mObservableSearch;
+
+    private MediatorLiveData<List<UserInfo>> mObservableSearchUser;
 
     private TwitterManager mTwitterManager;
 
@@ -69,6 +77,10 @@ public class TotalSnsRepository {
 
     private SingleLiveEvent<String> mSearchQuery;
 
+    private AtomicBoolean mIsSearchingUser = new AtomicBoolean(false);
+    private AtomicBoolean mIsSearching = new AtomicBoolean(false);
+    private MutableLiveData<UserInfo> userProfile;
+
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
         mTwitterManager = twitterManager;
@@ -78,6 +90,7 @@ public class TotalSnsRepository {
         mObservableDirectMessageDetail = new MediatorLiveData<>();
         mObservableMention = new MediatorLiveData<>();
         mObservableSearch = new MediatorLiveData<>();
+        mObservableSearchUser = new MediatorLiveData<>();
         mAppExecutors = new AppExecutors();
         loginResult = new SingleLiveEvent<LoginResult>();
         isSnsNetworkOnUse = new SingleLiveEvent<>();
@@ -85,6 +98,7 @@ public class TotalSnsRepository {
         currentUploadDM = new SingleLiveEvent<>();
         isSignOutFinished = new SingleLiveEvent<>();
         mSearchQuery = new SingleLiveEvent<>();
+        userProfile = new MutableLiveData<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
@@ -545,45 +559,69 @@ public class TotalSnsRepository {
     }
 
     // start of search
+    public synchronized void fetchSearchTotal(Query count) {
+        isSnsNetworkOnUse.postValue(true);
+
+        addSearchSource();
+        addSearchUserSource();
+
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchSearch(count);
+                mIsSearching.compareAndSet(false, true);
+                SearchUserQuery query = new SearchUserQuery(count.getQuery(), 1);
+                mTwitterManager.fetchSearchUser(query);
+                mIsSearchingUser.compareAndSet(false, true);
+            } catch (TwitterException e) {
+                if (checkSearchFinished()) {
+                    isSnsNetworkOnUse.postValue(false);
+                }
+                e.printStackTrace();
+            }
+        });
+    }
+
     private void addSearchSource() {
         try {
             mObservableSearch.addSource(mTwitterManager.getSearchList(),
-                    timeline ->
+                    searchList ->
                     {
-                        isSnsNetworkOnUse.postValue(false);
-                        SingletonToast.getInstance().log("search", timeline + "");
-                        mObservableSearch.postValue(timeline);
+                        SingletonToast.getInstance().show("searched List size is" + searchList.size());
+                        mIsSearching.set(false);
+                        if (checkSearchFinished()) {
+                            isSnsNetworkOnUse.postValue(false);
+                        }
+                        if (mObservableSearch.getValue() == null) {
+                            mObservableSearch.postValue(searchList);
+                        } else {
+                            ArrayList<Article> searches = new ArrayList<>(mObservableSearch.getValue());
+                            searches.addAll(searchList);
+                            mObservableSearch.postValue(searches);
+                        }
                     });
         } catch (IllegalArgumentException ignored) {
         }
-//        try {
-//            mObservableSearch.addSource(mTwitterManager.getSearchUserList(),
-//                    timeline ->
-//                    {
-//                        isSnsNetworkOnUse.postValue(false);
-//                        SingletonToast.getInstance().log("search", timeline + "");
-//                        mObservableSearch.postValue(timeline);
-//                    });
-//        } catch (IllegalArgumentException ignored) {
-//        }
     }
 
-    public LiveData<List<Search>> getSearchList() {
+    public MutableLiveData<List<Article>> getSearchList() {
         return mObservableSearch;
     }
 
     public void fetchRecentSearch() {
-        Query query = new Query().count(Constants.PAGE_CNT).query(mTwitterManager.getLastSearchString()).sinceId(mTwitterManager.getSearchSinceId());
-        fetchSearch(query);
+        SearchQuery lastQuery = mTwitterManager.getLastQuery();
+        Query newQuery = new Query(lastQuery.getQuery()).count(Constants.PAGE_CNT).sinceId(lastQuery.getSinceId());
+        fetchSearch(newQuery);
     }
 
     public void fetchPastSearch() {
-        Query query = new Query().count(Constants.PAGE_CNT).query(mTwitterManager.getLastSearchString()).maxId(mTwitterManager.getSearchMaxId());
-        fetchSearch(query);
+        SearchQuery lastQuery = mTwitterManager.getLastQuery();
+        Query newQuery = new Query(lastQuery.getQuery()).count(Constants.PAGE_CNT).maxId(lastQuery.getMaxId());
+        fetchSearch(newQuery);
     }
 
     public synchronized void fetchSearch(Query count) {
         isSnsNetworkOnUse.postValue(true);
+        mIsSearching.compareAndSet(false, true);
 
         addSearchSource();
 
@@ -591,22 +629,83 @@ public class TotalSnsRepository {
             try {
                 mTwitterManager.fetchSearch(count);
             } catch (TwitterException e) {
-                isSnsNetworkOnUse.postValue(false);
+                mIsSearching.set(false);
+                if (checkSearchFinished()) {
+                    isSnsNetworkOnUse.postValue(false);
+                }
                 e.printStackTrace();
             }
         });
-//        mAppExecutors.networkIO().execute(() -> {
-//            try {
-//                mTwitterManager.fetchSearchUser(count);
-//            } catch (TwitterException e) {
-//                isSnsNetworkOnUse.postValue(false);
-//                e.printStackTrace();
-//            }
-//        });
     }
 
     public SingleLiveEvent<String> getSearchQuery() {
         return mSearchQuery;
     }
     // End of search
+
+    // start of search user
+    public MutableLiveData<List<UserInfo>> getSearchUserList() {
+        return mObservableSearchUser;
+    }
+
+    private void addSearchUserSource() {
+        try {
+            mObservableSearchUser.addSource(mTwitterManager.getSearchUserList(),
+                    searchList ->
+                    {
+                        if (mObservableSearchUser.getValue() == null) {
+                            mObservableSearchUser.postValue(searchList);
+                        } else {
+                            ArrayList<UserInfo> searches = new ArrayList<>(mObservableSearchUser.getValue());
+                            searches.addAll(searchList);
+                            HashSet<UserInfo> set = new HashSet<>(searches);
+                            ArrayList<UserInfo> search = new ArrayList<>(set);
+                            Collections.sort(search, ConvertUtils::compareSearch);
+                            mObservableSearchUser.postValue(searches);
+                        }
+                        mIsSearchingUser.set(false);
+                        if (checkSearchFinished()) {
+                            isSnsNetworkOnUse.postValue(false);
+                        }
+                    });
+        } catch (IllegalArgumentException ignored) {
+        }
+    }
+
+    public synchronized void fetchSearchUser(SearchUserQuery query) {
+        isSnsNetworkOnUse.postValue(true);
+        mIsSearchingUser.compareAndSet(false, true);
+        addSearchUserSource();
+
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchSearchUser(query);
+            } catch (TwitterException e) {
+                mIsSearchingUser.set(false);
+                if (checkSearchFinished()) {
+                    isSnsNetworkOnUse.postValue(false);
+                }
+                e.printStackTrace();
+            }
+        });
+    }
+
+    private boolean checkSearchFinished() {
+        return !(mIsSearching.get() || mIsSearchingUser.get());
+    }
+    // end of search user
+
+    public LiveData<UserInfo> getUserProfile() {
+        return mTwitterManager.getUserProfile();
+    }
+
+    public void fetchProfile(long userId) {
+        mAppExecutors.networkIO().execute(() -> {
+            try {
+                mTwitterManager.fetchUser(userId);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 }
