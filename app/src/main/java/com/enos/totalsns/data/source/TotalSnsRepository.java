@@ -8,12 +8,13 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.data.SearchQuery;
-import com.enos.totalsns.data.SearchUserQuery;
+import com.enos.totalsns.data.source.remote.QuerySearchArticle;
+import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.data.source.remote.TwitterManager;
+import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
@@ -30,7 +31,6 @@ import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.StatusUpdate;
 import twitter4j.TwitterException;
-import twitter4j.User;
 
 /**
  * Repository handling the work with products and comments.
@@ -74,6 +74,9 @@ public class TotalSnsRepository {
     private AtomicBoolean mHasSourceAdded = new AtomicBoolean(false);
 
     private SingleLiveEvent<String> mSearchQuery;
+    private MutableLiveData<List<UserInfo>> followList;
+
+    private MutableLiveData<UserInfo> loggedInUser;
 
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
@@ -92,6 +95,8 @@ public class TotalSnsRepository {
         currentUploadDM = new SingleLiveEvent<>();
         isSignOutFinished = new SingleLiveEvent<>();
         mSearchQuery = new SingleLiveEvent<>();
+        followList = new MutableLiveData<>();
+        loggedInUser = new MutableLiveData<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
@@ -476,18 +481,19 @@ public class TotalSnsRepository {
         return loginResult;
     }
 
-    public LiveData<User> getLoggedInUser() {
+    public LiveData<UserInfo> getLoggedInUser() {
         isSnsNetworkOnUse.postValue(true);
         mAppExecutors.networkIO().execute(() -> {
             try {
-                mTwitterManager.fetchLoggedInUser();
+                UserInfo user = mTwitterManager.getLoggedInUser();
                 isSnsNetworkOnUse.postValue(false);
+                loggedInUser.postValue(user);
             } catch (TwitterException e) {
                 isSnsNetworkOnUse.postValue(false);
                 e.printStackTrace();
             }
         });
-        return mTwitterManager.getLoggedInUser();
+        return loggedInUser;
     }
 
     public MutableLiveData<Article> getCurrentUploadingArticle() {
@@ -547,7 +553,7 @@ public class TotalSnsRepository {
         mAppExecutors.networkIO().execute(() -> {
             try {
                 mTwitterManager.fetchSearch(count);
-                SearchUserQuery query = new SearchUserQuery(count.getQuery(), 1);
+                QuerySearchUser query = new QuerySearchUser(QuerySearchUser.FIRST, count.getQuery());
                 mTwitterManager.fetchSearchUser(query);
                 isSnsNetworkOnUse.postValue(false);
             } catch (TwitterException e) {
@@ -580,13 +586,13 @@ public class TotalSnsRepository {
     }
 
     public void fetchRecentSearch() {
-        SearchQuery lastQuery = mTwitterManager.getLastQuery();
+        QuerySearchArticle lastQuery = mTwitterManager.getLastQuery();
         Query newQuery = new Query(lastQuery.getQuery()).count(Constants.PAGE_CNT).sinceId(lastQuery.getSinceId());
         fetchSearch(newQuery);
     }
 
     public void fetchPastSearch() {
-        SearchQuery lastQuery = mTwitterManager.getLastQuery();
+        QuerySearchArticle lastQuery = mTwitterManager.getLastQuery();
         Query newQuery = new Query(lastQuery.getQuery()).count(Constants.PAGE_CNT).maxId(lastQuery.getMaxId());
         fetchSearch(newQuery);
     }
@@ -639,7 +645,7 @@ public class TotalSnsRepository {
         }
     }
 
-    public synchronized void fetchSearchUser(SearchUserQuery query) {
+    public synchronized void fetchSearchUser(QuerySearchUser query) {
         isSnsNetworkOnUse.postValue(true);
         addSearchUserSource();
 
@@ -666,6 +672,38 @@ public class TotalSnsRepository {
             } catch (TwitterException e) {
                 e.printStackTrace();
             }
+        });
+    }
+
+    public MutableLiveData<List<UserInfo>> getFollowList() {
+        return followList;
+    }
+
+    public void fetchFirstFollowList(QueryFollow queryFollow) {
+        fetchFollowList(queryFollow);
+    }
+
+    public void fetchNextFollowList() {
+        QueryFollow follow = new QueryFollow(QueryFollow.NEXT);
+        fetchFollowList(follow);
+    }
+
+    public void fetchPreviousFollowList() {
+        QueryFollow follow = new QueryFollow(QueryFollow.PREVIOUS);
+        fetchFollowList(follow);
+    }
+
+    public synchronized void fetchFollowList(QueryFollow queryFollow) {
+        isSnsNetworkOnUse.postValue(true);
+        mAppExecutors.networkIO().execute(() -> {
+            ArrayList<UserInfo> followerList = null;
+            try {
+                followerList = mTwitterManager.getFollowList(queryFollow);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+            isSnsNetworkOnUse.postValue(false);
+            followList.postValue(followerList);
         });
     }
 }
