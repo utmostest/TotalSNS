@@ -104,7 +104,7 @@ public class ProfileFragment extends Fragment {
             dataBinding.profileArticle.tlUserName.setText(userInfo.getLastArticle().getUserName());
             dataBinding.profileArticle.tlUserId.setText(userInfo.getLastArticle().getUserId());
             dataBinding.profileArticle.tlTime.setText(ConvertUtils.getDateString(userInfo.getLastArticle().getPostedAt()));
-            ActivityUtils.setAutoLinkTextView(getContext(), dataBinding.profileArticle.tlMessage, userInfo.getLastArticle());
+            ActivityUtils.setAutoLinkTextView(getContext(), dataBinding.profileArticle.tlMessage, userInfo.getLastArticle().getMessage(), userInfo.getLastArticle().getUrlMap());
 
             GlideUtils.loadProfileImage(getContext(), userInfo.getLastArticle().getProfileImg(), dataBinding.profileArticle.tlProfileImg);
         } else {

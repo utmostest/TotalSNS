@@ -106,7 +106,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public void bind() {
             binding.mUserId.setText(mItem.getSenderScreenId());
             binding.mUserName.setText(mItem.getSenderName());
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.mMessage, mItem);
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.mMessage, mItem.getMessage(), null);
             binding.mMessage.setText(mItem.getMessage());
             binding.mTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.mProfileImg);
@@ -119,7 +119,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                 }
             });
             binding.mProfileImg.setOnClickListener(v -> {
-                if(null!=mListener) mListener.onMessageProfileClicked(mItem.getSenderTableId());
+                if (null != mListener) mListener.onMessageProfileClicked(mItem.getSenderTableId());
             });
         }
     }

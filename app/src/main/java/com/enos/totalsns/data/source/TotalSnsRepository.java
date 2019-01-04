@@ -8,13 +8,13 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.data.source.remote.QuerySearchArticle;
-import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
-import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.data.source.remote.QueryFollow;
+import com.enos.totalsns.data.source.remote.QuerySearchArticle;
+import com.enos.totalsns.data.source.remote.QuerySearchUser;
+import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
@@ -636,7 +636,7 @@ public class TotalSnsRepository {
                                 searches.addAll(searchList);
                                 HashSet<UserInfo> set = new HashSet<>(searches);
                                 ArrayList<UserInfo> search = new ArrayList<>(set);
-                                Collections.sort(search, ConvertUtils::compareSearch);
+                                Collections.sort(search, ConvertUtils::compareUserInfo);
                                 mObservableSearchUser.postValue(searches);
                             });
                         }

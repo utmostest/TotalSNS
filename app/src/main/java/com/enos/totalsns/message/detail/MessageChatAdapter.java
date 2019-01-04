@@ -143,7 +143,7 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void bind() {
             binding.messageItemMsg.setText(mItem.getMessage());
             binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
-            GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile, R.drawable.ic_account_circle_black_36dp);
             binding.getRoot().setOnClickListener(v -> {
                 if (mListener != null) mListener.onMessageClicked(mItem);
             });

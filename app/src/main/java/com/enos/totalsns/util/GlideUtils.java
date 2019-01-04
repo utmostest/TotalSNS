@@ -13,11 +13,15 @@ import com.enos.totalsns.data.Constants;
 
 public class GlideUtils {
     public static void loadProfileImage(Context context, String imageUrl, ImageView imageView) {
+        loadProfileImage(context, imageUrl, imageView, R.drawable.ic_account_circle_black_48dp);
+    }
+
+    public static void loadProfileImage(Context context, String imageUrl, ImageView imageView, int res) {
         Glide.with(context)
                 .load(imageUrl)
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                .placeholder(res)
                                 .dontTransform()
                                 .optionalCircleCrop()
                 )

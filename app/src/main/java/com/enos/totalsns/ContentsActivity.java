@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -30,17 +31,18 @@ import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
+import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.follow.FollowListActivity;
 import com.enos.totalsns.follow.FollowListFragment;
 import com.enos.totalsns.follow.OnFollowListener;
-import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.mention.MentionListFragment;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
-import com.enos.totalsns.message.OnMessageClickListener;
+import com.enos.totalsns.message.send.MessageSendActivity;
 import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
@@ -317,6 +319,11 @@ public class ContentsActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private void startDirectMessageSendActivity() {
+        Intent intent = new Intent(this, MessageSendActivity.class);
+        startActivity(intent);
+    }
+
     private void startProfileActivity(long userId) {
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_ID, userId);
@@ -433,11 +440,51 @@ public class ContentsActivity extends AppCompatActivity
         }
 
         if (menuSelected && clazz != null) {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.timeline_frag_container);
+
+            if (currentFragment != null) {
+                String current = currentFragment.getClass().getSimpleName();
+                boolean isCurrentDm = current.equals(MessageListFragment.class.getSimpleName());
+                boolean isRecentDm = clazz.getSimpleName().equals(MessageListFragment.class.getSimpleName());
+                if ((isCurrentDm || isRecentDm) && !clazz.getSimpleName().equals(current)) {
+                    hideFabDelayedShow();
+                }
+            }
             changeFragment(clazz);
         }
 
         return menuSelected;
     };
+
+    private void hideFabDelayedShow() {
+        hideFab();
+        handler.removeCallbacks(mRunnable);
+        handler.postDelayed(mRunnable, Constants.CROSS_FADE_MILLI);
+    }
+
+    private final Handler handler = new Handler();
+
+    private Runnable mRunnable = () -> runOnUiThread(this::setIconAndShowFab);
+
+    private void hideFab() {
+        mDataBinding.appBar.fab.hide();
+    }
+
+    private void setIconAndShowFab() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.timeline_frag_container);
+        int resource = R.drawable.ic_add_white_24dp;
+        if (currentFragment != null) {
+            String current = currentFragment.getClass().getSimpleName();
+            if (current.equals(MessageListFragment.class.getSimpleName())) {
+                resource = R.drawable.ic_chat_white_24dp;
+                mDataBinding.appBar.fab.setOnClickListener(view -> startDirectMessageSendActivity());
+            } else {
+                mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+            }
+        }
+        mDataBinding.appBar.fab.setImageResource(resource);
+        mDataBinding.appBar.fab.show();
+    }
 
     @Override
     public void onArticleClicked(Article mItem, int position) {

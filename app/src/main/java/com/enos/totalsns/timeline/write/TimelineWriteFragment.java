@@ -56,7 +56,7 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     private void initObserver() {
         mViewModel.getCurrentUser().observe(this, (user) -> {
             if (user == null) return;
-            GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mDataBinding.tlWriteAccount);
+            GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mDataBinding.tlWriteAccount, R.drawable.ic_account_circle_black_36dp);
         });
     }
 

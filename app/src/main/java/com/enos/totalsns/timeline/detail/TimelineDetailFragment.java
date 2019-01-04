@@ -78,7 +78,7 @@ public class TimelineDetailFragment extends Fragment {
             if (appBarLayout != null && mArticle != null) {
                 appBarLayout.setTitle(getString(R.string.title_timeline_detail));
             }
-            GlideUtils.loadProfileImage(getContext(),mArticle.getProfileImg(),mDataBinding.tldProfileImg);
+            GlideUtils.loadProfileImage(getContext(), mArticle.getProfileImg(), mDataBinding.tldProfileImg);
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
             mDataBinding.tldTime.setText(ConvertUtils.getDateString(mArticle.getPostedAt()));
@@ -98,7 +98,7 @@ public class TimelineDetailFragment extends Fragment {
                 mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);
             }
 
-            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle);
+            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), mArticle.getUrlMap());
         }
     }
 }
