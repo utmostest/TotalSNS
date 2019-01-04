@@ -8,64 +8,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srl_direction="both">
-
-        <android.support.v4.widget.NestedScrollView
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/search_article_rv"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:context=".ContentsActivity"
-            tools:showIn="@layout/app_bar_contents">
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="vertical">
-
-                    <android.support.v7.widget.RecyclerView
-                        android:id="@+id/search_rv"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        app:layoutManager="LinearLayoutManager"
-                        tools:context=".search.SearchListFragment"
-                        tools:listitem="@layout/item_search_user" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="?android:attr/listDivider" />
-
-                    <Button
-                        android:id="@+id/search_more_user"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@android:color/transparent"
-                        android:text="@string/more_user" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="?android:attr/listDivider" />
-                </LinearLayout>
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/search_article_rv"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    app:layoutManager="LinearLayoutManager"
-                    tools:context=".search.SearchListFragment"
-                    tools:listitem="@layout/item_article" />
-            </LinearLayout>
-
-        </android.support.v4.widget.NestedScrollView>
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layoutManager="LinearLayoutManager"
+            tools:context=".search.SearchListFragment"
+            tools:listitem="@layout/item_article" />
     </android.support.v4.widget.SwipeRefreshLayout>
 
 </layout>
