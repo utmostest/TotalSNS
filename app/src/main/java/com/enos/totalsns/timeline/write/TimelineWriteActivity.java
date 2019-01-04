@@ -4,11 +4,9 @@ import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineWriteBinding;
-import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineWriteActivity extends AppCompatActivity {
@@ -37,13 +35,11 @@ public class TimelineWriteActivity extends AppCompatActivity {
     private void initObserver() {
         mViewModel.isShouldClose().observe(this, shouldClose -> {
 //            Log.i("observer", "isShouldClose onChanged called : " + shouldClose);
+            if (shouldClose == null) return;
             if (shouldClose.compareAndSet(true, false)) finish();
         });
         mViewModel.getUploadingArticle().observe(this, article -> {
-            if (article == null) {
-                SingletonToast.getInstance().show("포스팅 실패", Toast.LENGTH_SHORT);
-            } else {
-                SingletonToast.getInstance().show("포스팅 성공", Toast.LENGTH_SHORT);
+            if (article != null) {
                 finish();
             }
         });

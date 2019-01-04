@@ -31,7 +31,7 @@ public class ContentsViewModel extends ViewModel {
         isBackPressed = new MutableLiveData<>();
         isBackPressed.setValue(false);
         isShouldQuit.addSource(isBackPressed, (isPressed) -> {
-            if (isPressed) setFalseAfterDelay();
+            if (isPressed != null && isPressed) setFalseAfterDelay();
         });
     }
 
@@ -48,7 +48,7 @@ public class ContentsViewModel extends ViewModel {
     }
 
     public void onBackPressed() {
-        if (isBackPressed.getValue()) {
+        if (isBackPressed.getValue() != null && isBackPressed.getValue()) {
             isShouldQuit.postValue(true);
         } else {
             Toast.makeText(
@@ -77,5 +77,16 @@ public class ContentsViewModel extends ViewModel {
 
     public SingleLiveEvent<String> getSearchQuery() {
         return mRepository.getSearchQuery();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        isShouldQuit.postValue(null);
+        mRepository.getSearchQuery().postValue(null);
     }
 }

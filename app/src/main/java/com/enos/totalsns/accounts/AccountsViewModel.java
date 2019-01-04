@@ -64,4 +64,14 @@ public class AccountsViewModel extends ViewModel {
         mRepository.signInTwitterWithAccount(account, b);
         return loginResultMutableLiveData;
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        mObservableAccounts.postValue(null);
+    }
 }

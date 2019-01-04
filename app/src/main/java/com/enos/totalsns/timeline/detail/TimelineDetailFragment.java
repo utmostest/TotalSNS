@@ -104,7 +104,7 @@ public class TimelineDetailFragment extends Fragment {
             mDataBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             mDataBinding.imageContainer.setImageCount(urlSize);
             mDataBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                SingletonToast.getInstance().show(imgUrls[pos], Toast.LENGTH_SHORT);
+                SingletonToast.getInstance().log(imgUrls[pos]);
             });
             if (hasImage) {
                 mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);

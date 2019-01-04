@@ -50,7 +50,7 @@ public class ActivityUtils {
         autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, autoLinkText) -> {
             String matchedText = removeUnnecessaryString(autoLinkText);
 
-            SingletonToast.getInstance().show(autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT);
+            SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
             Intent intent = new Intent();
             switch (autoLinkMode) {
                 case MODE_URL:

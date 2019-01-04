@@ -36,7 +36,7 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
 
     @Override
     public void onMessageClicked(Message message) {
-        SingletonToast.getInstance().show(message.toString());
+        SingletonToast.getInstance().log(message.toString());
     }
 
     @Override

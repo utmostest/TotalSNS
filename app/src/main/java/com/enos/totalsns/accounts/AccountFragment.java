@@ -91,7 +91,6 @@ public class AccountFragment extends Fragment {
         return list;
     }
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);

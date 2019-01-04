@@ -29,4 +29,14 @@ public class ProfileViewModel extends ViewModel {
     public void fetchProfile(long userId) {
         mRepository.fetchProfile(userId);
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel(){
+        mRepository.getUserProfile().postValue(null);
+    }
 }

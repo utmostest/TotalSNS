@@ -325,7 +325,7 @@ public class TwitterManager {
         return currentUserId;
     }
 
-    public LiveData<UserInfo> getUserProfile(){
+    public MutableLiveData<UserInfo> getUserProfile(){
         return userProfile;
     }
 

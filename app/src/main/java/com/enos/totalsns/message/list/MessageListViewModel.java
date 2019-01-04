@@ -46,4 +46,14 @@ public class MessageListViewModel extends ViewModel {
     public void fetchDirectMessage() {
         mRepository.fetchDirectMessage(Constants.PAGE_CNT, null);
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        mRepository.getDirectMessage().postValue(null);
+    }
 }

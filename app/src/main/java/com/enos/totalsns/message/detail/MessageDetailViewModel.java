@@ -50,4 +50,14 @@ public class MessageDetailViewModel extends ViewModel {
     public LiveData<Message> getCurrentUploadingDM() {
         return mRepository.getCurrentUploadingDM();
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+    }
+
+    private void clearViewModel() {
+        mRepository.getDirectMessageDetail().postValue(null);
+        mRepository.getCurrentUploadingDM().postValue(null);
+    }
 }

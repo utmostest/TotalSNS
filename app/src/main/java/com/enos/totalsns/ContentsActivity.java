@@ -52,6 +52,7 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.ColorUtils;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -130,7 +131,7 @@ public class ContentsActivity extends AppCompatActivity
                 if (query != null && query.length() > 0) {
                     viewModel.getSearchQuery().postValue(query);
                 } else {
-                    SingletonToast.getInstance().show("검색어를 입력하세요");
+                    SingletonToast.getInstance().log("검색어를 입력하세요");
                 }
                 return false;
             }
@@ -247,7 +248,15 @@ public class ContentsActivity extends AppCompatActivity
                         .into(headerBackground);
             } else if (ConvertUtils.isStringValid(user.getProfileBackgroundColor())) {
                 headerBackground.setImageDrawable(null);
-                headerBackground.setBackgroundColor(Color.parseColor("#" + user.getProfileBackgroundColor()));
+                int backGround = Color.parseColor("#" + user.getProfileBackgroundColor());
+                headerBackground.setBackgroundColor(backGround);
+                int textColor = ColorUtils.getComplimentColor(backGround);
+                headerEmail.setTextColor(textColor);
+                headerName.setTextColor(textColor);
+                followerNum.setTextColor(textColor);
+                followingNum.setTextColor(textColor);
+                followerLabel.setTextColor(textColor);
+                followingLabel.setTextColor(textColor);
             } else {
                 headerBackground.setImageResource(R.drawable.side_nav_bar);
             }
@@ -264,7 +273,7 @@ public class ContentsActivity extends AppCompatActivity
 
     private void initObserver() {
         viewModel.isSignOutFinished().observe(this, (isFinished) -> {
-            if (isFinished) {
+            if (isFinished != null && isFinished) {
                 if (mSignOutOnce.compareAndSet(false, true)) {
                     finish();
                     startActivity(new Intent(this, AccountsActivity.class));
@@ -272,7 +281,7 @@ public class ContentsActivity extends AppCompatActivity
             }
         });
         viewModel.sholudQuit().observe(this, (shouldQuit) -> {
-            if (shouldQuit) {
+            if (shouldQuit != null && shouldQuit) {
                 if (mQuitOnce.compareAndSet(false, true)) {
                     finish();
                 }
@@ -463,7 +472,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onFollowButtonClicked(UserInfo info) {
-        SingletonToast.getInstance().show("onFollowButtonClicked",
-                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage(), Toast.LENGTH_SHORT);
+        SingletonToast.getInstance().log("onFollowButtonClicked",
+                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage());
     }
 }

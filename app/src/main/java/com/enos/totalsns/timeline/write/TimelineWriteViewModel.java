@@ -43,4 +43,15 @@ public class TimelineWriteViewModel extends ViewModel {
     public LiveData<User> getCurrentUser() {
         return mRepository.getLoggedInUser();
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        isShouldClose.postValue(null);
+        mRepository.getCurrentUploadingArticle().postValue(null);
+    }
 }

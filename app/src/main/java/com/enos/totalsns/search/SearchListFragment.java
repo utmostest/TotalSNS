@@ -88,6 +88,7 @@ public class SearchListFragment extends Fragment {
             mDataBinding.searchArticleRv.setAdapter(adapter);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
+            if(refresh==null) return;
             mDataBinding.swipeContainer.setRefreshing(refresh);
             if (!refresh) mDataBinding.swipeContainer.setEnabled(false);
         });

@@ -95,17 +95,18 @@ public class MessageListFragment extends Fragment {
         mDataBinding.msgRv.setAdapter(adapter);
 
         mViewModel.getMessageList().observe(this, articleList -> {
-            if (articleList != null) {
 //                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
-                adapter.swapMessageList(articleList);
+            adapter.swapMessageList(articleList);
 
 //                if (currentPosFirst == 0)
 //                    mDataBinding.tlRv.smoothScrollToPosition(0);
-            }
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.swipeContainer.setRefreshing(refresh));
+        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+            if (refresh == null) return;
+            mDataBinding.swipeContainer.setRefreshing(refresh);
+        });
     }
 
     @Override
