@@ -6,16 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ItemMessageDetailInBinding;
 import com.enos.totalsns.databinding.ItemMessageDetailOutBinding;
-import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
 
@@ -49,11 +46,11 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public void onBindViewHolder(final RecyclerView.ViewHolder vh, int position) {
         if (mValues == null) return;
         if (vh instanceof InViewHolder) {
-            InViewHolder holder = (InViewHolder)vh;
+            InViewHolder holder = (InViewHolder) vh;
             holder.mItem = mValues.get(position);
             holder.bind();
         } else if (vh instanceof OutViewHolder) {
-            OutViewHolder holder = (OutViewHolder)vh;
+            OutViewHolder holder = (OutViewHolder) vh;
             holder.mItem = mValues.get(position);
             holder.bind();
         }
@@ -128,6 +125,9 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void bind() {
             binding.messageItemMsg.setText(mItem.getMessage());
             binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+            binding.getRoot().setOnClickListener(v -> {
+                if (mListener != null) mListener.onMessageClicked(mItem);
+            });
         }
     }
 
@@ -143,19 +143,13 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void bind() {
             binding.messageItemMsg.setText(mItem.getMessage());
             binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
-            Glide.with(binding.getRoot().getContext())
-                    .load(mItem.getSenderProfile())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(binding.messageItemProfile);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile);
+            binding.getRoot().setOnClickListener(v -> {
+                if (mListener != null) mListener.onMessageClicked(mItem);
+            });
+            binding.messageItemProfile.setOnClickListener((v) -> {
+                if (mListener != null) mListener.onMessageProfileClicked(mItem.getSenderTableId());
+            });
         }
     }
 }

@@ -6,11 +6,10 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import twitter4j.User;
 
 public class TimelineWriteViewModel extends ViewModel {
     private Context mContext;
@@ -32,15 +31,11 @@ public class TimelineWriteViewModel extends ViewModel {
         mRepository.uploadStatus(article.getMessage());
     }
 
-    public void testSignIn() {
-        mRepository.signInTwitterWithSaved(false);
-    }
-
     public LiveData<Article> getUploadingArticle() {
         return mRepository.getCurrentUploadingArticle();
     }
 
-    public LiveData<User> getCurrentUser() {
+    public LiveData<UserInfo> getCurrentUser() {
         return mRepository.getLoggedInUser();
     }
 

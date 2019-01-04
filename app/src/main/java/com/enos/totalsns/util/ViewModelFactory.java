@@ -25,6 +25,7 @@ import android.support.annotation.VisibleForTesting;
 import com.enos.totalsns.ContentsViewModel;
 import com.enos.totalsns.accounts.AccountsViewModel;
 import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.follow.FollowListViewModel;
 import com.enos.totalsns.intro.IntroViewModel;
 import com.enos.totalsns.login.LoginViewModel;
 import com.enos.totalsns.mention.MentionListViewModel;
@@ -112,6 +113,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
         } else if (modelClass.isAssignableFrom(ProfileViewModel.class)) {
             //noinspection unchecked
             return (T) new ProfileViewModel(mContext, totalSnsRepository);
+        } else if (modelClass.isAssignableFrom(FollowListViewModel.class)) {
+            //noinspection unchecked
+            return (T) new FollowListViewModel(mContext, totalSnsRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

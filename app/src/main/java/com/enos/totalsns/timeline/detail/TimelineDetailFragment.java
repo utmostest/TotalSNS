@@ -20,6 +20,7 @@ import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -77,20 +78,7 @@ public class TimelineDetailFragment extends Fragment {
             if (appBarLayout != null && mArticle != null) {
                 appBarLayout.setTitle(getString(R.string.title_timeline_detail));
             }
-
-            Glide.with(getContext())
-                    .load(mArticle.getProfileImg())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(mDataBinding.tldProfileImg);
+            GlideUtils.loadProfileImage(getContext(),mArticle.getProfileImg(),mDataBinding.tldProfileImg);
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
             mDataBinding.tldTime.setText(ConvertUtils.getDateString(mArticle.getPostedAt()));

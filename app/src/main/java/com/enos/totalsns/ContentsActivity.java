@@ -15,20 +15,15 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
@@ -37,11 +32,15 @@ import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.follow.FollowListActivity;
+import com.enos.totalsns.follow.FollowListFragment;
+import com.enos.totalsns.follow.OnFollowListener;
+import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.mention.MentionListFragment;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
-import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
@@ -54,15 +53,15 @@ import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.ColorUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnUserClickListener, OnMessageClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnUserClickListener, OnMessageClickListener, OnFollowListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
@@ -193,35 +192,28 @@ public class ContentsActivity extends AppCompatActivity
             if (user == null) return;
 
             headerEmail.setText(user.getEmail());
-            headerName.setText(user.getName());
-            followerNum.setText(String.valueOf(user.getFollowersCount()));
-            followingNum.setText(String.valueOf(user.getFriendsCount()));
+            headerName.setText(user.getUserName());
+            followerNum.setText(String.valueOf(user.getFollowerCount()));
+            followingNum.setText(String.valueOf(user.getFollowingCount()));
 
-            Glide.with(this)
-                    .load(user.get400x400ProfileImageURL())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(headerProfile);
-            String profileBackImg = user.getProfileBackgroundImageURL();
+            followingLabel.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), false);
+            });
+            followingNum.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), false);
+            });
+            followerLabel.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), true);
+            });
+            followerNum.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), true);
+            });
+
+            GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
+            String profileBackImg = user.getProfileBackImg();
             if (ConvertUtils.isStringValid(profileBackImg)) {
-                Glide.with(this)
-                        .asBitmap()
-                        .load(profileBackImg)
-                        .apply(
-                                new RequestOptions()
-                                        .placeholder(R.drawable.side_nav_bar)
-                                        .dontTransform()
-                                        .centerCrop()
-                        )
-                        .listener(new RequestListener<Bitmap>() {
+                GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
+                        new RequestListener<Bitmap>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                                 return false;
@@ -230,37 +222,29 @@ public class ContentsActivity extends AppCompatActivity
                             @Override
                             public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                                 if (resource != null) {
-                                    Palette p = Palette.from(resource).generate();
-                                    List<Palette.Swatch> swatches = p.getSwatches();
-                                    if (swatches != null && swatches.size() > 0) {
-                                        Palette.Swatch s = swatches.get(0);
-                                        headerEmail.setTextColor(s.getTitleTextColor());
-                                        headerName.setTextColor(s.getTitleTextColor());
-                                        followerNum.setTextColor(s.getBodyTextColor());
-                                        followingNum.setTextColor(s.getBodyTextColor());
-                                        followerLabel.setTextColor(s.getBodyTextColor());
-                                        followingLabel.setTextColor(s.getBodyTextColor());
-                                    }
+                                    setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
                                 }
                                 return false;
                             }
-                        })
-                        .into(headerBackground);
-            } else if (ConvertUtils.isStringValid(user.getProfileBackgroundColor())) {
+                        });
+            } else if (ConvertUtils.isStringValid(user.getProfileBackColor())) {
                 headerBackground.setImageDrawable(null);
-                int backGround = Color.parseColor("#" + user.getProfileBackgroundColor());
+                int backGround = Color.parseColor("#" + user.getProfileBackColor());
                 headerBackground.setBackgroundColor(backGround);
                 int textColor = ColorUtils.getComplimentColor(backGround);
-                headerEmail.setTextColor(textColor);
-                headerName.setTextColor(textColor);
-                followerNum.setTextColor(textColor);
-                followingNum.setTextColor(textColor);
-                followerLabel.setTextColor(textColor);
-                followingLabel.setTextColor(textColor);
+                setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
             } else {
                 headerBackground.setImageResource(R.drawable.side_nav_bar);
             }
         });
+    }
+
+    private void setTextColor(int color, TextView... textViews) {
+        if (textViews != null) {
+            for (TextView tv : textViews) {
+                tv.setTextColor(color);
+            }
+        }
     }
 
     private void initBottomNavigation() {
@@ -336,6 +320,13 @@ public class ContentsActivity extends AppCompatActivity
     private void startProfileActivity(long userId) {
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_ID, userId);
+        startActivity(intent);
+    }
+
+    private void startFollowActivity(long userId, boolean isFollower) {
+        QueryFollow queryFollow = new QueryFollow(QueryFollow.FIRST, userId, -1, isFollower);
+        Intent intent = new Intent(this, FollowListActivity.class);
+        intent.putExtra(FollowListFragment.ARG_QUERY_FOLLOW, queryFollow);
         startActivity(intent);
     }
 
@@ -466,6 +457,11 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
+    public void onMessageProfileClicked(long senderTableId) {
+        startProfileActivity(senderTableId);
+    }
+
+    @Override
     public void onUserItemClicked(UserInfo item) {
         startProfileActivity(item.getLongUserId());
     }
@@ -474,5 +470,10 @@ public class ContentsActivity extends AppCompatActivity
     public void onFollowButtonClicked(UserInfo info) {
         SingletonToast.getInstance().log("onFollowButtonClicked",
                 info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage());
+    }
+
+    @Override
+    public void onFollowClicked(UserInfo info, boolean isFollower) {
+        startFollowActivity(info.getLongUserId(), isFollower);
     }
 }

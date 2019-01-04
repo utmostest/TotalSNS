@@ -9,12 +9,11 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
-
-import twitter4j.User;
 
 public class ContentsViewModel extends ViewModel {
     @SuppressLint("StaticFieldLeak")
@@ -39,7 +38,7 @@ public class ContentsViewModel extends ViewModel {
         mRepository.signOut();
     }
 
-    public LiveData<User> getLoggedInUser() {
+    public LiveData<UserInfo> getLoggedInUser() {
         return mRepository.getLoggedInUser();
     }
 

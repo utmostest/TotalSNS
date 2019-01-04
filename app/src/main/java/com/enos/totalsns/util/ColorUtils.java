@@ -1,7 +1,11 @@
 package com.enos.totalsns.util;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.support.v7.graphics.Palette;
+
+import java.util.List;
 
 /**
  * Utilities for performing common color-related tasks.
@@ -69,5 +73,17 @@ public class ColorUtils {
         rgbVal = Math.round(rgbVal);
 
         return String.valueOf(hexReference.charAt((rgbVal - rgbVal % 16) / 16) + "" + hexReference.charAt(rgbVal % 16));
+    }
+
+    public static int getBodyTextColorFromPalette(Bitmap resource) {
+        if (resource != null) {
+            Palette p = Palette.from(resource).generate();
+            List<Palette.Swatch> swatches = p.getSwatches();
+            if (swatches != null && swatches.size() > 0) {
+                Palette.Swatch s = swatches.get(0);
+                return s.getBodyTextColor();
+            }
+        }
+        return Color.BLACK;
     }
 }

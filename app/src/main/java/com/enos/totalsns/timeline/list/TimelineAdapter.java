@@ -18,6 +18,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -120,19 +121,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
 
         public void bind(int position) {
-            Glide.with(binding.getRoot().getContext())
-                    .load(mItem.getProfileImg())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(binding.tlProfileImg);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(),mItem.getProfileImg(),binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
             int urlSize = ConvertUtils.getActualSize(imgUrls);
