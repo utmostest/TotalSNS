@@ -4,10 +4,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
-import java.util.HashMap;
-
 @Entity(tableName = "message")
-public class Message implements Post {
+public class Message {
 
     @PrimaryKey
     @NonNull
@@ -100,11 +98,6 @@ public class Message implements Post {
 
     public String getMessage() {
         return message;
-    }
-
-    @Override
-    public HashMap<String, String> getUrlMap() {
-        return null;
     }
 
     public void setMessage(String message) {

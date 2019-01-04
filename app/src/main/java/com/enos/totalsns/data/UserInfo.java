@@ -1,7 +1,7 @@
 package com.enos.totalsns.data;
 
-// 룸에 저장하지 않음
-public class UserInfo implements Search {
+// 타인의 개인정보라 룸에 저장하지 않음
+public class UserInfo {
 
     private long longUserId;
     private String userId;
@@ -42,27 +42,22 @@ public class UserInfo implements Search {
         this.followingCount = followingCount;
     }
 
-    @Override
     public String getUserId() {
         return userId;
     }
 
-    @Override
     public String getUserName() {
         return userName;
     }
 
-    @Override
     public String getMessage() {
         return message;
     }
 
-    @Override
     public String getProfileImg() {
         return profileImg;
     }
 
-    @Override
     public int getSnsType() {
         return snsType;
     }

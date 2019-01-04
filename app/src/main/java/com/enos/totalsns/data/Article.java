@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 
 @Entity(tableName = "article")
-public class Article implements Parcelable, Post, Search {
+public class Article implements Parcelable {
 
     @PrimaryKey
     @NonNull
