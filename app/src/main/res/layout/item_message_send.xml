@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/batang_white"
+        android:padding="8dp"
+        tools:context=".ContentsActivity">
+
+        <ImageView
+            android:id="@+id/msProfileImg"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:transitionName="@string/tran_profile_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+
+        <TextView
+            android:id="@+id/msUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/black_overlay"
+            android:textStyle="bold"
+            android:transitionName="@string/tran_user_name"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toEndOf="@+id/msProfileImg"
+            app:layout_constraintTop_toTopOf="@+id/msProfileImg"
+            tools:hint="이름이다" />
+
+        <TextView
+            android:id="@+id/msUserId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:transitionName="@string/tran_user_id"
+            app:layout_constraintBottom_toBottomOf="@+id/msProfileImg"
+            app:layout_constraintStart_toStartOf="@+id/msUserName"
+            app:layout_constraintTop_toBottomOf="@+id/msUserName"
+            tools:text="'@userid'" />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

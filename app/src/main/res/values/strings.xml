@@ -57,4 +57,5 @@
     <string name="finish_message">%d초가 지나기 전에 한 번 더 누르시면 종료됩니다.</string>
     <string name="message_write_hint">쪽지 작성하기</string>
     <string name="more_user">유저 더보기</string>
+    <string name="title_dm_send">쪽지를 작성할 유저를 검색하세요</string>
 </resources>
