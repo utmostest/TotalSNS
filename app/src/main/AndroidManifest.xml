@@ -76,6 +76,22 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
+        <activity
+            android:name=".follow.FollowListActivity"
+            android:parentActivityName=".ContentsActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enos.totalsns.ContentsActivity" />
+        </activity>
+        <activity
+            android:name=".message.send.MessageSendActivity"
+            android:parentActivityName=".ContentsActivity"
+            android:screenOrientation="portrait">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.enos.totalsns.ContentsActivity" />
+        </activity>
     </application>
 
 </manifest>

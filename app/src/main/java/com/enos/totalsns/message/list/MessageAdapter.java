@@ -6,15 +6,13 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ItemMessageBinding;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
 
@@ -111,19 +109,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
             ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.mMessage, mItem);
             binding.mMessage.setText(mItem.getMessage());
             binding.mTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
-            Glide.with(binding.getRoot().getContext())
-                    .load(mItem.getSenderProfile())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(binding.mProfileImg);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.mProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
@@ -131,6 +117,9 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     // fragment is attached to one) that an item has been selected.
                     mListener.onMessageClicked(mItem);
                 }
+            });
+            binding.mProfileImg.setOnClickListener(v -> {
+                if(null!=mListener) mListener.onMessageProfileClicked(mItem.getSenderTableId());
             });
         }
     }
