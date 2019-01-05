@@ -284,7 +284,7 @@ public class NearbyArticleFragment extends Fragment
         lastKnownLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
         if (searchRadiusCircle != null)
-//            searchRadiusCircle.setCenter(new LatLng(location.getLatitude(), location.getLongitude()));
+            searchRadiusCircle.setCenter(new LatLng(location.getLatitude(), location.getLongitude()));
 
             updateZoomLevel(new LatLng(location.getLatitude(), location.getLongitude()));
 

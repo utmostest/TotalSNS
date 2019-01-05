@@ -35,11 +35,11 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     private OnUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
 
-    private final int TYPE_HEADER = -2;
-    private final int TYPE_FOOTER = -1;
     private final int TYPE_TWITTER = Constants.TWITTER;
     private final int TYPE_FACEBOOK = Constants.FACEBOOK;
     private final int TYPE_INSTAGRAM = Constants.INSTAGRAM;
+    private final int TYPE_HEADER = 11;
+    private final int TYPE_FOOTER = 12;
 
     private boolean mIsEnableFooter = false;
     private boolean mIsEnableHeader = false;
@@ -190,6 +190,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     }
 
     public void swapUserList(List<UserInfo> list) {
+        mFilteredList = list;
         if (mUserRecyclerView != null) {
             ((UserAdapter) mUserRecyclerView.getAdapter()).swapUserList(list);
         }
@@ -214,7 +215,8 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             binding.imageContainer.setImageCount(urlSize);
             //Log.i("bind", "urlSize : " + urlSize + ", imgUrls : " + Arrays.toString(imgUrls));
             binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                if (mArticleListener != null) mArticleListener.onArticleImageClicked(iv, mItem, pos);
+                if (mArticleListener != null)
+                    mArticleListener.onArticleImageClicked(iv, mItem, pos);
             });
             if (hasImage) {
                 binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);
@@ -267,10 +269,17 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
         public void bind() {
             mUserRecyclerView = binding.searchRv;
-            UserAdapter userAdapter = new UserAdapter(mFilteredList, mListener);
+            UserAdapter userAdapter = null;
+            if (mUserRecyclerView.getAdapter() != null && mUserRecyclerView.getAdapter() instanceof UserAdapter) {
+                userAdapter = (UserAdapter) mUserRecyclerView.getAdapter();
+                userAdapter.swapUserList(mFilteredList);
+            }
+            if (userAdapter == null) {
+                userAdapter = new UserAdapter(mFilteredList, mListener);
+                binding.searchRv.setAdapter(userAdapter);
+            }
             binding.searchRv.setHasFixedSize(true);
             binding.searchRv.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
-            binding.searchRv.setAdapter(userAdapter);
             binding.searchRv.setRecycledViewPool(recycledViewPool);
         }
     }
