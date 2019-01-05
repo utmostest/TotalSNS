@@ -48,6 +48,7 @@ import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
 import com.enos.totalsns.search.SearchListFragment;
+import com.enos.totalsns.settings.SettingsActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
@@ -343,6 +344,11 @@ public class ContentsActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     private void signOut() {
         viewModel.signOut();
     }
@@ -407,7 +413,7 @@ public class ContentsActivity extends AppCompatActivity
         } else if (id == R.id.nav_dr_nearby) {
             startNearByArticleActivity();
         } else if (id == R.id.nav_dr_setting) {
-
+            startSettingsActivity();
         } else if (id == R.id.nav_dr_sign_out) {
             signOut();
         }
