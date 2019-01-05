@@ -499,8 +499,9 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onArticleClicked(Article mItem, int position) {
-        startTimelineDetailActivity(mItem);
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+//        startTimelineDetailActivity(mItem);
+        startTimelineDetailActivityWithImage(binding, mItem, ConvertUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
     @Override

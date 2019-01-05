@@ -239,7 +239,7 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 if (null != mArticleListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mArticleListener.onArticleClicked(mItem, position);
+                    mArticleListener.onArticleClicked(binding, mItem, position);
                 }
             });
             binding.tlProfileImg.setOnClickListener(v -> {
