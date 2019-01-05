@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedAttribute">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/batang_white"
+        android:padding="8dp"
+        tools:context=".ContentsActivity">
+
+        <ImageView
+            android:id="@+id/fProfileImg"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:transitionName="@string/tran_profile_image"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+
+        <Button
+            android:id="@+id/item_user_follow_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="32dp"
+            android:background="@drawable/rounded_btn"
+            android:text="팔로우"
+            android:textColor="@color/batang_white"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/fUserName"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/fUserName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:minWidth="30dp"
+            android:textColor="@color/black_overlay"
+            android:textStyle="bold"
+            android:transitionName="@string/tran_user_name"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toStartOf="@+id/item_user_follow_btn"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_chainStyle="spread_inside"
+            app:layout_constraintStart_toEndOf="@+id/fProfileImg"
+            app:layout_constraintTop_toTopOf="@+id/fProfileImg"
+            tools:hint="이름이다" />
+
+        <TextView
+            android:id="@+id/fUserId"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:transitionName="@string/tran_user_id"
+            app:layout_constraintEnd_toStartOf="@+id/item_user_follow_btn"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/fUserName"
+            app:layout_constraintTop_toBottomOf="@+id/fUserName"
+            tools:text="'@userid'" />
+
+        <TextView
+            android:id="@+id/fMessage"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginTop="8dp"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:focusable="false"
+            android:maxLines="2"
+            android:textColor="@color/text_black"
+            android:transitionName="@string/tran_message"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/fProfileImg"
+            app:layout_constraintTop_toBottomOf="@+id/fUserId"
+            tools:text="다이렉트 메세지는 유저간 비공개 대화를 하는 기능이다." />
+
+    </android.support.constraint.ConstraintLayout>
+</layout>

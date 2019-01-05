@@ -18,6 +18,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentTimelineWriteBinding;
+import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -54,19 +55,8 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
 
     private void initObserver() {
         mViewModel.getCurrentUser().observe(this, (user) -> {
-            Glide.with(getContext())
-                    .load(user.get400x400ProfileImageURL())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_36dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(mDataBinding.tlWriteAccount);
+            if (user == null) return;
+            GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mDataBinding.tlWriteAccount, R.drawable.ic_account_circle_black_36dp);
         });
     }
 

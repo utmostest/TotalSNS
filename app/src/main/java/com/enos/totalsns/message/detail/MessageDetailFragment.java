@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.FragmentMessageDetailBinding;
-import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
@@ -89,12 +89,16 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
         mViewModel.getDirectMessageDetail().observe(this, articleList -> {
             if (articleList != null) {
                 if (articleList.size() > 0) sampleMessage = articleList.get(0);
-                adapter.swapMessageList(articleList);
                 mDataBinding.msgRv.scrollToPosition(adapter.getItemCount() - 1);
             }
+            adapter.swapMessageList(articleList);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> mDataBinding.swipeContainer.setRefreshing(refresh));
+        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+            if (refresh == null) return;
+            mDataBinding.swipeContainer.setRefreshing(refresh);
+        });
         mViewModel.getCurrentUploadingDM().observe(this, (dm) -> {
+            if (dm == null) return;
             mDataBinding.messageDetailEdit.setText("");
         });
     }

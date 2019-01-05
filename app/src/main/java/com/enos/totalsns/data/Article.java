@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import java.util.HashMap;
 
 @Entity(tableName = "article")
-public class Article implements Parcelable, Post, Search {
+public class Article implements Parcelable {
 
     @PrimaryKey
     @NonNull
@@ -30,6 +30,11 @@ public class Article implements Parcelable, Post, Search {
     private HashMap<String, String> urlMap;
     private boolean isMention;
     private long longUserId;
+    //임시적으로 룸에 저장되지 않도록 ignore 어노테이션 추가
+    @Ignore
+    private double latitude;
+    @Ignore
+    private double longitude;
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
@@ -207,6 +212,22 @@ public class Article implements Parcelable, Post, Search {
 
     public void setLongUserId(long longUserId) {
         this.longUserId = longUserId;
+    }
+
+    public double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 
     @Override

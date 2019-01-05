@@ -11,7 +11,6 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:scaleType="centerCrop"
-        android:contentDescription="@string/nav_header_desc"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -25,7 +24,6 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
-        android:contentDescription="@string/nav_header_desc"
         app:layout_constraintBottom_toTopOf="@+id/header_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -45,7 +43,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
         app:layout_constraintTop_toBottomOf="@+id/header_profile"
-        tools:text="@string/nav_header_title" />
+        tools:text="이름" />
 
     <TextView
         android:id="@+id/header_email"
@@ -56,7 +54,7 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
         app:layout_constraintTop_toBottomOf="@+id/header_name"
-        tools:text="@string/nav_header_subtitle" />
+        tools:text="userid@site.com" />
 
     <TextView
         android:id="@+id/header_following_label"
@@ -65,12 +63,12 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:text="@string/title_following"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_num"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
-        app:layout_constraintTop_toBottomOf="@+id/header_email"
-        app:layout_constrainedWidth="true" />
+        app:layout_constraintTop_toBottomOf="@+id/header_email" />
 
     <TextView
         android:id="@+id/header_following_num"
@@ -79,13 +77,13 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_label"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_label"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
-        app:layout_constrainedWidth="true"
-        tools:text="0" />
+        tools:text="21" />
 
 
     <TextView
@@ -95,12 +93,12 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:text="@string/title_follower"
+        app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_num"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_num"
-        app:layout_constraintTop_toTopOf="@+id/header_following_label"
-        app:layout_constrainedWidth="true" />
+        app:layout_constraintTop_toTopOf="@+id/header_following_label" />
 
     <TextView
         android:id="@+id/header_follower_num"
@@ -108,13 +106,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
-        android:text="0"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_follower_label"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
-        app:layout_constraintWidth_default="spread" />
+        app:layout_constraintWidth_default="spread"
+        tools:text="15" />
 
 </android.support.constraint.ConstraintLayout>

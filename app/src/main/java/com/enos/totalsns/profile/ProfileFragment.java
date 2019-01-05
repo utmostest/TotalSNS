@@ -1,6 +1,7 @@
 package com.enos.totalsns.profile;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -12,14 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentProfileBinding;
+import com.enos.totalsns.follow.OnFollowListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -31,6 +31,7 @@ public class ProfileFragment extends Fragment {
     public static final long INVALID_ID = -1;
     private long mUserId = INVALID_ID;
     private FragmentProfileBinding dataBinding;
+    private OnFollowListener mListener;
 
     public static ProfileFragment newInstance(long userId) {
         Bundle arguments = new Bundle();
@@ -64,11 +65,33 @@ public class ProfileFragment extends Fragment {
         initObserver();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnFollowListener) {
+            mListener = (OnFollowListener) context;
+        } else {
+            throw new RuntimeException(context.toString() + " must implement OnFollowListener");
+        }
+    }
+
     private void initView(UserInfo userInfo) {
         dataBinding.profileAddress.setText(userInfo.getLocation());
         dataBinding.profileCreated.setText(ConvertUtils.getDateString(userInfo.getCreatedAt()));
         dataBinding.profileFollowerNum.setText(String.valueOf(userInfo.getFollowerCount()));
         dataBinding.profileFollowingNum.setText(String.valueOf(userInfo.getFollowingCount()));
+        dataBinding.profileFollowingNum.setOnClickListener(v -> {
+            if (mListener != null) mListener.onFollowClicked(userInfo, false);
+        });
+        dataBinding.profileFollowingLabel.setOnClickListener(v -> {
+            if (mListener != null) mListener.onFollowClicked(userInfo, false);
+        });
+        dataBinding.profileFollowerNum.setOnClickListener(v -> {
+            if (mListener != null) mListener.onFollowClicked(userInfo, true);
+        });
+        dataBinding.profileFollowerLabel.setOnClickListener(v -> {
+            if (mListener != null) mListener.onFollowClicked(userInfo, true);
+        });
         if (userInfo.getLastArticle() != null) {
             if (ConvertUtils.getActualSize(userInfo.getLastArticle().getImageUrls()) > 0) {
                 dataBinding.profileArticle.imageContainer.setVisibility(View.VISIBLE);
@@ -81,21 +104,9 @@ public class ProfileFragment extends Fragment {
             dataBinding.profileArticle.tlUserName.setText(userInfo.getLastArticle().getUserName());
             dataBinding.profileArticle.tlUserId.setText(userInfo.getLastArticle().getUserId());
             dataBinding.profileArticle.tlTime.setText(ConvertUtils.getDateString(userInfo.getLastArticle().getPostedAt()));
-            ActivityUtils.setAutoLinkTextView(getContext(), dataBinding.profileArticle.tlMessage, userInfo.getLastArticle());
+            ActivityUtils.setAutoLinkTextView(getContext(), dataBinding.profileArticle.tlMessage, userInfo.getLastArticle().getMessage(), userInfo.getLastArticle().getUrlMap());
 
-            Glide.with(this)
-                    .load(userInfo.getLastArticle().getProfileImg())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(dataBinding.profileArticle.tlProfileImg);
+            GlideUtils.loadProfileImage(getContext(), userInfo.getLastArticle().getProfileImg(), dataBinding.profileArticle.tlProfileImg);
         } else {
             dataBinding.profileArticle.getRoot().setVisibility(View.GONE);
         }
@@ -103,34 +114,10 @@ public class ProfileFragment extends Fragment {
         dataBinding.itemUserName.setText(userInfo.getUserName());
         dataBinding.itemUserScreenId.setText(userInfo.getUserId());
 
-        Glide.with(this)
-                .load(userInfo.getProfileImg())
-                .apply(
-                        new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                .dontTransform()
-                                .optionalCircleCrop()
-                )
-                .transition(
-                        new DrawableTransitionOptions()
-                                .crossFade(Constants.CROSS_FADE_MILLI)
-                )
-                .into(dataBinding.itemUserProfile);
+        GlideUtils.loadProfileImage(getContext(), userInfo.getProfileImg(), dataBinding.itemUserProfile);
 
         if (ConvertUtils.isStringValid(userInfo.getProfileBackImg())) {
-            Glide.with(getContext())
-                    .load(userInfo.getProfileBackImg())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.side_nav_bar)
-                                    .dontTransform()
-                                    .centerCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(dataBinding.itemUserProfileBack);
+            GlideUtils.loadBackImage(getContext(), userInfo.getProfileBackImg(), dataBinding.itemUserProfileBack);
         } else if (ConvertUtils.isStringValid(userInfo.getProfileBackColor())) {
             SingletonToast.getInstance().log("backcolor", userInfo.getProfileBackColor());
             dataBinding.itemUserProfileBack.setImageDrawable(null);

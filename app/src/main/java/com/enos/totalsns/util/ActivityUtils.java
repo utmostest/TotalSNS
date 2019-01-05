@@ -4,18 +4,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.v4.content.ContextCompat;
-import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Post;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.enos.totalsns.util.autolink.AutoLinkTextView;
 
 import java.util.HashMap;
 
 public class ActivityUtils {
-    public static void setAutoLinkTextView(final Context context, final AutoLinkTextView autoLinkTextView, final Post article) {
+    public static void setAutoLinkTextView(final Context context, final AutoLinkTextView autoLinkTextView, final String message, final HashMap<String, String> hashMap) {
         autoLinkTextView.addAutoLinkMode(
                 AutoLinkMode.MODE_HASHTAG,
                 AutoLinkMode.MODE_MENTION,
@@ -44,17 +41,17 @@ public class ActivityUtils {
         autoLinkTextView.enableUnderLine(); //underline
         // step2 optional set mode color, selected color, bold, underline
 
-        autoLinkTextView.setText(article.getMessage());
+        autoLinkTextView.setText(message);
         //step3 required settext
 
         autoLinkTextView.setAutoLinkOnClickListener((autoLinkMode, autoLinkText) -> {
             String matchedText = removeUnnecessaryString(autoLinkText);
 
-            SingletonToast.getInstance().show(autoLinkMode + " : " + matchedText, Toast.LENGTH_SHORT);
+            SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
             Intent intent = new Intent();
             switch (autoLinkMode) {
                 case MODE_URL:
-                    String normalizedString = getExpandedUrlFromMap(article.getUrlMap(), matchedText);
+                    String normalizedString = getExpandedUrlFromMap(hashMap, matchedText);
                     intent.setAction(Intent.ACTION_VIEW);
                     intent.setData(Uri.parse(normalizedString));
                     checkResolveAndStartActivity(intent, context);

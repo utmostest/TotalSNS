@@ -13,7 +13,6 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.data.Search;
 import com.enos.totalsns.data.UserInfo;
 
 import java.util.ArrayList;
@@ -36,6 +35,10 @@ public class ConvertUtils {
     //tableUserId_articleId primary key for Article class
     public static String getUserNObjectPK(long tableUser, long articleId) {
         return tableUser + "_" + articleId;
+    }
+
+    public static String getUserNObjectPK(long tableUser, long articleId, boolean isMention) {
+        return tableUser + "_" + articleId + "_" + isMention;
     }
 
     public static String[] toStringArray(MediaEntity[] urls) {
@@ -88,10 +91,14 @@ public class ConvertUtils {
 //        Log.i("status", status + "");
 //        String simplifiedText = removeMediaUrl(status);
         Article article = new Article(
-                ConvertUtils.getUserNObjectPK(currentUserId, articleId), currentUserId, articleId,
+                ConvertUtils.getUserNObjectPK(currentUserId, articleId, isMentionDb), currentUserId, articleId,
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()), user.getId());
+        if (status.getGeoLocation() != null) {
+            article.setLatitude(status.getGeoLocation().getLatitude());
+            article.setLongitude(status.getGeoLocation().getLongitude());
+        }
         article.setMention(isMentionDb);
         return article;
     }
@@ -221,6 +228,8 @@ public class ConvertUtils {
     }
 
     public static boolean isArticleSame(Article oldArticle, Article newArticle) {
+        if (newArticle == null && oldArticle == null) return true;
+        else if (newArticle == null || oldArticle == null) return false;
         return isStringEqual(oldArticle.getTablePlusArticleId(), newArticle.getTablePlusArticleId()) &&
                 isStringEqual(oldArticle.getProfileImg(), newArticle.getProfileImg()) &&
                 isStringEqual(oldArticle.getUserName(), newArticle.getUserName()) &&
@@ -235,6 +244,8 @@ public class ConvertUtils {
     }
 
     public static boolean isUserInfoSame(UserInfo oldArticle, UserInfo newArticle) {
+        if (newArticle == null && oldArticle == null) return true;
+        else if (newArticle == null || oldArticle == null) return false;
         return oldArticle.getLongUserId() == newArticle.getLongUserId() &&
                 oldArticle.isFollowed() == newArticle.isFollowed() &&
                 isStringEqual(oldArticle.getProfileImg(), newArticle.getProfileImg()) &&
@@ -252,26 +263,14 @@ public class ConvertUtils {
         else return one.equals(other);
     }
 
-    public static boolean isSearchSame(Search oldSearch, Search newSearch) {
-        if (oldSearch == null && newSearch == null) return true;
-        else if (oldSearch == null || newSearch == null) return false;
-
-        if (oldSearch instanceof Article && newSearch instanceof Article) {
-            return isArticleSame((Article) oldSearch, (Article) newSearch);
-        } else if (oldSearch instanceof UserInfo && newSearch instanceof UserInfo) {
-            return isUserInfoSame((UserInfo) oldSearch, (UserInfo) newSearch);
-        } else {
-            return false;
-        }
-    }
-
     public static ArrayList<Article> toArticleList(QueryResult list, long currentUser) {
         if (list == null) return null;
         List<Status> statuses = list.getTweets();
         ArrayList<Article> searches = new ArrayList<>();
 
         for (Status status : statuses) {
-            SingletonToast.getInstance().log(list.getQuery(), status.toString());
+            System.out.println(status.getId() + " , " + status.getUser().getName() + " , " +
+                    status.getCreatedAt().toString() + "\n" + status.getText());
             Article search = toArticle(status, currentUser);
             searches.add(search);
         }
@@ -282,13 +281,14 @@ public class ConvertUtils {
         if (list == null) return null;
         ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
         for (User user : list) {
+            System.out.println(user.getId() + " , " + user.getName() + "," + user.getDescription());
 
             Status status = user.getStatus();
 
             Article article = null;
             if (status != null) {
                 article = new Article(
-                        ConvertUtils.getUserNObjectPK(currentUserId, status.getId()), currentUserId, status.getId(),
+                        ConvertUtils.getUserNObjectPK(currentUserId, status.getId(), false), currentUserId, status.getId(),
                         user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                         toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                         toStringHashMap(status.getURLEntities()), user.getId());
@@ -304,28 +304,55 @@ public class ConvertUtils {
         return userList;
     }
 
-    public static int compareSearch(Search one, Search other) {
-        if (one instanceof Article && other instanceof UserInfo) {
+    public static int compareArticle(Article one, Article other) {
+        long different = (((Article) other).getArticleId() - ((Article) one).getArticleId());
+        if (different > 0) {
             return 1;
-        } else if (one instanceof UserInfo && other instanceof Article) {
+        } else if (different < 0) {
             return -1;
-        } else if (one instanceof UserInfo && other instanceof UserInfo) {
-            long different = (((UserInfo) other).getLongUserId() - ((UserInfo) one).getLongUserId());
-            if (different > 0) {
-                return 1;
-            } else if (different < 0) {
-                return -1;
-            }
-            return 0;
-        } else if (one instanceof Article && other instanceof Article) {
-            long different = (((Article) other).getArticleId() - ((Article) one).getArticleId());
-            if (different > 0) {
-                return 1;
-            } else if (different < 0) {
-                return -1;
-            }
-            return 0;
         }
         return 0;
+    }
+
+    public static int compareUserInfo(UserInfo one, UserInfo other) {
+        long different = (((UserInfo) other).getLongUserId() - ((UserInfo) one).getLongUserId());
+        if (different > 0) {
+            return 1;
+        } else if (different < 0) {
+            return -1;
+        }
+        return 0;
+    }
+
+    public static long[] getSmallAndLargeId(QueryResult result) {
+        if (result == null || result.getTweets().size() == 0) {
+            return new long[]{0, 0};
+        }
+        long[] id = new long[]{Long.MAX_VALUE, 0};
+        for (Status status : result.getTweets()) {
+            id[0] = Math.min(id[0], status.getId());
+            id[1] = Math.max(id[1], status.getId());
+        }
+        if (id[0] > 0) id[0] -= 1;
+        return id;
+    }
+
+    public static UserInfo toUserInfo(User user, long currentUserId) {
+        Status status = user.getStatus();
+
+        Article article = null;
+        if (status != null) {
+            article = new Article(
+                    ConvertUtils.getUserNObjectPK(currentUserId, status.getId(), false), currentUserId, status.getId(),
+                    user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
+                    toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
+                    toStringHashMap(status.getURLEntities()), user.getId());
+            article.setMention(false);
+        }
+        UserInfo userInfo = new UserInfo(user.getId(), user.getScreenName(), user.getName(), user.getDescription(),
+                user.get400x400ProfileImageURL(), user.getProfileBackgroundImageURL(), user.getProfileBackgroundColor(),
+                user.isFollowRequestSent(), Constants.TWITTER, user.getLocation(), user.getCreatedAt().getTime(),
+                user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount());
+        return userInfo;
     }
 }

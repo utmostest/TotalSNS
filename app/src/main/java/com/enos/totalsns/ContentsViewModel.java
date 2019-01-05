@@ -9,12 +9,11 @@ import android.content.Context;
 import android.widget.Toast;
 
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.util.AppExecutors;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
-
-import twitter4j.User;
 
 public class ContentsViewModel extends ViewModel {
     @SuppressLint("StaticFieldLeak")
@@ -31,7 +30,7 @@ public class ContentsViewModel extends ViewModel {
         isBackPressed = new MutableLiveData<>();
         isBackPressed.setValue(false);
         isShouldQuit.addSource(isBackPressed, (isPressed) -> {
-            if (isPressed) setFalseAfterDelay();
+            if (isPressed != null && isPressed) setFalseAfterDelay();
         });
     }
 
@@ -39,7 +38,7 @@ public class ContentsViewModel extends ViewModel {
         mRepository.signOut();
     }
 
-    public LiveData<User> getLoggedInUser() {
+    public LiveData<UserInfo> getLoggedInUser() {
         return mRepository.getLoggedInUser();
     }
 
@@ -48,7 +47,7 @@ public class ContentsViewModel extends ViewModel {
     }
 
     public void onBackPressed() {
-        if (isBackPressed.getValue()) {
+        if (isBackPressed.getValue() != null && isBackPressed.getValue()) {
             isShouldQuit.postValue(true);
         } else {
             Toast.makeText(
@@ -77,5 +76,16 @@ public class ContentsViewModel extends ViewModel {
 
     public SingleLiveEvent<String> getSearchQuery() {
         return mRepository.getSearchQuery();
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        isShouldQuit.postValue(null);
+        mRepository.getSearchQuery().postValue(null);
     }
 }

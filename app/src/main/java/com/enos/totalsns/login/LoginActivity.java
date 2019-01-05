@@ -7,13 +7,12 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.webkit.WebSettings;
-import android.widget.Toast;
 
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.databinding.ActivityLoginBinding;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -44,7 +43,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent data = getIntent();
         if (data != null) {
             int snsType = data.getIntExtra(SNS_TYPE_KEY, -1);
-            SingletonToast.getInstance().show("SNS Type : " + snsType, Toast.LENGTH_SHORT);
+            SingletonToast.getInstance().log("SNS Type : " + snsType);
         }
 
         setupUI();
@@ -72,6 +71,8 @@ public class LoginActivity extends AppCompatActivity {
     private void startLogin() {
         viewModel.signInFirstStep();
         viewModel.getLoginResult().observe(this, result -> {
+            if (result == null) return;
+
             switch (result.getLoginStep()) {
                 case LoginResult.STEP1_INIT:
                     if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
@@ -94,12 +95,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginCanceled(String message) {
-        SingletonToast.getInstance().show(message, Toast.LENGTH_SHORT);
+        SingletonToast.getInstance().log(message);
         viewModel.signInFirstStep();
     }
 
     private void loginFailed(String message) {
-        SingletonToast.getInstance().show(message, Toast.LENGTH_SHORT);
+        SingletonToast.getInstance().log(message);
         viewModel.signOut();
         viewModel.signInFirstStep();
     }

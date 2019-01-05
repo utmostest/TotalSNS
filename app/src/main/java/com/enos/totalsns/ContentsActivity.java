@@ -6,6 +6,7 @@ import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -15,53 +16,56 @@ import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.graphics.Palette;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
+import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.follow.FollowListActivity;
+import com.enos.totalsns.follow.FollowListFragment;
+import com.enos.totalsns.follow.OnFollowListener;
 import com.enos.totalsns.mention.MentionListFragment;
+import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
-import com.enos.totalsns.message.list.OnMessageClickListener;
+import com.enos.totalsns.message.send.MessageSendActivity;
+import com.enos.totalsns.nearby.NearbyArticleActivity;
 import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
 import com.enos.totalsns.search.SearchListFragment;
+import com.enos.totalsns.settings.SettingsActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.ColorUtils;
 import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentsActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnUserClickListener, OnMessageClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener, OnUserClickListener, OnMessageClickListener, OnFollowListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
@@ -130,7 +134,7 @@ public class ContentsActivity extends AppCompatActivity
                 if (query != null && query.length() > 0) {
                     viewModel.getSearchQuery().postValue(query);
                 } else {
-                    SingletonToast.getInstance().show("검색어를 입력하세요");
+                    SingletonToast.getInstance().log("검색어를 입력하세요");
                 }
                 return false;
             }
@@ -192,35 +196,28 @@ public class ContentsActivity extends AppCompatActivity
             if (user == null) return;
 
             headerEmail.setText(user.getEmail());
-            headerName.setText(user.getName());
-            followerNum.setText(String.valueOf(user.getFollowersCount()));
-            followingNum.setText(String.valueOf(user.getFriendsCount()));
+            headerName.setText(user.getUserName());
+            followerNum.setText(String.valueOf(user.getFollowerCount()));
+            followingNum.setText(String.valueOf(user.getFollowingCount()));
 
-            Glide.with(this)
-                    .load(user.get400x400ProfileImageURL())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(headerProfile);
-            String profileBackImg = user.getProfileBackgroundImageURL();
+            followingLabel.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), false);
+            });
+            followingNum.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), false);
+            });
+            followerLabel.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), true);
+            });
+            followerNum.setOnClickListener(v -> {
+                startFollowActivity(user.getLongUserId(), true);
+            });
+
+            GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
+            String profileBackImg = user.getProfileBackImg();
             if (ConvertUtils.isStringValid(profileBackImg)) {
-                Glide.with(this)
-                        .asBitmap()
-                        .load(profileBackImg)
-                        .apply(
-                                new RequestOptions()
-                                        .placeholder(R.drawable.side_nav_bar)
-                                        .dontTransform()
-                                        .centerCrop()
-                        )
-                        .listener(new RequestListener<Bitmap>() {
+                GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
+                        new RequestListener<Bitmap>() {
                             @Override
                             public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
                                 return false;
@@ -229,29 +226,29 @@ public class ContentsActivity extends AppCompatActivity
                             @Override
                             public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                                 if (resource != null) {
-                                    Palette p = Palette.from(resource).generate();
-                                    List<Palette.Swatch> swatches = p.getSwatches();
-                                    if (swatches != null && swatches.size() > 0) {
-                                        Palette.Swatch s = swatches.get(0);
-                                        headerEmail.setTextColor(s.getTitleTextColor());
-                                        headerName.setTextColor(s.getTitleTextColor());
-                                        followerNum.setTextColor(s.getBodyTextColor());
-                                        followingNum.setTextColor(s.getBodyTextColor());
-                                        followerLabel.setTextColor(s.getBodyTextColor());
-                                        followingLabel.setTextColor(s.getBodyTextColor());
-                                    }
+                                    setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
                                 }
                                 return false;
                             }
-                        })
-                        .into(headerBackground);
-            } else if (ConvertUtils.isStringValid(user.getProfileBackgroundColor())) {
+                        });
+            } else if (ConvertUtils.isStringValid(user.getProfileBackColor())) {
                 headerBackground.setImageDrawable(null);
-                headerBackground.setBackgroundColor(Color.parseColor("#" + user.getProfileBackgroundColor()));
+                int backGround = Color.parseColor("#" + user.getProfileBackColor());
+                headerBackground.setBackgroundColor(backGround);
+                int textColor = ColorUtils.getComplimentColor(backGround);
+                setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
             } else {
                 headerBackground.setImageResource(R.drawable.side_nav_bar);
             }
         });
+    }
+
+    private void setTextColor(int color, TextView... textViews) {
+        if (textViews != null) {
+            for (TextView tv : textViews) {
+                tv.setTextColor(color);
+            }
+        }
     }
 
     private void initBottomNavigation() {
@@ -264,7 +261,7 @@ public class ContentsActivity extends AppCompatActivity
 
     private void initObserver() {
         viewModel.isSignOutFinished().observe(this, (isFinished) -> {
-            if (isFinished) {
+            if (isFinished != null && isFinished) {
                 if (mSignOutOnce.compareAndSet(false, true)) {
                     finish();
                     startActivity(new Intent(this, AccountsActivity.class));
@@ -272,7 +269,7 @@ public class ContentsActivity extends AppCompatActivity
             }
         });
         viewModel.sholudQuit().observe(this, (shouldQuit) -> {
-            if (shouldQuit) {
+            if (shouldQuit != null && shouldQuit) {
                 if (mQuitOnce.compareAndSet(false, true)) {
                     finish();
                 }
@@ -324,9 +321,31 @@ public class ContentsActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private void startDirectMessageSendActivity() {
+        Intent intent = new Intent(this, MessageSendActivity.class);
+        startActivity(intent);
+    }
+
     private void startProfileActivity(long userId) {
         Intent intent = new Intent(this, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_ID, userId);
+        startActivity(intent);
+    }
+
+    private void startFollowActivity(long userId, boolean isFollower) {
+        QueryFollow queryFollow = new QueryFollow(QueryFollow.FIRST, userId, -1, isFollower);
+        Intent intent = new Intent(this, FollowListActivity.class);
+        intent.putExtra(FollowListFragment.ARG_QUERY_FOLLOW, queryFollow);
+        startActivity(intent);
+    }
+
+    private void startNearByArticleActivity() {
+        Intent intent = new Intent(this, NearbyArticleActivity.class);
+        startActivity(intent);
+    }
+
+    private void startSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
         startActivity(intent);
     }
 
@@ -392,9 +411,9 @@ public class ContentsActivity extends AppCompatActivity
         } else if (id == R.id.nav_dr_edit) {
 
         } else if (id == R.id.nav_dr_nearby) {
-
+            startNearByArticleActivity();
         } else if (id == R.id.nav_dr_setting) {
-
+            startSettingsActivity();
         } else if (id == R.id.nav_dr_sign_out) {
             signOut();
         }
@@ -433,11 +452,51 @@ public class ContentsActivity extends AppCompatActivity
         }
 
         if (menuSelected && clazz != null) {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.timeline_frag_container);
+
+            if (currentFragment != null) {
+                String current = currentFragment.getClass().getSimpleName();
+                boolean isCurrentDm = current.equals(MessageListFragment.class.getSimpleName());
+                boolean isRecentDm = clazz.getSimpleName().equals(MessageListFragment.class.getSimpleName());
+                if ((isCurrentDm || isRecentDm) && !clazz.getSimpleName().equals(current)) {
+                    hideFabDelayedShow();
+                }
+            }
             changeFragment(clazz);
         }
 
         return menuSelected;
     };
+
+    private void hideFabDelayedShow() {
+        hideFab();
+        handler.removeCallbacks(mRunnable);
+        handler.postDelayed(mRunnable, Constants.CROSS_FADE_MILLI);
+    }
+
+    private final Handler handler = new Handler();
+
+    private Runnable mRunnable = () -> runOnUiThread(this::setIconAndShowFab);
+
+    private void hideFab() {
+        mDataBinding.appBar.fab.hide();
+    }
+
+    private void setIconAndShowFab() {
+        Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.timeline_frag_container);
+        int resource = R.drawable.ic_add_white_24dp;
+        if (currentFragment != null) {
+            String current = currentFragment.getClass().getSimpleName();
+            if (current.equals(MessageListFragment.class.getSimpleName())) {
+                resource = R.drawable.ic_chat_white_24dp;
+                mDataBinding.appBar.fab.setOnClickListener(view -> startDirectMessageSendActivity());
+            } else {
+                mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+            }
+        }
+        mDataBinding.appBar.fab.setImageResource(resource);
+        mDataBinding.appBar.fab.show();
+    }
 
     @Override
     public void onArticleClicked(Article mItem, int position) {
@@ -457,13 +516,23 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
+    public void onMessageProfileClicked(long senderTableId) {
+        startProfileActivity(senderTableId);
+    }
+
+    @Override
     public void onUserItemClicked(UserInfo item) {
         startProfileActivity(item.getLongUserId());
     }
 
     @Override
     public void onFollowButtonClicked(UserInfo info) {
-        SingletonToast.getInstance().show("onFollowButtonClicked",
-                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage(), Toast.LENGTH_SHORT);
+        SingletonToast.getInstance().log("onFollowButtonClicked",
+                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage());
+    }
+
+    @Override
+    public void onFollowClicked(UserInfo info, boolean isFollower) {
+        startFollowActivity(info.getLongUserId(), isFollower);
     }
 }

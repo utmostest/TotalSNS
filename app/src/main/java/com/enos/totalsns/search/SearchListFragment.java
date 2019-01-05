@@ -74,42 +74,35 @@ public class SearchListFragment extends Fragment {
     private void initObserver() {
         mViewModel.getSearchQuery().observe(this, (query) -> {
             if (query != null && query.length() > 0) {
-                ((TimelineAdapter) mDataBinding.searchArticleRv.getAdapter()).swapTimelineList(null);
-                ((UserAdapter) mDataBinding.searchRv.getAdapter()).swapUserList(null);
+                ((SearchAdapter) mDataBinding.searchArticleRv.getAdapter()).swapUserList(null);
                 mViewModel.fetchSearch(query);
             }
         });
-        mViewModel.getSearchUserList().observe(this, (list) -> {
-            UserAdapter adapter = new UserAdapter(list, mListener);
-            mDataBinding.searchRv.setAdapter(adapter);
+        mViewModel.getSearchUserList().observe(this, list -> {
+            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            adapter.swapUserList(list);
         });
         mViewModel.getSearchList().observe(this, (list) -> {
-            TimelineAdapter adapter = new TimelineAdapter(list, mArticleListener);
-            mDataBinding.searchArticleRv.setAdapter(adapter);
+            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            adapter.swapTimelineList(list);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
+            if (refresh == null) return;
             mDataBinding.swipeContainer.setRefreshing(refresh);
-            if (!refresh) mDataBinding.swipeContainer.setEnabled(false);
         });
     }
 
     private void initView() {
         if (mDataBinding == null) return;
 
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        mDataBinding.searchRv.setLayoutManager(manager);
-        UserAdapter adapter = new UserAdapter(mViewModel.getSearchUserList().getValue(), mListener);
-        mDataBinding.searchRv.setAdapter(adapter);
-
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-        managerVertical.setAutoMeasureEnabled(true);
-        TimelineAdapter timelineAdapter = new TimelineAdapter(mViewModel.getSearchList().getValue(), mArticleListener);
+        SearchAdapter searchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(), mListener, mArticleListener);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-                manager.getOrientation());
+                managerVertical.getOrientation());
+        searchAdapter.setEnableHeader(true, true, null);
         mDataBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
-        mDataBinding.searchArticleRv.setAdapter(timelineAdapter);
+        mDataBinding.searchArticleRv.setAdapter(searchAdapter);
     }
 
     @Override

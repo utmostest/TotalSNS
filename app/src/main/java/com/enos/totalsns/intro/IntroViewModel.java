@@ -28,4 +28,14 @@ public class IntroViewModel extends ViewModel {
         mRepository.signInTwitterWithSaved(false);
         return loginResultMutableLiveData;
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        loginResultMutableLiveData.postValue(null);
+    }
 }

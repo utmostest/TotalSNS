@@ -15,6 +15,7 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
 import com.enos.totalsns.databinding.ItemAccountFooterBinding;
+import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
 
@@ -188,19 +189,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public void bind() {
             binding.accUserId.setText(mItem.getScreenName());
             binding.accUserName.setText(mItem.getName());
-            Glide.with(binding.getRoot().getContext())
-                    .load(mItem.getProfileImage())
-                    .apply(
-                            new RequestOptions()
-                                    .placeholder(R.drawable.ic_account_circle_black_48dp)
-                                    .dontTransform()
-                                    .optionalCircleCrop()
-                    )
-                    .transition(
-                            new DrawableTransitionOptions()
-                                    .crossFade(Constants.CROSS_FADE_MILLI)
-                    )
-                    .into(binding.accProfileImg);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(),mItem.getProfileImage(),binding.accProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {

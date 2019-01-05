@@ -34,4 +34,14 @@ public class LoginViewModel extends ViewModel {
     public void signInTwitterWithOauthToken(OauthToken oauthToken, boolean b) {
         mRepository.signInTwitterWithOauthToken(oauthToken, b);
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        loginResultMutableLiveData.postValue(null);
+    }
 }

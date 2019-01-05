@@ -5,14 +5,11 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
-import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 
 import java.util.List;
-
-import twitter4j.Paging;
 
 public class MessageListViewModel extends ViewModel {
     private Context mContext;
@@ -45,5 +42,15 @@ public class MessageListViewModel extends ViewModel {
 
     public void fetchDirectMessage() {
         mRepository.fetchDirectMessage(Constants.PAGE_CNT, null);
+    }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        mRepository.getDirectMessage().postValue(null);
     }
 }

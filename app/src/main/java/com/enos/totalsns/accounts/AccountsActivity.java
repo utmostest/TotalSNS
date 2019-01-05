@@ -1,7 +1,6 @@
 package com.enos.totalsns.accounts;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
@@ -12,13 +11,13 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ActivityAccountsBinding;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.login.LoginActivity;
-import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -51,17 +50,16 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         getSupportFragmentManager().beginTransaction().add(R.id.accounts_frag_container, AccountFragment.newInstance(Constants.DEFAULT_SNS)).commit();
     }
 
-    Observer<LoginResult> observer = result -> {
-        if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
-            onLoginSucceed(result.getAccount());
-        } else {
-            onLoginFailed(result.getMessage());
-        }
-    };
-
     private void loginTwitter(Account account) {
         loginResultLiveData = viewModel.getLoginResult(account, true);
-        loginResultLiveData.observe(this, observer);
+        loginResultLiveData.observe(this, result -> {
+            if (result == null) return;
+            if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
+                onLoginSucceed(result.getAccount());
+            } else {
+                onLoginFailed(result.getMessage());
+            }
+        });
     }
 
     private void finishAndStartActivity(Class<?> activity) {

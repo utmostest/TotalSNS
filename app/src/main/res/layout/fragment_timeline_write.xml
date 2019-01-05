@@ -54,7 +54,7 @@
             app:layout_constraintStart_toEndOf="@+id/tl_write_title"
             app:layout_constraintTop_toTopOf="@+id/tl_write_close" />
 
-        <ImageButton
+        <ImageView
             android:id="@+id/tl_write_account"
             android:layout_width="36dp"
             android:layout_height="36dp"

@@ -46,4 +46,14 @@ public class MentionListViewModel extends ViewModel {
     public void fetchMentionForStart() {
         mRepository.fetchMentionForStart(new Paging().count(Constants.PAGE_CNT));
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        mRepository.getMention().postValue(null);
+    }
 }

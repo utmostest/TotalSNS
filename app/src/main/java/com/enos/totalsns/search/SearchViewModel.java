@@ -49,4 +49,15 @@ public class SearchViewModel extends ViewModel {
     public MutableLiveData<List<UserInfo>> getSearchUserList() {
         return mRepository.getSearchUserList();
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        clearViewModel();
+    }
+
+    private void clearViewModel() {
+        mRepository.getSearchList().postValue(null);
+        mRepository.getSearchUserList().postValue(null);
+    }
 }

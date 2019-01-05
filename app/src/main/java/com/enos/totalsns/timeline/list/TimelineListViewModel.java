@@ -45,4 +45,10 @@ public class TimelineListViewModel extends ViewModel {
     public void fetchTimelineForStart() {
         mRepository.fetchTimelineForStart(new Paging().count(Constants.PAGE_CNT));
     }
+
+    @Override
+    protected void onCleared() {
+        super.onCleared();
+        mRepository.getHomeTimeline().postValue(null);
+    }
 }

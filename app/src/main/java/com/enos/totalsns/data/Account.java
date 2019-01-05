@@ -4,8 +4,6 @@ package com.enos.totalsns.data;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-//TODO Article 클래스 등 범용으로 사용할 수 있는 게시물 관련 클래스 추가
-
 @Entity(tableName = "account")
 public class Account {
 
