@@ -22,5 +22,8 @@ public class Constants {
     public static final int CROSS_FADE_MILLI = 500;
     public static final long QUIT_DELAY_MILLI = 3000;
     public static final int USER_LIST_COUNT = 100;
+    public static final double DEFAULT_LONGITUDE = 127.044714;
+    public static final double DEFAULT_LATITUDE = 37.533141;
+    public static final double DEFAULT_RADIUS_KM = 1;
     public static boolean IS_TWITTER_DEBUG = false;
 }

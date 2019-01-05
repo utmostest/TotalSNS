@@ -321,7 +321,7 @@ public class ConvertUtils {
     }
 
     public static long[] getSmallAndLargeId(QueryResult result) {
-        if (result == null || result.getCount() == 0) {
+        if (result == null || result.getTweets().size() == 0) {
             return new long[]{0, 0};
         }
         long[] id = new long[]{Long.MAX_VALUE, 0};

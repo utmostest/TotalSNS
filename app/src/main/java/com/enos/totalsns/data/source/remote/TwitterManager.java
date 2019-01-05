@@ -12,10 +12,13 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
+import twitter4j.GeoLocation;
 import twitter4j.GeoQuery;
 import twitter4j.PagableResponseList;
 import twitter4j.Paging;
@@ -40,11 +43,8 @@ public class TwitterManager {
     private Twitter mTwitter = null;
 
     private MutableLiveData<ArrayList<Article>> homeTimeline;
-
     private MutableLiveData<ArrayList<Message>> directMessage;
-
     private MutableLiveData<ArrayList<Article>> mentionList;
-
     private MutableLiveData<ArrayList<Article>> searchList;
     private MutableLiveData<ArrayList<UserInfo>> searchUserList;
 
@@ -54,7 +54,11 @@ public class TwitterManager {
 
     private QuerySearchArticle mQuery;
 
+    private QueryArticleNearBy mQueryNearBy;
+
     private QuerySearchUser mUserQuery;
+
+    private QueryFollow queryFollow;
 
     private TwitterManager() {
         init();
@@ -63,8 +67,6 @@ public class TwitterManager {
     private long currentUserId = INVALID_ID;
 
     private String mDmCursor = null;
-
-    private QueryFollow queryFollow;
 
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
@@ -90,7 +92,6 @@ public class TwitterManager {
         searchList = new MutableLiveData<ArrayList<Article>>();
         searchUserList = new MutableLiveData<ArrayList<UserInfo>>();
         userProfile = new MutableLiveData<>();
-        queryFollow = new QueryFollow(QueryFollow.FIRST, 0, -1, false);
 
         initSearchVariable();
     }
@@ -243,9 +244,10 @@ public class TwitterManager {
     // Start of search
     private void initSearchVariable() {
         if (mQuery == null) mQuery = new QuerySearchArticle(QuerySearchArticle.FIRST, "");
-        mQuery.setSinceId(0);
-        mQuery.setMaxId(Long.MAX_VALUE);
         if (mUserQuery == null) mUserQuery = new QuerySearchUser(QuerySearchUser.FIRST, "");
+        if (queryFollow == null) queryFollow = new QueryFollow(QueryFollow.FIRST, 0, -1, false);
+        if (mQueryNearBy == null)
+            mQueryNearBy = new QueryArticleNearBy(QueryArticleNearBy.FIRST, Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE);
     }
 
     public QuerySearchArticle getLastQuery() {
@@ -388,6 +390,48 @@ public class TwitterManager {
                 case QuerySearchArticle.RECENT:
                     System.out.println("next result\n" + result.toString());
                     mQuery.setSinceId(Math.max(mQuery.getSinceId(), ids[1]));
+                    break;
+            }
+        }
+        return ConvertUtils.toArticleList(result, getCurrentUserId());
+    }
+
+    public ArrayList<Article> getSearchNearBy(QueryArticleNearBy query) throws TwitterException {
+
+        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        System.out.println(dateString);
+        Query tQuery = new Query("until:" + dateString).count(Constants.PAGE_CNT);
+
+        switch (query.getQueryType()) {
+            case QueryArticleNearBy.FIRST:
+                mQueryNearBy = query;
+                break;
+            case QueryArticleNearBy.PAST:
+                tQuery.setMaxId(mQueryNearBy.getMaxId());
+                break;
+            case QueryArticleNearBy.RECENT:
+                tQuery.setSinceId(mQueryNearBy.getSinceId());
+                break;
+        }
+        GeoLocation geoLocation = new GeoLocation(mQueryNearBy.getLatitude(), mQueryNearBy.getLongitudu());
+        tQuery.setGeoCode(geoLocation, mQueryNearBy.getRadius(), Query.Unit.km);
+
+        QueryResult result = null;
+        result = mTwitter.search(tQuery);
+        if (result != null) {
+            long[] ids = ConvertUtils.getSmallAndLargeId(result);
+
+            System.out.println("PREVIOUS : " + ids[0] + " , NEXT : " + ids[1] + " , size: " + (result.getTweets() != null ? result.getTweets().size() : 0));
+            switch (query.getQueryType()) {
+                case QueryArticleNearBy.FIRST:
+                    mQueryNearBy.setSinceId(ids[1]);
+                    mQueryNearBy.setMaxId(ids[0]);
+                    break;
+                case QueryArticleNearBy.PAST:
+                    mQueryNearBy.setMaxId(Math.min(mQueryNearBy.getMaxId(), ids[0]));
+                    break;
+                case QueryArticleNearBy.RECENT:
+                    mQueryNearBy.setSinceId(Math.max(mQueryNearBy.getSinceId(), ids[1]));
                     break;
             }
         }
