@@ -43,6 +43,7 @@ import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.send.MessageSendActivity;
+import com.enos.totalsns.nearby.NearbyArticleActivity;
 import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnUserClickListener;
@@ -337,6 +338,11 @@ public class ContentsActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    private void startNearByArticleActivity() {
+        Intent intent = new Intent(this, NearbyArticleActivity.class);
+        startActivity(intent);
+    }
+
     private void signOut() {
         viewModel.signOut();
     }
@@ -399,7 +405,7 @@ public class ContentsActivity extends AppCompatActivity
         } else if (id == R.id.nav_dr_edit) {
 
         } else if (id == R.id.nav_dr_nearby) {
-
+            startNearByArticleActivity();
         } else if (id == R.id.nav_dr_setting) {
 
         } else if (id == R.id.nav_dr_sign_out) {

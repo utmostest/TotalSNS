@@ -2,25 +2,8 @@
     <string name="app_name">TotalSNS</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">User Name</string>
-    <string name="nav_header_subtitle">email@user.com</string>
-    <string name="nav_header_desc">Navigation header</string>
-    <string name="action_settings">Settings</string>
-    <string name="title_activity_login">Sign in</string>
+    <string name="title_activity_login">로그인하기</string>
     <string name="title_activity_timeline">게시물 목록</string>
-    <!-- Strings related to login -->
-    <string name="prompt_email">Email</string>
-    <string name="prompt_password">Password (optional)</string>
-    <string name="action_sign_in">Sign in or register</string>
-    <string name="action_sign_in_short">Sign in</string>
-    <string name="error_invalid_email">This email address is invalid</string>
-    <string name="error_invalid_password">This password is too short</string>
-    <string name="error_incorrect_password">This password is incorrect</string>
-    <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
-
     <string name="title_activity_intro">인트로</string>
     <string name="app_name_intro">Total SNS</string>
     <string name="sign_out">로그아웃</string>
@@ -48,14 +31,18 @@
     <string name="title_follower">팔로워</string>
     <string name="title_write_timeline">게시물 작성하기</string>
     <string name="write_hint">작성할 게시물을 입력하세요</string>
+
     <string name="tran_profile_image">profileImage</string>
     <string name="tran_user_name">userName</string>
     <string name="tran_user_id">userId</string>
     <string name="tran_created_at">createdAt</string>
     <string name="tran_message">message</string>
     <string name="tran_image_container">imageContainer</string>
+
     <string name="finish_message">%d초가 지나기 전에 한 번 더 누르시면 종료됩니다.</string>
     <string name="message_write_hint">쪽지 작성하기</string>
     <string name="more_user">유저 더보기</string>
     <string name="title_dm_send">쪽지를 작성할 유저를 검색하세요</string>
+    <string name="nearby_more_search">검색 결과 추가</string>
+    <string name="nearby_new_search">새로운 검색 시작</string>
 </resources>

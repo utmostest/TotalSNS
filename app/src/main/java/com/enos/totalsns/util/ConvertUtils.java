@@ -95,6 +95,10 @@ public class ConvertUtils {
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()), user.getId());
+        if (status.getGeoLocation() != null) {
+            article.setLatitude(status.getGeoLocation().getLatitude());
+            article.setLongitude(status.getGeoLocation().getLongitude());
+        }
         article.setMention(isMentionDb);
         return article;
     }

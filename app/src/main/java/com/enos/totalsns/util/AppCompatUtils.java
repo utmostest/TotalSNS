@@ -1,6 +1,9 @@
 package com.enos.totalsns.util;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.util.Pair;
@@ -83,5 +86,20 @@ public class AppCompatUtils {
 //                    }
             }
         });
+    }
+
+    public static boolean requestPermissionIfNeeded(Activity context, int REQUEST_PERMISSION, String... PERMISSIONS) {
+        boolean permissionNeeded = false;
+        for (String permission : PERMISSIONS) {
+            if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                permissionNeeded = true;
+                break;
+            }
+        }
+        if (permissionNeeded) {
+            ActivityCompat.requestPermissions(context, PERMISSIONS, REQUEST_PERMISSION);
+        }
+
+        return permissionNeeded;
     }
 }

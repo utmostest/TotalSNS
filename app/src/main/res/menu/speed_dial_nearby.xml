@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/sd_nearby_new"
+        android:icon="@drawable/ic_search_white_24dp"
+        android:title="@string/nearby_new_search" />
+    <item
+        android:id="@+id/sd_nearby_more"
+        android:icon="@drawable/ic_add_white_24dp"
+        android:title="@string/nearby_more_search" />
+</menu>

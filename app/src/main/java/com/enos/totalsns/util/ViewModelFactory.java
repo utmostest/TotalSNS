@@ -32,6 +32,7 @@ import com.enos.totalsns.mention.MentionListViewModel;
 import com.enos.totalsns.message.detail.MessageDetailViewModel;
 import com.enos.totalsns.message.list.MessageListViewModel;
 import com.enos.totalsns.message.send.MessageSendViewModel;
+import com.enos.totalsns.nearby.NearbyArticleViewModel;
 import com.enos.totalsns.profile.ProfileViewModel;
 import com.enos.totalsns.search.SearchViewModel;
 import com.enos.totalsns.timeline.detail.TimelineDetailViewModel;
@@ -120,6 +121,9 @@ public class ViewModelFactory extends ViewModelProvider.NewInstanceFactory {
         } else if (modelClass.isAssignableFrom(MessageSendViewModel.class)) {
             //noinspection unchecked
             return (T) new MessageSendViewModel(mContext, totalSnsRepository);
+        } else if (modelClass.isAssignableFrom(NearbyArticleViewModel.class)) {
+            //noinspection unchecked
+            return (T) new NearbyArticleViewModel(mContext, totalSnsRepository);
         }
         throw new IllegalArgumentException("Unknown ViewModel class: " + modelClass.getName());
     }

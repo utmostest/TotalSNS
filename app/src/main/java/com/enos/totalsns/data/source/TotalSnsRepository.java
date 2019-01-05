@@ -11,6 +11,7 @@ import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.local.TotalSnsDatabase;
 import com.enos.totalsns.data.source.remote.OauthToken;
+import com.enos.totalsns.data.source.remote.QueryArticleNearBy;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchArticle;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
@@ -77,6 +78,7 @@ public class TotalSnsRepository {
     private MutableLiveData<List<UserInfo>> followList;
 
     private MutableLiveData<UserInfo> loggedInUser;
+    private MutableLiveData<List<Article>> nearbyArticle;
 
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
@@ -97,6 +99,7 @@ public class TotalSnsRepository {
         mSearchQuery = new SingleLiveEvent<>();
         followList = new MutableLiveData<>();
         loggedInUser = new MutableLiveData<>();
+        nearbyArticle = new MutableLiveData<>();
 
         mObservableAccounts.addSource(mDatabase.accountDao().loadAccounts(),
                 accounts -> mObservableAccounts.postValue(accounts));
@@ -704,6 +707,24 @@ public class TotalSnsRepository {
             }
             isSnsNetworkOnUse.postValue(false);
             followList.postValue(followerList);
+        });
+    }
+
+    public MutableLiveData<List<Article>> getNearbySearchList() {
+        return nearbyArticle;
+    }
+
+    public void fetchNearbySearch(QueryArticleNearBy query) {
+        isSnsNetworkOnUse.postValue(true);
+        mAppExecutors.networkIO().execute(() -> {
+            ArrayList<Article> nearbyList = null;
+            try {
+                nearbyList = mTwitterManager.getSearchNearBy(query);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+            isSnsNetworkOnUse.postValue(false);
+            nearbyArticle.postValue(nearbyList);
         });
     }
 }

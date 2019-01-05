@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.RequestOptions;
+import com.bumptech.glide.request.target.SimpleTarget;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Constants;
 
@@ -44,6 +45,21 @@ public class GlideUtils {
                 )
                 .listener(callback)
                 .into(imageView);
+    }
+
+    public static void loadProfileImageWithTarget(Context context, String image, int imageSize, SimpleTarget<Bitmap> target) {
+        Glide.with(context)
+                .asBitmap()
+                .load(image)
+                .apply(
+                        new RequestOptions()
+                                .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                .dontTransform()
+                                .override(imageSize)
+                                .centerCrop()
+                                .circleCrop()
+                )
+                .into(target);
     }
 
     public static void loadBackImage(Context context, String imageUrl, ImageView imageView) {
