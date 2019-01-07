@@ -5,9 +5,9 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.data.source.remote.QueryMessage;
 
 import java.util.List;
 
@@ -29,11 +29,11 @@ public class MessageListViewModel extends ViewModel {
     }
 
     public void fetchRecentDirectMessage() {
-        mRepository.fetchRecentDirectMessage();
+        mRepository.fetchDirectMessage(new QueryMessage(QueryMessage.FIRST));
     }
 
     public void fetchPastDirectMessage() {
-        mRepository.fetchPastDirectMessage();
+        mRepository.fetchDirectMessage(new QueryMessage(QueryMessage.NEXT));
     }
 
     public LiveData<List<Message>> getMessageList() {
@@ -41,7 +41,7 @@ public class MessageListViewModel extends ViewModel {
     }
 
     public void fetchDirectMessage() {
-        mRepository.fetchDirectMessage(Constants.PAGE_CNT, null);
+        mRepository.fetchDirectMessage(new QueryMessage(QueryMessage.FIRST));
     }
 
     @Override

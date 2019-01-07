@@ -1,7 +1,10 @@
 package com.enos.totalsns.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 // 타인의 개인정보라 룸에 저장하지 않음
-public class UserInfo {
+public class UserInfo implements Parcelable {
 
     private long longUserId;
     private String userId;
@@ -41,6 +44,36 @@ public class UserInfo {
         this.followerCount = followerCount;
         this.followingCount = followingCount;
     }
+
+    protected UserInfo(Parcel in) {
+        longUserId = in.readLong();
+        userId = in.readString();
+        userName = in.readString();
+        message = in.readString();
+        profileImg = in.readString();
+        profileBackImg = in.readString();
+        profileBackColor = in.readString();
+        snsType = in.readInt();
+        isFollowed = in.readByte() != 0;
+        location = in.readString();
+        createdAt = in.readLong();
+        email = in.readString();
+        lastArticle = in.readParcelable(Article.class.getClassLoader());
+        followerCount = in.readInt();
+        followingCount = in.readInt();
+    }
+
+    public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
+        @Override
+        public UserInfo createFromParcel(Parcel in) {
+            return new UserInfo(in);
+        }
+
+        @Override
+        public UserInfo[] newArray(int size) {
+            return new UserInfo[size];
+        }
+    };
 
     public String getUserId() {
         return userId;
@@ -165,5 +198,29 @@ public class UserInfo {
 
     public void setFollowingCount(int followingCount) {
         this.followingCount = followingCount;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeLong(longUserId);
+        dest.writeString(userId);
+        dest.writeString(userName);
+        dest.writeString(message);
+        dest.writeString(profileImg);
+        dest.writeString(profileBackImg);
+        dest.writeString(profileBackColor);
+        dest.writeInt(snsType);
+        dest.writeByte((byte) (isFollowed ? 1 : 0));
+        dest.writeString(location);
+        dest.writeLong(createdAt);
+        dest.writeString(email);
+        dest.writeParcelable(lastArticle, flags);
+        dest.writeInt(followerCount);
+        dest.writeInt(followingCount);
     }
 }

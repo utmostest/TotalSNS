@@ -1,4 +1,4 @@
-package com.enos.totalsns.follow;
+package com.enos.totalsns.userlist;
 
 import android.databinding.DataBindingUtil;
 import android.support.v7.util.DiffUtil;
@@ -8,25 +8,24 @@ import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
-import com.enos.totalsns.databinding.ItemFollowBinding;
-import com.enos.totalsns.search.OnUserClickListener;
+import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
 
-public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.ViewHolder> {
+public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<UserInfo> mValues;
     private final OnUserClickListener mListener;
 
-    public FollowAdapter(List<UserInfo> items, OnUserClickListener listener) {
+    public UserAdapter(List<UserInfo> items, OnUserClickListener listener) {
         mValues = items;
         mListener = listener;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ItemFollowBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_follow, parent, false);
+        ItemUserBinding binding = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()), R.layout.item_user, parent, false);
         return new ViewHolder(binding);
     }
 
@@ -42,8 +41,12 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.ViewHolder
         return mValues == null ? 0 : mValues.size();
     }
 
+    public List<UserInfo> getUserList() {
+        return mValues;
+    }
+
     public void swapUserList(List<UserInfo> list) {
-        if (mValues == null) {
+        if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();
         } else {
@@ -90,10 +93,10 @@ public class FollowAdapter extends RecyclerView.Adapter<FollowAdapter.ViewHolder
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        public final ItemFollowBinding binding;
+        public final ItemUserBinding binding;
         private UserInfo mItem;
 
-        ViewHolder(ItemFollowBinding view) {
+        ViewHolder(ItemUserBinding view) {
             super(view.getRoot());
             binding = view;
         }

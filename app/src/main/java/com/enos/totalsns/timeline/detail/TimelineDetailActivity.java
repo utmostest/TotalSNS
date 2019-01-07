@@ -57,7 +57,7 @@ public class TimelineDetailActivity extends AppCompatActivity {
         if (id == android.R.id.home) {
 
 //            navigateUpTo(new Intent(this, ContentsActivity.class));
-            finish();
+            supportFinishAfterTransition();
             return true;
         }
         return super.onOptionsItemSelected(item);

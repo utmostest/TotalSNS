@@ -12,6 +12,7 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingletonToast;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,13 +32,13 @@ import twitter4j.StatusUpdate;
 import twitter4j.Twitter;
 import twitter4j.TwitterException;
 import twitter4j.TwitterFactory;
+import twitter4j.UploadedMedia;
 import twitter4j.User;
 import twitter4j.auth.AccessToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 public class TwitterManager {
 
-    public static final long INVALID_ID = -1;
     private static TwitterManager mTwitterManager = null;
 
     private Twitter mTwitter = null;
@@ -45,33 +46,24 @@ public class TwitterManager {
     private MutableLiveData<ArrayList<Article>> homeTimeline;
     private MutableLiveData<ArrayList<Message>> directMessage;
     private MutableLiveData<ArrayList<Article>> mentionList;
-    private MutableLiveData<ArrayList<Article>> searchList;
-    private MutableLiveData<ArrayList<UserInfo>> searchUserList;
 
-    private UserInfo loggedInUser;
+    private UserInfo loggedInUser = null;
 
-    private MutableLiveData<UserInfo> userProfile;
-
-    private QuerySearchArticle mQuery;
-
-    private QueryArticleNearBy mQueryNearBy;
-
-    private QuerySearchUser mUserQuery;
-
+    private QuerySearchArticle querySearchArticle;
+    private QueryArticleNearBy queryArticleNearBy;
+    private QuerySearchUser querySearchUser;
     private QueryFollow queryFollow;
+    private QueryMessage queryMessage;
+    private QueryTimeline queryTimeline;
+    private QueryUserTimeline queryUserTimeline;
 
     private TwitterManager() {
         init();
     }
 
-    private long currentUserId = INVALID_ID;
-
-    private String mDmCursor = null;
-
     public static TwitterManager getInstance() {
         if (mTwitterManager == null) {
             mTwitterManager = new TwitterManager();
-//            Log.i("tweet", "tweet constructor called");
         }
         return mTwitterManager;
     }
@@ -89,15 +81,25 @@ public class TwitterManager {
         homeTimeline = new MutableLiveData<ArrayList<Article>>();
         directMessage = new MutableLiveData<ArrayList<Message>>();
         mentionList = new MutableLiveData<ArrayList<Article>>();
-        searchList = new MutableLiveData<ArrayList<Article>>();
-        searchUserList = new MutableLiveData<ArrayList<UserInfo>>();
-        userProfile = new MutableLiveData<>();
 
         initSearchVariable();
     }
 
+    private void initSearchVariable() {
+        if (querySearchArticle == null)
+            querySearchArticle = new QuerySearchArticle(QuerySearchArticle.FIRST, "");
+        if (querySearchUser == null)
+            querySearchUser = new QuerySearchUser(QuerySearchUser.FIRST, "");
+        if (queryFollow == null) queryFollow = new QueryFollow(QueryFollow.FIRST, 0, -1, false);
+        if (queryArticleNearBy == null)
+            queryArticleNearBy = new QueryArticleNearBy(QueryArticleNearBy.FIRST, Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE);
+        if (queryMessage == null) queryMessage = new QueryMessage(QueryMessage.FIRST, null);
+        if (queryTimeline == null) queryTimeline = new QueryTimeline(QueryTimeline.FIRST);
+        if (queryUserTimeline == null)
+            queryUserTimeline = new QueryUserTimeline(QueryUserTimeline.FIRST, -1);
+    }
+
     public String getAuthorizationUrl() throws TwitterException {
-        if (mTwitter == null) return null;
         return mTwitter.getOAuthRequestToken().getAuthorizationURL();
     }
 
@@ -121,7 +123,6 @@ public class TwitterManager {
 
         User credential = mTwitter.verifyCredentials();
         long userId = credential.getId();
-        currentUserId = userId;
         String profileImg = credential.get400x400ProfileImageURL();
         String screenName = credential.getScreenName();
         String name = credential.getName();
@@ -131,23 +132,22 @@ public class TwitterManager {
         return new Account(userId, screenName, token.getToken(), token.getSecret(), profileImg, name, Constants.TWITTER, true);
     }
 
-    public Status updateStatus(String message) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.updateStatus(message);
-    }
-
-    public Status updateStatus(StatusUpdate status) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.updateStatus(status);
-    }
-
-    // Start of home timeline
-    public ResponseList<Status> getTimeLine(Paging paging) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.getHomeTimeline(paging);
+    public Article updateStatus(QueryUploadArticle query) throws TwitterException {
+        StatusUpdate status = new StatusUpdate(query.getMessage());
+        if (query.getGeoLocation() != null)
+            status.setLocation(new GeoLocation(query.getGeoLocation().latitude, query.getGeoLocation().longitude));
+        if (query.getUploadingFiles() != null) {
+            long[] mediaIds = new long[query.getUploadingFiles().length];
+            int position = 0;
+            for (File file : query.getUploadingFiles()) {
+                UploadedMedia media = mTwitter.uploadMedia(file);
+                mediaIds[position] = media.getMediaId();
+                position++;
+            }
+            status.setMediaIds(mediaIds);
+        }
+        Article article = ConvertUtils.toArticle(mTwitter.updateStatus(status), loggedInUser.getLongUserId());
+        return article;
     }
 
     public LiveData<ArrayList<Article>> getHomeTimeline() {
@@ -156,25 +156,14 @@ public class TwitterManager {
 
     public void fetchTimeline(Paging paging) throws TwitterException {
 
-        ResponseList<Status> list = getTimeLine(paging);
+        ResponseList<Status> list = mTwitter.getHomeTimeline(paging);
         ArrayList<Article> articleList = new ArrayList<Article>();
-        long currentUserId = getCurrentUserId();
-        int num = 0;
+        long currentUserId = getLoggedInUser().getLongUserId();
         for (Status status : list) {
-            num++;
-            SingletonToast.getInstance().log("timeline", status.toString());
             Article article = ConvertUtils.toArticle(status, currentUserId);
             articleList.add(article);
         }
         homeTimeline.postValue(articleList);
-    }
-    // End of home timeline
-
-    // Start of mention timeline
-    public ResponseList<Status> getMention(Paging paging) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.getMentionsTimeline(paging);
     }
 
     public LiveData<ArrayList<Article>> getMention() {
@@ -183,127 +172,55 @@ public class TwitterManager {
 
     public void fetchMention(Paging paging) throws TwitterException {
 
-        ResponseList<Status> list = getMention(paging);
+        ResponseList<Status> list = mTwitter.getMentionsTimeline(paging);
         SingletonToast.getInstance().log("mention", list + "");
         ArrayList<Article> articleList = new ArrayList<Article>();
-        long currentUserId = getCurrentUserId();
-        int num = 0;
+        long currentUserId = getLoggedInUser().getLongUserId();
         for (Status status : list) {
-            num++;
-//            Log.i("timeline", num + ":" + status.getText());
-            SingletonToast.getInstance().log("mention", status + "");
             Article mention = ConvertUtils.toMention(status, currentUserId);
             articleList.add(mention);
         }
         mentionList.postValue(articleList);
-    }
-    // End of mention timeline
-
-    // Start of User timeline
-    public ResponseList<Status> getUserTimeline(long userId, Paging paging) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.getUserTimeline(userId, paging);
-    }
-    // End of User timeline
-
-    // Start of Direct Message
-    public String getDmCursor() {
-        return mDmCursor;
     }
 
     public LiveData<ArrayList<Message>> getDirectMessage() {
         return directMessage;
     }
 
-    public void fetchDirectMessage(int count, String cursor) throws TwitterException {
+    public void fetchDirectMessage(QueryMessage message) throws TwitterException {
+        switch (message.getQueryType()) {
+            case QueryMessage.FIRST:
+                queryMessage = message;
+                break;
+            case QueryMessage.NEXT:
+                message.setCursor(queryMessage.getCursor());
+                break;
+        }
+        String cursor = message.getCursor();
 
-        DirectMessageList list = getDirectMessage(count, cursor);
+        DirectMessageList list = (cursor == null || cursor.length() <= 0) ? mTwitter.getDirectMessages(Constants.PAGE_CNT) :
+                mTwitter.getDirectMessages(Constants.PAGE_CNT, cursor);
 
-        mDmCursor = list.getNextCursor();
+        queryMessage.setCursor(list.getNextCursor());
 
-        long[] userSet = ConvertUtils.getUserIdSet(list, getCurrentUserId());
+        long[] userSet = ConvertUtils.getUserIdSet(list, getLoggedInUser().getLongUserId());
 
         ResponseList<User> userList = mTwitter.lookupUsers(userSet);
 
-        directMessage.postValue(ConvertUtils.toMessageList(list, getCurrentUserId(), ConvertUtils.getUserIdMap(userList)));
+        directMessage.postValue(
+                ConvertUtils.toMessageList(list, getLoggedInUser().getLongUserId(),
+                        ConvertUtils.getUserIdMap(userList, getLoggedInUser().getLongUserId())));
     }
 
-    public DirectMessageList getDirectMessage(int count, String cursor) throws TwitterException {
-        if (mTwitter == null) return null;
-        return (cursor == null || cursor.length() <= 0) ? mTwitter.getDirectMessages(count) :
-                mTwitter.getDirectMessages(count, cursor);
-    }
-    // End of Direct Message
-
-    public DirectMessage sendDirectMessage(long userId, String message, long mediaId) throws TwitterException {
-        if (mTwitter == null) return null;
-        return mediaId <= 0 ? mTwitter.sendDirectMessage(userId, message) : mTwitter.sendDirectMessage(userId, message, mediaId);
-    }
-
-    // Start of search
-    private void initSearchVariable() {
-        if (mQuery == null) mQuery = new QuerySearchArticle(QuerySearchArticle.FIRST, "");
-        if (mUserQuery == null) mUserQuery = new QuerySearchUser(QuerySearchUser.FIRST, "");
-        if (queryFollow == null) queryFollow = new QueryFollow(QueryFollow.FIRST, 0, -1, false);
-        if (mQueryNearBy == null)
-            mQueryNearBy = new QueryArticleNearBy(QueryArticleNearBy.FIRST, Constants.DEFAULT_LATITUDE, Constants.DEFAULT_LONGITUDE);
-    }
-
-    public QuerySearchArticle getLastQuery() {
-        return mQuery;
-    }
-
-    public LiveData<ArrayList<Article>> getSearchList() {
-        return searchList;
-    }
-
-    public void fetchSearch(Query query) throws TwitterException {
-        if (!query.getQuery().equals(mQuery.getQuery())) {
-            mQuery.setQuery(query.getQuery());
-            mQuery.setSinceId(query.getSinceId());
-            mQuery.setMaxId(query.getMaxId());
+    public Message sendDirectMessage(QueryUploadMessage query, Message user) throws TwitterException {
+        long mediaId = 0;
+        if (query.getUploadingFile() != null && query.getUploadingFile().length() > 0) {
+            UploadedMedia media = mTwitter.uploadMedia(query.getUploadingFile());
+            mediaId = media.getMediaId();
         }
-        QueryResult list = search(query);
-        long max = Math.min(list.getMaxId(), mQuery.getMaxId() > 0 ? mQuery.getMaxId() : list.getMaxId());
-        long since = Math.max(list.getSinceId(), mQuery.getSinceId());
-        mQuery.setMaxId(max);
-        mQuery.setSinceId(since);
-        searchList.postValue(ConvertUtils.toArticleList(list, getCurrentUserId()));
-    }
-
-    public QueryResult search(Query query) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.search(query);
-    }
-
-    public LiveData<ArrayList<UserInfo>> getSearchUserList() {
-        return searchUserList;
-    }
-
-    public void fetchSearchUser(QuerySearchUser query) throws TwitterException {
-        if (!query.getQuery().equals(mUserQuery.getQuery())) {
-            mUserQuery.setQuery(query.getQuery());
-            mUserQuery.setMaxPage(0);
-        }
-        ResponseList<User> list = searchUser(query.getQuery(), query.getPage());
-        int maxPage = Math.max(query.getPage(), mUserQuery.getMaxPage());
-        mUserQuery.setMaxPage(maxPage);
-        searchUserList.postValue(ConvertUtils.toUserInfoList(list, getCurrentUserId()));
-    }
-
-    public ResponseList<User> searchUser(String query, int page) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.searchUsers(query, page);
-    }
-    // End of search
-
-    public ResponseList<Place> search(GeoQuery geoQuery) throws TwitterException {
-        if (mTwitter == null) return null;
-
-        return mTwitter.searchPlaces(geoQuery);
+        DirectMessage dm = mediaId <= 0 ? mTwitter.sendDirectMessage(query.getUserId(), query.getMessage()) :
+                mTwitter.sendDirectMessage(query.getUserId(), query.getMessage(), mediaId);
+        return ConvertUtils.toMessage(dm, getLoggedInUser().getLongUserId(), user);
     }
 
     public void signOut() {
@@ -313,63 +230,60 @@ public class TwitterManager {
     public UserInfo getLoggedInUser() throws TwitterException {
         if (loggedInUser == null) {
             User user = mTwitter.verifyCredentials();
-            currentUserId = user.getId();
-            loggedInUser = ConvertUtils.toUserInfo(user, currentUserId);
+            loggedInUser = ConvertUtils.toUserInfo(user, user.getId());
         }
         return loggedInUser;
     }
 
-    public long getCurrentUserId() throws RuntimeException {
-        if (currentUserId <= INVALID_ID) throw new RuntimeException("twitter id is invalid");
-        return currentUserId;
-    }
-
-    public MutableLiveData<UserInfo> getUserProfile() {
-        return userProfile;
-    }
-
-    public void fetchUser(long userId) throws TwitterException {
+    public UserInfo getUserInfo(long userId) throws TwitterException {
         ResponseList<User> users = mTwitter.lookupUsers(userId);
-        ArrayList<UserInfo> userArrayList = ConvertUtils.toUserInfoList(users, getCurrentUserId());
-        userProfile.postValue(userArrayList.get(0));
+        ArrayList<UserInfo> userArrayList = ConvertUtils.toUserInfoList(users, getLoggedInUser().getLongUserId());
+        return userArrayList.get(0);
+    }
+
+    public ResponseList<Place> search(GeoQuery geoQuery) throws TwitterException {
+        if (mTwitter == null) return null;
+
+        return mTwitter.searchPlaces(geoQuery);
     }
 
     public ArrayList<UserInfo> getSearchUser(QuerySearchUser query) throws TwitterException {
 
         switch (query.getQueryType()) {
             case QuerySearchUser.FIRST:
-                mUserQuery = query;
+                querySearchUser = query;
                 // 1 페이지가 첫번째 페이지
-                mUserQuery.setPage(1);
+                querySearchUser.setPage(1);
                 break;
             case QuerySearchUser.NEXT:
-                mUserQuery.setPage(mUserQuery.getMaxPage());
+                querySearchUser.setPage(querySearchUser.getMaxPage() < 1 ? 1 : querySearchUser.getMaxPage());
                 break;
         }
 
         ResponseList<User> result = null;
-        result = mTwitter.searchUsers(mUserQuery.getQuery(), mUserQuery.getPage());
+        result = mTwitter.searchUsers(querySearchUser.getQuery(), querySearchUser.getPage());
         if (result != null) {
-            mUserQuery.setMaxPage(mUserQuery.getPage() + 1);
-            System.out.println("current : " + mUserQuery.getPage() + " , NEXT : " + mUserQuery.getMaxPage() + " , size: " + result.size());
+            if (querySearchUser.getPage() < 1) querySearchUser.setPage(1);
+            querySearchUser.setMaxPage(querySearchUser.getPage() + 1);
+            System.out.println("current : " + querySearchUser.getPage() + " , NEXT : " + querySearchUser.getMaxPage() + " , size: " + result.size());
         }
-        return ConvertUtils.toUserInfoList(result, getCurrentUserId());
+        return ConvertUtils.toUserInfoList(result, getLoggedInUser().getLongUserId());
     }
 
     public ArrayList<Article> getSearch(QuerySearchArticle query) throws TwitterException {
 
-        Query tQuery = new Query(mQuery.getQuery()).count(Constants.PAGE_CNT);
+        Query tQuery = new Query(querySearchArticle.getQuery()).count(Constants.PAGE_CNT);
 
         switch (query.getQueryType()) {
             case QuerySearchArticle.FIRST:
-                mQuery = query;
-                tQuery.setQuery(mQuery.getQuery());
+                querySearchArticle = query;
+                tQuery.setQuery(query.getQuery());
                 break;
             case QuerySearchArticle.PAST:
-                tQuery.setMaxId(mQuery.getMaxId());
+                tQuery.setMaxId(querySearchArticle.getMaxId());
                 break;
             case QuerySearchArticle.RECENT:
-                tQuery.setSinceId(mQuery.getSinceId());
+                tQuery.setSinceId(querySearchArticle.getSinceId());
                 break;
         }
 
@@ -381,40 +295,40 @@ public class TwitterManager {
             System.out.println("PREVIOUS : " + ids[0] + " , NEXT : " + ids[1] + " , size: " + (result.getTweets() != null ? result.getTweets().size() : 0));
             switch (query.getQueryType()) {
                 case QuerySearchArticle.FIRST:
-                    mQuery.setSinceId(ids[1]);
-                    mQuery.setMaxId(ids[0]);
+                    querySearchArticle.setSinceId(ids[1]);
+                    querySearchArticle.setMaxId(ids[0]);
                     break;
                 case QuerySearchArticle.PAST:
-                    mQuery.setMaxId(Math.min(mQuery.getMaxId(), ids[0]));
+                    querySearchArticle.setMaxId(Math.min(querySearchArticle.getMaxId(), ids[0]));
                     break;
                 case QuerySearchArticle.RECENT:
-                    System.out.println("next result\n" + result.toString());
-                    mQuery.setSinceId(Math.max(mQuery.getSinceId(), ids[1]));
+                    querySearchArticle.setSinceId(Math.max(querySearchArticle.getSinceId(), ids[1]));
                     break;
             }
         }
-        return ConvertUtils.toArticleList(result, getCurrentUserId());
+        return ConvertUtils.toArticleList(result, getLoggedInUser().getLongUserId());
     }
 
     public ArrayList<Article> getSearchNearBy(QueryArticleNearBy query) throws TwitterException {
 
         String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         System.out.println(dateString);
+        // default query string for until today
         Query tQuery = new Query("until:" + dateString).count(Constants.PAGE_CNT);
 
         switch (query.getQueryType()) {
             case QueryArticleNearBy.FIRST:
-                mQueryNearBy = query;
+                queryArticleNearBy = query;
                 break;
             case QueryArticleNearBy.PAST:
-                tQuery.setMaxId(mQueryNearBy.getMaxId());
+                tQuery.setMaxId(queryArticleNearBy.getMaxId());
                 break;
             case QueryArticleNearBy.RECENT:
-                tQuery.setSinceId(mQueryNearBy.getSinceId());
+                tQuery.setSinceId(queryArticleNearBy.getSinceId());
                 break;
         }
-        GeoLocation geoLocation = new GeoLocation(mQueryNearBy.getLatitude(), mQueryNearBy.getLongitudu());
-        tQuery.setGeoCode(geoLocation, mQueryNearBy.getRadius(), Query.Unit.km);
+        GeoLocation geoLocation = new GeoLocation(queryArticleNearBy.getLatitude(), queryArticleNearBy.getLongitudu());
+        tQuery.setGeoCode(geoLocation, queryArticleNearBy.getRadius(), Query.Unit.km);
 
         QueryResult result = null;
         result = mTwitter.search(tQuery);
@@ -424,18 +338,18 @@ public class TwitterManager {
             System.out.println("PREVIOUS : " + ids[0] + " , NEXT : " + ids[1] + " , size: " + (result.getTweets() != null ? result.getTweets().size() : 0));
             switch (query.getQueryType()) {
                 case QueryArticleNearBy.FIRST:
-                    mQueryNearBy.setSinceId(ids[1]);
-                    mQueryNearBy.setMaxId(ids[0]);
+                    queryArticleNearBy.setSinceId(ids[1]);
+                    queryArticleNearBy.setMaxId(ids[0]);
                     break;
                 case QueryArticleNearBy.PAST:
-                    mQueryNearBy.setMaxId(Math.min(mQueryNearBy.getMaxId(), ids[0]));
+                    queryArticleNearBy.setMaxId(Math.min(queryArticleNearBy.getMaxId(), ids[0]));
                     break;
                 case QueryArticleNearBy.RECENT:
-                    mQueryNearBy.setSinceId(Math.max(mQueryNearBy.getSinceId(), ids[1]));
+                    queryArticleNearBy.setSinceId(Math.max(queryArticleNearBy.getSinceId(), ids[1]));
                     break;
             }
         }
-        return ConvertUtils.toArticleList(result, getCurrentUserId());
+        return ConvertUtils.toArticleList(result, getLoggedInUser().getLongUserId());
     }
 
     public ArrayList<UserInfo> getFollowList(QueryFollow follow) throws TwitterException {
@@ -445,18 +359,18 @@ public class TwitterManager {
                 queryFollow = follow;
                 break;
             case QueryFollow.PREVIOUS:
-                follow.setCursor(queryFollow.getPreviosCursor());
+                queryFollow.setCursor(queryFollow.getPreviosCursor());
                 break;
             case QueryFollow.NEXT:
-                follow.setCursor(queryFollow.getNextCursor());
+                queryFollow.setCursor(queryFollow.getNextCursor());
                 break;
         }
 
         PagableResponseList<User> list = null;
-        if (follow.isFollower()) {
-            list = mTwitter.getFollowersList(follow.getUserId(), follow.getCursor(), Constants.USER_LIST_COUNT);
+        if (queryFollow.isFollower()) {
+            list = mTwitter.getFollowersList(queryFollow.getUserId(), queryFollow.getCursor(), Constants.USER_LIST_COUNT);
         } else {
-            list = mTwitter.getFriendsList(follow.getUserId(), follow.getCursor(), Constants.USER_LIST_COUNT);
+            list = mTwitter.getFriendsList(queryFollow.getUserId(), queryFollow.getCursor(), Constants.USER_LIST_COUNT);
         }
         if (list != null) {
             System.out.println("next : " + list.getNextCursor() + " , previous : " + list.getPreviousCursor() + " , size: " + list.size());
@@ -473,6 +387,46 @@ public class TwitterManager {
                     break;
             }
         }
-        return ConvertUtils.toUserInfoList(list, getCurrentUserId());
+        return ConvertUtils.toUserInfoList(list, getLoggedInUser().getLongUserId());
+    }
+
+    public ArrayList<Article> getUserTimeline(QueryUserTimeline query) throws TwitterException {
+        Paging paging = new Paging().count(Constants.PAGE_CNT);
+        switch (query.getQueryType()) {
+            case QueryUserTimeline.FIRST:
+                queryUserTimeline = query;
+                break;
+            case QueryUserTimeline.RECENT:
+                paging.setSinceId(queryUserTimeline.getSinceId());
+                break;
+            case QueryUserTimeline.PAST:
+                paging.setMaxId(queryUserTimeline.getMaxId() - 1);
+                break;
+        }
+        ResponseList<Status> list = mTwitter.getUserTimeline(queryUserTimeline.getUserId(), paging);
+        if (list != null) {
+            long[] ids = ConvertUtils.getSmallAndLargeId(list);
+
+            switch (query.getQueryType()) {
+                case QueryUserTimeline.FIRST:
+                    queryUserTimeline.setSinceId(ids[1]);
+                    queryUserTimeline.setMaxId(ids[0]);
+                    break;
+                case QueryUserTimeline.RECENT:
+                    queryUserTimeline.setSinceId(Math.max(queryUserTimeline.getSinceId(), ids[1]));
+                    break;
+                case QueryUserTimeline.PAST:
+                    queryUserTimeline.setMaxId(Math.min(queryUserTimeline.getMaxId(), ids[0]));
+                    break;
+            }
+        }
+        ArrayList<Article> articleList = new ArrayList<Article>();
+
+        long currentUserId = getLoggedInUser().getLongUserId();
+        for (Status status : list) {
+            Article article = ConvertUtils.toArticle(status, currentUserId);
+            articleList.add(article);
+        }
+        return articleList;
     }
 }

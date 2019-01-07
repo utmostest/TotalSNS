@@ -9,4 +9,6 @@ public interface OnArticleClickListener {
     void onArticleClicked(ItemArticleBinding binding, Article mItem, int position);
 
     void onArticleImageClicked(ImageView iv, Article article, int position);
+
+    void onArticleProfileImgClicked(Article article);
 }

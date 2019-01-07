@@ -1,10 +1,10 @@
 package com.enos.totalsns.data.source.remote;
 
-public class QueryTimeline {
+public class QueryMention {
 
     private int queryType;
 
-    public QueryTimeline(int queryType) {
+    public QueryMention(int queryType) {
         this.queryType = queryType;
     }
 

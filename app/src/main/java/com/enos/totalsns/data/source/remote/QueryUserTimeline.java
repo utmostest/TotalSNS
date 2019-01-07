@@ -1,38 +1,23 @@
 package com.enos.totalsns.data.source.remote;
 
-public class QuerySearchArticle {
-    private String query;
+public class QueryUserTimeline {
+
+    private int queryType;
+    private long userId;
     private long sinceId;
     private long maxId;
-    private int queryType;
 
     public static final int FIRST = 1;
     public static final int PAST = 2;
     public static final int RECENT = 3;
 
-    public QuerySearchArticle(int queryType) {
+    public QueryUserTimeline(int queryType) {
         this.queryType = queryType;
     }
 
-    public QuerySearchArticle(int queryType, String query) {
+    public QueryUserTimeline(int queryType, long userId) {
         this.queryType = queryType;
-        this.query = query;
-    }
-
-    public int getQueryType() {
-        return queryType;
-    }
-
-    public void setQueryType(int queryType) {
-        this.queryType = queryType;
-    }
-
-    public String getQuery() {
-        return query;
-    }
-
-    public void setQuery(String query) {
-        this.query = query;
+        this.userId = userId;
     }
 
     public long getSinceId() {
@@ -51,4 +36,19 @@ public class QuerySearchArticle {
         this.maxId = maxId;
     }
 
+    public long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(long userId) {
+        this.userId = userId;
+    }
+
+    public int getQueryType() {
+        return queryType;
+    }
+
+    public void setQueryType(int queryType) {
+        this.queryType = queryType;
+    }
 }

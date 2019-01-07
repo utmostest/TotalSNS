@@ -107,7 +107,7 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
         Editable editable = mDataBinding.messageDetailEdit.getEditableText();
         if (editable != null && editable.toString().length() > 0) {
             String message = editable.toString();
-            mViewModel.postDirectMessage(currentReceiverId, message, sampleMessage);
+            mViewModel.postDirectMessage(currentReceiverId, message, null, sampleMessage);
         }
     }
 

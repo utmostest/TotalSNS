@@ -1,4 +1,4 @@
-package com.enos.totalsns.search;
+package com.enos.totalsns.userlist;
 
 import com.enos.totalsns.data.UserInfo;
 

@@ -6,12 +6,10 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.data.source.remote.QueryTimeline;
 
 import java.util.List;
-
-import twitter4j.Paging;
 
 public class TimelineListViewModel extends ViewModel {
     private Context mContext;
@@ -35,15 +33,15 @@ public class TimelineListViewModel extends ViewModel {
     }
 
     public void fetchRecentTimeline() {
-        mRepository.fetchRecentTimeline();
+        mRepository.fetchTimeline(new QueryTimeline(QueryTimeline.RECENT));
     }
 
     public void fetchPastTimeline() {
-        mRepository.fetchPastTimeline();
+        mRepository.fetchTimeline(new QueryTimeline(QueryTimeline.PAST));
     }
 
     public void fetchTimelineForStart() {
-        mRepository.fetchTimelineForStart(new Paging().count(Constants.PAGE_CNT));
+        mRepository.fetchTimeline(new QueryTimeline(QueryTimeline.FIRST));
     }
 
     @Override

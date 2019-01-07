@@ -6,12 +6,10 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.data.source.remote.QueryMention;
 
 import java.util.List;
-
-import twitter4j.Paging;
 
 public class MentionListViewModel extends ViewModel {
     private Context mContext;
@@ -35,16 +33,15 @@ public class MentionListViewModel extends ViewModel {
     }
 
     public void fetchRecentMention() {
-        mRepository.fetchRecentMention();
+        mRepository.fetchMention(new QueryMention(QueryMention.RECENT));
     }
 
     public void fetchPastMention() {
-        mRepository.fetchPastMention();
+        mRepository.fetchMention(new QueryMention(QueryMention.PAST));
     }
 
-
     public void fetchMentionForStart() {
-        mRepository.fetchMentionForStart(new Paging().count(Constants.PAGE_CNT));
+        mRepository.fetchMention(new QueryMention(QueryMention.FIRST));
     }
 
     @Override

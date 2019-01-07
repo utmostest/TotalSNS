@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
+import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -21,12 +22,12 @@ import java.util.List;
  * specified {@link OnUserClickListener }.
  * TODO: Replace the implementation with code for your data type.
  */
-public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<UserInfo> mFilteredList;
     private final OnUserClickListener mListener;
 
-    public UserAdapter(List<UserInfo> items, OnUserClickListener mListener) {
+    public SearchedUserAdapter(List<UserInfo> items, OnUserClickListener mListener) {
         mFilteredList = items;
         this.mListener = mListener;
     }
@@ -54,8 +55,8 @@ public class UserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     public void swapUserList(List<UserInfo> list) {
-        if (list == null) {
-            mFilteredList = null;
+        if (list == null || mFilteredList == null) {
+            mFilteredList = list;
             notifyDataSetChanged();
             return;
         }

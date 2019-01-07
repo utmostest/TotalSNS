@@ -1,6 +1,9 @@
 package com.enos.totalsns.data.source.remote;
 
-public class QuerySearchUser {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class QuerySearchUser implements Parcelable {
     private String query;
     private int maxPage;
     private int page = 1;
@@ -17,6 +20,25 @@ public class QuerySearchUser {
         this.queryType = queryType;
         this.query = query;
     }
+
+    protected QuerySearchUser(Parcel in) {
+        query = in.readString();
+        maxPage = in.readInt();
+        page = in.readInt();
+        queryType = in.readInt();
+    }
+
+    public static final Creator<QuerySearchUser> CREATOR = new Creator<QuerySearchUser>() {
+        @Override
+        public QuerySearchUser createFromParcel(Parcel in) {
+            return new QuerySearchUser(in);
+        }
+
+        @Override
+        public QuerySearchUser[] newArray(int size) {
+            return new QuerySearchUser[size];
+        }
+    };
 
     public int getQueryType() {
         return queryType;
@@ -48,5 +70,18 @@ public class QuerySearchUser {
 
     public void setMaxPage(int maxPage) {
         this.maxPage = maxPage;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(query);
+        dest.writeInt(maxPage);
+        dest.writeInt(page);
+        dest.writeInt(queryType);
     }
 }

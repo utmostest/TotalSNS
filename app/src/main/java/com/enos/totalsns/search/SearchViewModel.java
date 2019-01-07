@@ -10,6 +10,7 @@ import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
+import com.enos.totalsns.data.source.remote.QuerySearchArticle;
 
 import java.util.List;
 
@@ -40,6 +41,14 @@ public class SearchViewModel extends ViewModel {
         getSearchList().setValue(null);
         getSearchUserList().setValue(null);
         mRepository.fetchSearchTotal(new Query(query).count(Constants.PAGE_CNT));
+    }
+
+    public void fetchPast() {
+        mRepository.fetchSearch(new QuerySearchArticle(QuerySearchArticle.PAST));
+    }
+
+    public void fetchRecent() {
+        mRepository.fetchSearch(new QuerySearchArticle(QuerySearchArticle.RECENT));
     }
 
     public LiveData<String> getSearchQuery() {

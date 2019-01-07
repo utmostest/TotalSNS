@@ -1,6 +1,8 @@
 package com.enos.totalsns.message.send;
 
 import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.MediatorLiveData;
+import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
@@ -15,23 +17,36 @@ public class MessageSendViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
 
+    private MediatorLiveData<List<UserInfo>> sendToList;
+    private MutableLiveData<List<UserInfo>> followingList;
+    private MutableLiveData<List<UserInfo>> searchedList;
+
     public MessageSendViewModel(Context application, TotalSnsRepository repository) {
         mContext = application;
         mRepository = repository;
+        sendToList = new MediatorLiveData<>();
+        followingList = new MutableLiveData<>();
+        searchedList = new MutableLiveData<>();
+        sendToList.addSource(followingList, list -> {
+            sendToList.postValue(list);
+        });
+        sendToList.addSource(searchedList, list -> {
+            sendToList.postValue(list);
+        });
     }
 
     public LiveData<Boolean> isNetworkOnUse() {
         return mRepository.isSnsNetworkOnUse();
     }
 
-    public LiveData<List<UserInfo>> getUserFollowList() {
-        return mRepository.getFollowList();
+    public LiveData<List<UserInfo>> getSendToList() {
+        return sendToList;
     }
 
     public void fetchFirstFollowList(QueryFollow queryFollow) {
         queryFollow.setUserId(mRepository.getLoggedInUser().getValue().getLongUserId());
         queryFollow.setFollower(false);
-        mRepository.fetchFirstFollowList(queryFollow);
+        mRepository.fetchFollowList(queryFollow, followingList);
     }
 
     @Override
@@ -41,14 +56,12 @@ public class MessageSendViewModel extends ViewModel {
     }
 
     private void clearViewModel() {
-        mRepository.getFollowList().postValue(null);
-    }
-
-    public LiveData<List<UserInfo>> getUserSearchList() {
-        return mRepository.getSearchUserList();
+        followingList.postValue(null);
+        searchedList.postValue(null);
+        sendToList.postValue(null);
     }
 
     public void fetchUserSearchList(String query) {
-        mRepository.fetchSearchUser(new QuerySearchUser(QuerySearchUser.FIRST, query));
+        mRepository.fetchSearchUser(new QuerySearchUser(QuerySearchUser.FIRST, query), searchedList);
     }
 }

@@ -16,14 +16,14 @@
             android:id="@+id/tlProfileImg"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:srcCompat="@drawable/ic_account_circle_black_48dp"
             android:transitionName="@string/tran_profile_image"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.0"
+            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <TextView
             android:id="@+id/tlUserName"
@@ -128,10 +128,7 @@
             app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintEnd_toEndOf="@+id/tlMessage"
             app:layout_constraintStart_toStartOf="@+id/tlProfileImg"
-            app:layout_constraintTop_toBottomOf="@+id/tlMessage"
-            tools:srcCompat="@tools:sample/backgrounds/scenic"
-            tools:targetApi="lollipop"
-            tools:visibility="visible" />
+            app:layout_constraintTop_toBottomOf="@+id/tlMessage" />
 
     </android.support.constraint.ConstraintLayout>
 </layout>

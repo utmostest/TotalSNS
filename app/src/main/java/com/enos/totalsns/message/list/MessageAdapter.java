@@ -50,7 +50,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     public void swapMessageList(List<Message> list) {
-        if (mValues == null) {
+        if (mValues == null || list==null) {
             mValues = list;
             notifyDataSetChanged();
         } else {
@@ -117,9 +117,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
                     // fragment is attached to one) that an item has been selected.
                     mListener.onMessageClicked(mItem);
                 }
-            });
-            binding.mProfileImg.setOnClickListener(v -> {
-                if (null != mListener) mListener.onMessageProfileClicked(mItem.getSenderTableId());
             });
         }
     }

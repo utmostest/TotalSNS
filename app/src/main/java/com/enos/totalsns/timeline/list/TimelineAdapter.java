@@ -56,8 +56,8 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     public void swapTimelineList(List<Article> list) {
-        if (list == null) {
-            mFilteredList = null;
+        if (list == null || mFilteredList == null) {
+            mFilteredList = list;
             notifyDataSetChanged();
             return;
         }
@@ -158,7 +158,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
             binding.tlProfileImg.setOnClickListener(v -> {
                 if (null != mListener)
-                    mListener.onArticleImageClicked((ImageView) v, mItem, position);
+                    mListener.onArticleProfileImgClicked(mItem);
             });
         }
     }

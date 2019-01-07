@@ -23,7 +23,9 @@ import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
+import twitter4j.GeoLocation;
 import twitter4j.MediaEntity;
+import twitter4j.Place;
 import twitter4j.QueryResult;
 import twitter4j.ResponseList;
 import twitter4j.Status;
@@ -72,6 +74,12 @@ public class ConvertUtils {
         return message;
     }
 
+    public static Message toMessage(DirectMessage dm, long currentUserId, UserInfo user) {
+        Message message = new Message(ConvertUtils.getUserNObjectPK(currentUserId, dm.getId()), currentUserId, dm.getId(),
+                dm.getRecipientId(), dm.getSenderId(), user.getUserName(), user.getUserId(), user.getProfileImg(),
+                dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
+        return message;
+    }
 
     public static Message toMessage(DirectMessage dm, long currentUserId, Message sender) {
 
@@ -95,12 +103,46 @@ public class ConvertUtils {
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()), user.getId());
-        if (status.getGeoLocation() != null) {
-            article.setLatitude(status.getGeoLocation().getLatitude());
-            article.setLongitude(status.getGeoLocation().getLongitude());
-        }
+        GeoLocation geoLocation = status.getGeoLocation();
+        Place place = status.getPlace();
+        setArticleLocationIfExist(article, geoLocation, place);
         article.setMention(isMentionDb);
         return article;
+    }
+
+    private static void setArticleLocationIfExist(Article article, GeoLocation geoLocation, Place place) {
+        if (geoLocation != null) {
+            article.setLatitude(geoLocation.getLatitude());
+            article.setLongitude(geoLocation.getLongitude());
+        } else if (place != null) {
+            if (place.getGeometryCoordinates() != null) {
+                double latitude = 0;
+                double longitude = 0;
+                int count = 0;
+                for (GeoLocation[] location : place.getGeometryCoordinates()) {
+                    for (GeoLocation loc : location) {
+                        latitude += loc.getLatitude();
+                        longitude += loc.getLongitude();
+                        count++;
+                    }
+                }
+                article.setLatitude(latitude / count);
+                article.setLongitude(longitude / count);
+            } else if (place.getBoundingBoxCoordinates() != null) {
+                double latitude = 0;
+                double longitude = 0;
+                int count = 0;
+                for (GeoLocation[] location : place.getBoundingBoxCoordinates()) {
+                    for (GeoLocation loc : location) {
+                        latitude += loc.getLatitude();
+                        longitude += loc.getLongitude();
+                        count++;
+                    }
+                }
+                article.setLatitude(latitude / count);
+                article.setLongitude(longitude / count);
+            }
+        }
     }
 
     public static Article toMention(Status status, long currentUserId) {
@@ -145,7 +187,21 @@ public class ConvertUtils {
         else return urlMap.equals(urlMap2);
     }
 
-    public static ArrayList<Message> toMessageList(DirectMessageList list, long currentUserId, HashMap<Long, User> userMap) {
+//    public static ArrayList<Message> toMessageList(DirectMessageList list, long currentUserId, HashMap<Long, User> userMap) {
+//
+//        ArrayList<Message> dmList = new ArrayList<Message>();
+//        int num = 0;
+//        for (DirectMessage dm : list) {
+//            num++;
+//            SingletonToast.getInstance().log(dm.toString());
+//            long senderId = currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId();
+//            Message message = toMessage(dm, currentUserId, userMap.get(senderId));
+//            dmList.add(message);
+//        }
+//        return dmList;
+//    }
+
+    public static ArrayList<Message> toMessageList(DirectMessageList list, long currentUserId, HashMap<Long, UserInfo> userMap) {
 
         ArrayList<Message> dmList = new ArrayList<Message>();
         int num = 0;
@@ -181,12 +237,13 @@ public class ConvertUtils {
         return result;
     }
 
-    public static HashMap<Long, User> getUserIdMap(ResponseList<User> userList) {
+    public static HashMap<Long, UserInfo> getUserIdMap(ResponseList<User> userList, long longUserId) {
         if (userList == null) return null;
 
-        @SuppressLint("UseSparseArrays") HashMap<Long, User> userHashMap = new HashMap<>();
+        @SuppressLint("UseSparseArrays") HashMap<Long, UserInfo> userHashMap = new HashMap<>();
         for (User user : userList) {
-            userHashMap.put(user.getId(), user);
+            UserInfo userInfo = toUserInfo(user, longUserId);
+            userHashMap.put(user.getId(), userInfo);
         }
         return userHashMap;
     }
@@ -330,6 +387,19 @@ public class ConvertUtils {
         }
         long[] id = new long[]{Long.MAX_VALUE, 0};
         for (Status status : result.getTweets()) {
+            id[0] = Math.min(id[0], status.getId());
+            id[1] = Math.max(id[1], status.getId());
+        }
+        if (id[0] > 0) id[0] -= 1;
+        return id;
+    }
+
+    public static long[] getSmallAndLargeId(ResponseList<Status> result) {
+        if (result == null || result.size() == 0) {
+            return new long[]{0, 0};
+        }
+        long[] id = new long[]{Long.MAX_VALUE, 0};
+        for (Status status : result) {
             id[0] = Math.min(id[0], status.getId());
             id[1] = Math.max(id[1], status.getId());
         }

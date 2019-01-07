@@ -62,20 +62,17 @@ public class MessageSendFragment extends Fragment implements OnUserToSendClickLi
                 managerVertical.getOrientation());
         dataBinding.msgSendRv.addItemDecoration(dividerItemDecoration);
         dataBinding.msgSendRv.setAdapter(adapter);
+        dataBinding.swipeContainer.setOnRefreshListener(direction -> dataBinding.swipeContainer.setRefreshing(false));
     }
 
     private void initObserver() {
-        mViewModel.getUserFollowList().observe(this, (list) -> {
+        mViewModel.getSendToList().observe(this, (list) -> {
             MessageSendAdapter adapter = (MessageSendAdapter) dataBinding.msgSendRv.getAdapter();
             adapter.swapUserList(list);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
             dataBinding.swipeContainer.setRefreshing(refresh);
-        });
-        mViewModel.getUserSearchList().observe(this, list -> {
-            MessageSendAdapter adapter = (MessageSendAdapter) dataBinding.msgSendRv.getAdapter();
-            adapter.swapUserList(list);
         });
     }
 

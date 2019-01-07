@@ -1,6 +1,5 @@
 package com.enos.totalsns.message.send;
 
-import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
@@ -125,7 +124,7 @@ public class MessageSendAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void swapUserList(List<UserInfo> list) {
-        if (mValues == null) {
+        if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();
         } else {

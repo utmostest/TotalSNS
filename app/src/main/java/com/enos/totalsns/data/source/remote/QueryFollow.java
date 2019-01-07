@@ -12,10 +12,11 @@ public class QueryFollow implements Parcelable {
     private int queryType;
 
     public static final int FIRST = 1;
-    public static final int PREVIOUS = 2;
-    public static final int NEXT = 3;
+    public static final int NEXT = 2;
+    public static final int PREVIOUS = 3;
 
     public QueryFollow(int type) {
+        queryType = type;
     }
 
     public QueryFollow(int type, long userId, long cursor, boolean isFollower) {

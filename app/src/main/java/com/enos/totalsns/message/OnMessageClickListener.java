@@ -4,6 +4,4 @@ import com.enos.totalsns.data.Message;
 
 public interface OnMessageClickListener {
     void onMessageClicked(Message message);
-
-    void onMessageProfileClicked(long senderTableId);
 }

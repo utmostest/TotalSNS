@@ -4,18 +4,14 @@ import android.content.Context;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
-import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
 import com.enos.totalsns.databinding.ItemAccountFooterBinding;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.widget.HFSupportAdapter;
 
 import java.util.List;
 
@@ -23,26 +19,19 @@ import java.util.List;
  * {@link RecyclerView.Adapter} that can display a {@link Account} and makes a call to the
  * specified {@link OnSnsAccountListener}.
  */
-public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class AccountsAdapter extends HFSupportAdapter {
 
     // TODO SNS별 뷰홀더 추가 및 화면 표시
-    //    private Context mContext;
     private List<Account> mValues;
     private OnSnsAccountListener mListener;
 
-    private final int TYPE_HEADER = -2;
-    private final int TYPE_FOOTER = -1;
     private final int TYPE_TWITTER = Constants.TWITTER;
     private final int TYPE_FACEBOOK = Constants.FACEBOOK;
     private final int TYPE_INSTAGRAM = Constants.INSTAGRAM;
 
-    private boolean mIsEnableFooter = false;
-    private boolean mIsEnableHeader = false;
-
-    private boolean mIsEnableFooterAlways = false;
-    private boolean mIsEnableHeaderAlways = false;
-
     private int mSnsType = Constants.DEFAULT_SNS;
+
+    private boolean isItemChanged = false;
 
     public AccountsAdapter(Context context, int snsType, OnSnsAccountListener listener) {
         mSnsType = snsType;
@@ -50,84 +39,67 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public List<?> getItems() {
+        return mValues;
+    }
+
+    @Override
+    public boolean isItemChanged() {
+        return isItemChanged;
+    }
+
+    @Override
+    public void setIsItemChanged(boolean changed) {
+        isItemChanged = changed;
+    }
+
+    @Override
+    public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == TYPE_HEADER) {
-            ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
-            return new HeaderViewHolder(itemAccountFooterBinding);
-        } else if (viewType == TYPE_FOOTER) {
-            ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
-            return new FooterViewHolder(itemAccountFooterBinding);
-        } else {
-            ItemAccountBinding itemAccountBinding = ItemAccountBinding.inflate(inflater, parent, false);
-            return new ItemViewHolder(itemAccountBinding);
-        }
+        ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
+        return new AccountHeaderViewHolder(itemAccountFooterBinding);
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder vh, int pos) {
-
-        if (vh instanceof HeaderViewHolder) {
-            HeaderViewHolder holder = (HeaderViewHolder) vh;
-            holder.bind();
-        } else if (vh instanceof FooterViewHolder) {
-            FooterViewHolder holder = (FooterViewHolder) vh;
-            holder.bind();
-        } else {
-            int position = getActualPosition(pos);
-            if (position < 0) return;
-
-            ItemViewHolder holder = (ItemViewHolder) vh;
-            holder.mItem = mValues.get(position);
-            holder.bind();
-        }
-    }
-
-    private int getActualPosition(int pos) {
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-
-        if (size <= 0) return -1;
-        int position = (pos - (isHeaderEnabled ? 1 : 0));
-        return position;
+    public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
+        return new AccountFooterViewHolder(itemAccountFooterBinding);
     }
 
     @Override
-    public int getItemCount() {
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-        boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
-
-        return size + (isHeaderEnabled ? 1 : 0) + (isFooterEnabled ? 1 : 0);
+    public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemAccountBinding itemAccountBinding = ItemAccountBinding.inflate(inflater, parent, false);
+        return new AccountItemViewHolder(itemAccountBinding);
     }
 
     @Override
-    public int getItemViewType(int position) {
-        int headerPos = -1;
-        int footerPos = -1;
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-        boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
+    public void onBindHeaderViewHolder(HeaderViewHolder vh, int pos) {
+        AccountHeaderViewHolder holder = (AccountHeaderViewHolder) vh;
+        holder.bind();
+    }
 
-        int currentType = mSnsType;
+    @Override
+    public void onBindFooterViewHolder(FooterViewHolder vh, int pos) {
+        AccountFooterViewHolder holder = (AccountFooterViewHolder) vh;
+        holder.bind();
+    }
 
-        if (isHeaderEnabled) {
-            headerPos = 0;
-        }
-        if (isFooterEnabled) {
-            footerPos = size + headerPos + 1;
-        }
+    @Override
+    public void onBindItemViewHolder(ItemViewHolder vh, int position) {
+        AccountItemViewHolder holder = (AccountItemViewHolder) vh;
+        holder.mItem = mValues.get(position);
+        holder.bind();
+    }
 
-        if (position == headerPos) {
-            return TYPE_HEADER;
-        } else if (position == footerPos) {
-            return TYPE_FOOTER;
-        }
-        return currentType;
+    @Override
+    public int getYourItemViewType(int position) {
+        return 0;
     }
 
     public void swapAccountsList(List<Account> list) {
-        if (mValues == null) {
+        if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();
         } else {
@@ -167,21 +139,11 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    public void setEnableHeader(boolean isEnable, boolean isEnableAlways, View.OnClickListener headerListener) {
-        mIsEnableHeader = isEnable;
-        mIsEnableHeaderAlways = isEnableAlways;
-    }
-
-    public void setEnableFooter(boolean isEnable, boolean isEnableAlways, View.OnClickListener footerListener) {
-        mIsEnableFooter = isEnable;
-        mIsEnableFooterAlways = isEnableAlways;
-    }
-
-    private class ItemViewHolder extends RecyclerView.ViewHolder {
+    private class AccountItemViewHolder extends ItemViewHolder {
         public final ItemAccountBinding binding;
         private Account mItem;
 
-        ItemViewHolder(ItemAccountBinding view) {
+        AccountItemViewHolder(ItemAccountBinding view) {
             super(view.getRoot());
             binding = view;
         }
@@ -189,7 +151,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         public void bind() {
             binding.accUserId.setText(mItem.getScreenName());
             binding.accUserName.setText(mItem.getName());
-            GlideUtils.loadProfileImage(binding.getRoot().getContext(),mItem.getProfileImage(),binding.accProfileImg);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImage(), binding.accProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
@@ -201,10 +163,10 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class HeaderViewHolder extends RecyclerView.ViewHolder {
+    private class AccountHeaderViewHolder extends HeaderViewHolder {
         public final ItemAccountFooterBinding binding;
 
-        HeaderViewHolder(ItemAccountFooterBinding view) {
+        AccountHeaderViewHolder(ItemAccountFooterBinding view) {
             super(view.getRoot());
             binding = view;
         }
@@ -213,10 +175,10 @@ public class AccountsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         }
     }
 
-    private class FooterViewHolder extends RecyclerView.ViewHolder {
+    private class AccountFooterViewHolder extends FooterViewHolder {
         public final ItemAccountFooterBinding binding;
 
-        FooterViewHolder(ItemAccountFooterBinding view) {
+        AccountFooterViewHolder(ItemAccountFooterBinding view) {
             super(view.getRoot());
             binding = view;
         }

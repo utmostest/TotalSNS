@@ -28,7 +28,7 @@ public class TimelineWriteViewModel extends ViewModel {
     }
 
     public void postArticle(Article article) {
-        mRepository.uploadStatus(article.getMessage());
+        mRepository.postArticle(article.getMessage());
     }
 
     public LiveData<Article> getUploadingArticle() {

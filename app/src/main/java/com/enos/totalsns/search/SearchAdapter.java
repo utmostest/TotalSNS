@@ -15,9 +15,11 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchHeaderBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.widget.HFSupportAdapter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,121 +29,112 @@ import java.util.List;
  * specified {@link OnUserClickListener }.
  * TODO: Replace the implementation with code for your data type.
  */
-public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class SearchAdapter extends HFSupportAdapter {
 
     private List<UserInfo> mFilteredList;
     private List<Article> mValues;
 
     private OnUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
+    private OnMoreUserButtonClickListener moreUserButtonClickListener;
 
     private final int TYPE_TWITTER = Constants.TWITTER;
     private final int TYPE_FACEBOOK = Constants.FACEBOOK;
     private final int TYPE_INSTAGRAM = Constants.INSTAGRAM;
-    private final int TYPE_HEADER = 11;
-    private final int TYPE_FOOTER = 12;
-
-    private boolean mIsEnableFooter = false;
-    private boolean mIsEnableHeader = false;
-
-    private boolean mIsEnableFooterAlways = false;
-    private boolean mIsEnableHeaderAlways = false;
 
     private int mSnsType = Constants.DEFAULT_SNS;
 
     private RecyclerView.RecycledViewPool recycledViewPool;
 
     private RecyclerView mUserRecyclerView;
+    private boolean isItemChanged = false;
 
-    public SearchAdapter(List<UserInfo> items, List<Article> list, OnUserClickListener mListener, OnArticleClickListener articleClickListener) {
+    private ItemSearchHeaderBinding headerViewHolder = null;
+
+    public SearchAdapter(List<UserInfo> items, List<Article> list,
+                         OnUserClickListener mListener, OnArticleClickListener articleClickListener,
+                         OnMoreUserButtonClickListener moreUserButtonClickListener) {
         mValues = list;
         mFilteredList = items;
         this.mListener = mListener;
         this.mArticleListener = articleClickListener;
+        this.moreUserButtonClickListener = moreUserButtonClickListener;
         recycledViewPool = new RecyclerView.RecycledViewPool();
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public List<?> getItems() {
+        return mValues;
+    }
+
+    public List<UserInfo> getUserList() {
+        return mFilteredList;
+    }
+
+    public List<Article> getArticleList() {
+        return mValues;
+    }
+
+    @Override
+    public boolean isItemChanged() {
+        return isItemChanged;
+    }
+
+    @Override
+    public void setIsItemChanged(boolean changed) {
+        isItemChanged = changed;
+    }
+
+    @Override
+    public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        if (viewType == TYPE_HEADER) {
-            ItemSearchHeaderBinding itemHeaderBinding = ItemSearchHeaderBinding.inflate(inflater, parent, false);
-            return new HeaderViewHolder(itemHeaderBinding);
-        } else if (viewType == TYPE_FOOTER) {
-            ItemSearchHeaderBinding itemFooterBinding = ItemSearchHeaderBinding.inflate(inflater, parent, false);
-            return new FooterViewHolder(itemFooterBinding);
-        } else {
-            ItemArticleBinding itemUserBinding = ItemArticleBinding.inflate(inflater, parent, false);
-            return new ArticleViewHolder(itemUserBinding);
-        }
+        ItemSearchHeaderBinding itemHeaderBinding = ItemSearchHeaderBinding.inflate(inflater, parent, false);
+        return new ArticleHeaderViewHolder(itemHeaderBinding);
     }
 
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder vh, int pos) {
-
-        if (vh instanceof HeaderViewHolder) {
-            HeaderViewHolder holder = (HeaderViewHolder) vh;
-            holder.bind();
-        } else if (vh instanceof FooterViewHolder) {
-            FooterViewHolder holder = (FooterViewHolder) vh;
-            holder.bind();
-        } else {
-            int position = getActualPosition(pos);
-            if (position < 0) return;
-
-            if (mValues == null) return;
-            ArticleViewHolder holder = (ArticleViewHolder) vh;
-            holder.mItem = mValues.get(position);
-            holder.bind(position);
-        }
-    }
-
-    private int getActualPosition(int pos) {
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-
-        if (size <= 0) return -1;
-        int position = (pos - (isHeaderEnabled ? 1 : 0));
-        return position;
+    public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemSearchHeaderBinding itemFooterBinding = ItemSearchHeaderBinding.inflate(inflater, parent, false);
+        return new ArticleFooterViewHolder(itemFooterBinding);
     }
 
     @Override
-    public int getItemCount() {
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-        boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
-
-        return size + (isHeaderEnabled ? 1 : 0) + (isFooterEnabled ? 1 : 0);
+    public ItemViewHolder onCreateItemViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        ItemArticleBinding itemUserBinding = ItemArticleBinding.inflate(inflater, parent, false);
+        return new ArticleViewHolder(itemUserBinding);
     }
 
     @Override
-    public int getItemViewType(int position) {
-        int headerPos = -1;
-        int footerPos = -1;
-        int size = mValues == null ? 0 : mValues.size();
-        boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
-        boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
+    public void onBindHeaderViewHolder(HFSupportAdapter.HeaderViewHolder vh, int pos) {
+        ArticleHeaderViewHolder holder = (ArticleHeaderViewHolder) vh;
+        holder.bind();
+    }
 
-        int currentType = mSnsType;
+    @Override
+    public void onBindFooterViewHolder(HFSupportAdapter.FooterViewHolder vh, int pos) {
+        ArticleFooterViewHolder holder = (ArticleFooterViewHolder) vh;
+        holder.bind();
+    }
 
-        if (isHeaderEnabled) {
-            headerPos = 0;
-        }
-        if (isFooterEnabled) {
-            footerPos = size + headerPos + 1;
-        }
+    @Override
+    public void onBindItemViewHolder(ItemViewHolder vh, int position) {
+        if (mValues == null) return;
+        ArticleViewHolder holder = (ArticleViewHolder) vh;
+        holder.mItem = mValues.get(position);
+        holder.bind(position);
+    }
 
-        if (position == headerPos) {
-            return TYPE_HEADER;
-        } else if (position == footerPos) {
-            return TYPE_FOOTER;
-        }
-        return currentType;
+    @Override
+    public int getYourItemViewType(int position) {
+        return 0;
     }
 
     public void swapTimelineList(List<Article> list) {
-        if (list == null) {
-            mValues = null;
+        isItemChanged = true;
+        if (list == null || mValues == null) {
+            mValues = list;
             notifyDataSetChanged();
             return;
         }
@@ -192,11 +185,12 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     public void swapUserList(List<UserInfo> list) {
         mFilteredList = list;
         if (mUserRecyclerView != null) {
-            ((UserAdapter) mUserRecyclerView.getAdapter()).swapUserList(list);
+            headerViewHolder.getRoot().setVisibility(mFilteredList == null || mFilteredList.size() <= 0 ? View.GONE : View.VISIBLE);
+            ((SearchedUserAdapter) mUserRecyclerView.getAdapter()).swapUserList(list);
         }
     }
 
-    private class ArticleViewHolder extends RecyclerView.ViewHolder {
+    private class ArticleViewHolder extends ItemViewHolder {
         public final ItemArticleBinding binding;
         private Article mItem;
 
@@ -244,56 +238,51 @@ public class SearchAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             });
             binding.tlProfileImg.setOnClickListener(v -> {
                 if (null != mArticleListener)
-                    mArticleListener.onArticleImageClicked((ImageView) v, mItem, position);
+                    mArticleListener.onArticleProfileImgClicked(mItem);
             });
         }
     }
 
-    public void setEnableHeader(boolean isEnable, boolean isEnableAlways, View.OnClickListener headerListener) {
-        mIsEnableHeader = isEnable;
-        mIsEnableHeaderAlways = isEnableAlways;
-    }
-
-    public void setEnableFooter(boolean isEnable, boolean isEnableAlways, View.OnClickListener footerListener) {
-        mIsEnableFooter = isEnable;
-        mIsEnableFooterAlways = isEnableAlways;
-    }
-
-    private class HeaderViewHolder extends RecyclerView.ViewHolder {
+    private class ArticleHeaderViewHolder extends HeaderViewHolder {
         public final ItemSearchHeaderBinding binding;
 
-        HeaderViewHolder(ItemSearchHeaderBinding view) {
+        ArticleHeaderViewHolder(ItemSearchHeaderBinding view) {
             super(view.getRoot());
             binding = view;
+            headerViewHolder = view;
+            headerViewHolder.getRoot().setVisibility(mFilteredList == null || mFilteredList.size() <= 0 ? View.GONE : View.VISIBLE);
         }
 
         public void bind() {
             mUserRecyclerView = binding.searchRv;
-            UserAdapter userAdapter = null;
-            if (mUserRecyclerView.getAdapter() != null && mUserRecyclerView.getAdapter() instanceof UserAdapter) {
-                userAdapter = (UserAdapter) mUserRecyclerView.getAdapter();
-                userAdapter.swapUserList(mFilteredList);
+            SearchedUserAdapter userAdapter = null;
+            if (mUserRecyclerView.getAdapter() != null && mUserRecyclerView.getAdapter() instanceof SearchedUserAdapter) {
+                userAdapter = (SearchedUserAdapter) mUserRecyclerView.getAdapter();
+//                userAdapter.swapUserList(mFilteredList);
             }
             if (userAdapter == null) {
-                userAdapter = new UserAdapter(mFilteredList, mListener);
+                userAdapter = new SearchedUserAdapter(mFilteredList, mListener);
                 binding.searchRv.setAdapter(userAdapter);
             }
             binding.searchRv.setHasFixedSize(true);
             binding.searchRv.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
             binding.searchRv.setRecycledViewPool(recycledViewPool);
+            binding.searchMoreUser.setOnClickListener(v -> {
+                if (moreUserButtonClickListener != null)
+                    moreUserButtonClickListener.onMoreUserButtonClicked();
+            });
         }
     }
 
-    private class FooterViewHolder extends RecyclerView.ViewHolder {
+    private class ArticleFooterViewHolder extends FooterViewHolder {
         public final ItemSearchHeaderBinding binding;
 
-        FooterViewHolder(ItemSearchHeaderBinding view) {
+        ArticleFooterViewHolder(ItemSearchHeaderBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
         public void bind() {
-
         }
     }
 }

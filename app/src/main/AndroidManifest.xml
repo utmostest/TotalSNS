@@ -88,7 +88,7 @@
                 android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
         <activity
-            android:name=".follow.FollowListActivity"
+            android:name=".userlist.UserListActivity"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait">
             <meta-data

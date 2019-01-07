@@ -69,7 +69,7 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     public void swapMessageList(List<Message> list) {
-        if (mValues == null) {
+        if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();
         } else {
@@ -146,9 +146,6 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile, R.drawable.ic_account_circle_black_36dp);
             binding.getRoot().setOnClickListener(v -> {
                 if (mListener != null) mListener.onMessageClicked(mItem);
-            });
-            binding.messageItemProfile.setOnClickListener((v) -> {
-                if (mListener != null) mListener.onMessageProfileClicked(mItem.getSenderTableId());
             });
         }
     }

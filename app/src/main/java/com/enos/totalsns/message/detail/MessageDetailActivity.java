@@ -1,6 +1,5 @@
 package com.enos.totalsns.message.detail;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -9,8 +8,6 @@ import android.view.MenuItem;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.message.OnMessageClickListener;
-import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.util.SingletonToast;
 
 public class MessageDetailActivity extends AppCompatActivity implements OnMessageClickListener {
@@ -40,17 +37,6 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
     @Override
     public void onMessageClicked(Message message) {
         SingletonToast.getInstance().log(message.getMessage());
-    }
-
-    @Override
-    public void onMessageProfileClicked(long senderTableId) {
-        startProfileActivity(senderTableId);
-    }
-
-    private void startProfileActivity(long userId) {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_ID, userId);
-        startActivity(intent);
     }
 
     @Override

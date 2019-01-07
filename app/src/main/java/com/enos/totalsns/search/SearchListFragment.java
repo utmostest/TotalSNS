@@ -13,11 +13,13 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentSearchBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.timeline.list.TimelineAdapter;
+import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
-import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
+
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +31,7 @@ public class SearchListFragment extends Fragment {
 
     private OnUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
+    private OnMoreUserButtonClickListener mMoreUserListener;
 
     private SearchViewModel mViewModel;
     private FragmentSearchBinding mDataBinding;
@@ -84,6 +87,22 @@ public class SearchListFragment extends Fragment {
         });
         mViewModel.getSearchList().observe(this, (list) -> {
             SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            List<Article> old = adapter.getArticleList();
+            if (old != null && old.size() > 0) {
+                Article oldLast = old.get(0);
+                Article oldFirst = old.get(old.size() - 1);
+                if (list != null && list.size() > 0) {
+                    Article last = list.get(0);
+                    Article first = list.get(list.size() - 1);
+                    if (first.getPostedAt() > oldLast.getPostedAt()) {
+                        list.addAll(list.size(), old);
+                    } else if (last.getPostedAt() < oldFirst.getPostedAt()) {
+                        list.addAll(0, old);
+                    }
+                } else if (list != null) {
+                    list.addAll(old);
+                }
+            }
             adapter.swapTimelineList(list);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
@@ -97,23 +116,35 @@ public class SearchListFragment extends Fragment {
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-        SearchAdapter searchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(), mListener, mArticleListener);
+        SearchAdapter searchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(),
+                mListener, mArticleListener, mMoreUserListener);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
-        searchAdapter.setEnableHeader(true, true, null);
+        searchAdapter.setEnableHeader(true, true);
         mDataBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
         mDataBinding.searchArticleRv.setAdapter(searchAdapter);
+        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+            switch (direction) {
+                case TOP:
+                    mViewModel.fetchRecent();
+                    break;
+                case BOTTOM:
+                    mViewModel.fetchPast();
+                    break;
+            }
+        });
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnArticleClickListener && context instanceof OnUserClickListener) {
+        if (context instanceof OnArticleClickListener && context instanceof OnUserClickListener && context instanceof OnMoreUserButtonClickListener) {
             mListener = (OnUserClickListener) context;
             mArticleListener = (OnArticleClickListener) context;
+            mMoreUserListener = (OnMoreUserButtonClickListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnSearchClickListener and OnUserClickListener");
+                    + " must implement OnSearchClickListener and OnUserClickListener and OnMoreUserButtonClickListener");
         }
     }
 
