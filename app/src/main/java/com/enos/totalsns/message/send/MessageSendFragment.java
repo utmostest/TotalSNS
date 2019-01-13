@@ -1,8 +1,8 @@
 package com.enos.totalsns.message.send;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -19,7 +19,6 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.databinding.FragmentMessageSendBinding;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
-import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class MessageSendFragment extends Fragment implements OnUserToSendClickListener {
@@ -76,12 +75,6 @@ public class MessageSendFragment extends Fragment implements OnUserToSendClickLi
         });
     }
 
-    private void startDirectMessageDetailActivity(long senderId) {
-        Intent intent = new Intent(getActivity(), MessageDetailActivity.class);
-        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
-        startActivity(intent);
-    }
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -89,8 +82,11 @@ public class MessageSendFragment extends Fragment implements OnUserToSendClickLi
 
     @Override
     public void onUserToSendClicked(UserInfo userInfo) {
-        getActivity().finish();
-        startDirectMessageDetailActivity(userInfo.getLongUserId());
+        Activity context = getActivity();
+        if (context != null) {
+            context.finish();
+            MessageDetailActivity.start(context, userInfo.getLongUserId());
+        }
     }
 
     @Override

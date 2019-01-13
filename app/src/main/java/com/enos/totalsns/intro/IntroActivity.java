@@ -10,9 +10,9 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
-import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.databinding.ActivityIntroBinding;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -127,8 +127,11 @@ public class IntroActivity extends AppCompatActivity {
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             finish();
-            Intent intent = new Intent(this, activity);
-            startActivity(intent);
+            if (activity.isAssignableFrom(ContentsActivity.class)) {
+                ContentsActivity.start(this);
+            }else if(activity.isAssignableFrom(AccountsActivity.class)){
+                AccountsActivity.start(this);
+            }
         }
     }
 }

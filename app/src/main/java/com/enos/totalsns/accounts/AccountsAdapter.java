@@ -99,6 +99,7 @@ public class AccountsAdapter extends HFSupportAdapter {
     }
 
     public void swapAccountsList(List<Account> list) {
+        isItemChanged = true;
         if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();

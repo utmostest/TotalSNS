@@ -59,11 +59,6 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         if (list == null || mFilteredList == null) {
             mFilteredList = list;
             notifyDataSetChanged();
-            return;
-        }
-        if (mFilteredList == null) {
-            mFilteredList = list;
-            notifyDataSetChanged();
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 
@@ -138,7 +133,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), mItem.getUrlMap());
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), (autoLinkMode, autoLinkText) -> {
+                if (mListener != null)
+                    mListener.onAutoLinkClicked(autoLinkMode, autoLinkText, mItem.getUrlMap());
+            });
 
             binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());
@@ -153,7 +151,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onArticleClicked(binding,mItem, position);
+                    mListener.onArticleClicked(binding, mItem, position);
                 }
             });
             binding.tlProfileImg.setOnClickListener(v -> {

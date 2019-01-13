@@ -108,7 +108,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * don't override it
      **/
-    private int getActualPosition(int pos) {
+    public int getActualPosition(int pos) {
         checkItems();
         int size = mValues == null ? 0 : mValues.size();
         boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);

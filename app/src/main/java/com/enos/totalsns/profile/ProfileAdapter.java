@@ -189,7 +189,10 @@ public class ProfileAdapter extends HFSupportAdapter {
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), mItem.getUrlMap());
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
+                if (mArticleListener != null)
+                    mArticleListener.onAutoLinkClicked(autoLinkMode, matchedText, mItem.getUrlMap());
+            }));
 
             binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());

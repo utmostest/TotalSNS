@@ -266,4 +266,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return super.onOptionsItemSelected(item);
         }
     }
+
+    public static void start(Context context){
+        Intent intent = new Intent(context, SettingsActivity.class);
+        context.startActivity(intent);
+    }
 }

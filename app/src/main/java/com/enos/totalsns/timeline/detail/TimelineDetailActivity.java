@@ -1,15 +1,31 @@
 package com.enos.totalsns.timeline.detail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
+import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
+import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.profile.ProfileActivity;
+import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.autolink.AutoLinkMode;
+
+import java.util.HashMap;
 
 /**
  * An activity representing a single Item detail screen. This
@@ -17,7 +33,7 @@ import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
  * item details are presented side-by-side with a list of items
  * in a {@link ContentsActivity}.
  */
-public class TimelineDetailActivity extends AppCompatActivity {
+public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener {
 
     ActivityTimelineDetailBinding mDataBinding;
 
@@ -61,5 +77,85 @@ public class TimelineDetailActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+
+    }
+
+    @Override
+    public void onArticleImageClicked(ImageView iv, Article article, int position) {
+
+    }
+
+    @Override
+    public void onArticleProfileImgClicked(Article article) {
+        ProfileActivity.start(this, article.getLongUserId());
+    }
+
+    @Override
+    public void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> hashMap) {
+        String matchedText = ActivityUtils.removeUnnecessaryString(text);
+
+        SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
+        Intent intent = new Intent();
+        switch (autoLinkMode) {
+            case MODE_URL:
+                String normalizedString = ActivityUtils.getExpandedUrlFromMap(hashMap, matchedText);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(normalizedString));
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_PHONE:
+                intent.setAction(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + matchedText));
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_EMAIL:
+                intent.setAction(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{matchedText});
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_HASHTAG:
+            case MODE_MENTION:
+//                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+//                viewModel.getSearchQuery().postValue(text);
+                return;
+        }
+    }
+
+    public static void startWithTransition(AppCompatActivity context, ItemArticleBinding binding, Article mItem, boolean enableImage) {
+//        AppCompatUtils.setExitCallback(this);
+        if (enableImage) {
+            start(context, mItem,
+                    Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)),
+                    Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)),
+                    Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)),
+                    Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)),
+                    Pair.create(binding.tlMessage, context.getString(R.string.tran_message)),
+                    Pair.create(binding.imageContainer, context.getString(R.string.tran_image_container)));
+        } else {
+            start(context, mItem,
+                    Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)),
+                    Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)),
+                    Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)),
+                    Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)),
+                    Pair.create(binding.tlMessage, context.getString(R.string.tran_message))
+            );
+        }
+    }
+
+    public static void start(Context context, Article mItem) {
+        Intent intent = new Intent(context, TimelineDetailActivity.class);
+        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+        context.startActivity(intent);
+    }
+
+    public static void start(AppCompatActivity context, Article mItem, Pair<View, String>... pairs) {
+        Intent intent = new Intent(context, TimelineDetailActivity.class);
+        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+        AppCompatUtils.startActivityWithTransition(context, intent, pairs);
     }
 }

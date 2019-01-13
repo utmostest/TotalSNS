@@ -1,6 +1,7 @@
 package com.enos.totalsns.timeline.detail;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -8,20 +9,16 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
-import com.enos.totalsns.ContentsActivity;
+import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.GlideUtils;
-import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 /**
@@ -42,6 +39,7 @@ public class TimelineDetailFragment extends Fragment {
     TimelineDetailViewModel viewModel;
 
     FragmentTimelineDetailBinding mDataBinding;
+    private OnArticleClickListener mListener;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -72,6 +70,16 @@ public class TimelineDetailFragment extends Fragment {
         return mDataBinding.getRoot();
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof OnArticleClickListener) {
+            mListener = (OnArticleClickListener) context;
+        } else {
+            throw new IllegalArgumentException("you must implement OnArticleClickListener");
+        }
+    }
+
     private void updateUI() {
         if (mArticle != null) {
             CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
@@ -79,6 +87,9 @@ public class TimelineDetailFragment extends Fragment {
                 appBarLayout.setTitle(getString(R.string.title_timeline_detail));
             }
             GlideUtils.loadProfileImage(getContext(), mArticle.getProfileImg(), mDataBinding.tldProfileImg);
+            mDataBinding.tldProfileImg.setOnClickListener((v) -> {
+                if (mListener != null) mListener.onArticleProfileImgClicked(mArticle);
+            });
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
             mDataBinding.tldTime.setText(ConvertUtils.getDateString(mArticle.getPostedAt()));
@@ -92,13 +103,16 @@ public class TimelineDetailFragment extends Fragment {
             mDataBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             mDataBinding.imageContainer.setImageCount(urlSize);
             mDataBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
-                SingletonToast.getInstance().log(imgUrls[pos]);
+                if (mListener != null) mListener.onArticleImageClicked(iv, mArticle, pos);
             });
             if (hasImage) {
                 mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);
             }
 
-            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), mArticle.getUrlMap());
+            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), ((autoLinkMode, matchedText) -> {
+                if (mListener != null)
+                    mListener.onAutoLinkClicked(autoLinkMode, matchedText, mArticle.getUrlMap());
+            }));
         }
     }
 }

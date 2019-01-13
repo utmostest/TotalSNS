@@ -1,5 +1,7 @@
 package com.enos.totalsns.nearby;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -18,5 +20,10 @@ public class NearbyArticleActivity extends AppCompatActivity {
     private void initFragment() {
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         getSupportFragmentManager().beginTransaction().add(R.id.container, NearbyArticleFragment.newInstance(), NearbyArticleFragment.class.getSimpleName()).commitNow();
+    }
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, NearbyArticleActivity.class);
+        context.startActivity(intent);
     }
 }

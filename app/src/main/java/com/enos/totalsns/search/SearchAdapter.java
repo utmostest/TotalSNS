@@ -6,7 +6,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.enos.totalsns.data.Article;
@@ -136,11 +135,6 @@ public class SearchAdapter extends HFSupportAdapter {
         if (list == null || mValues == null) {
             mValues = list;
             notifyDataSetChanged();
-            return;
-        }
-        if (mValues == null) {
-            mValues = list;
-            notifyDataSetChanged();
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 
@@ -218,7 +212,10 @@ public class SearchAdapter extends HFSupportAdapter {
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), mItem.getUrlMap());
+            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
+                if (mArticleListener != null)
+                    mArticleListener.onAutoLinkClicked(autoLinkMode, matchedText, mItem.getUrlMap());
+            }));
 
             binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());
@@ -267,6 +264,7 @@ public class SearchAdapter extends HFSupportAdapter {
             binding.searchRv.setHasFixedSize(true);
             binding.searchRv.setLayoutManager(new LinearLayoutManager(binding.getRoot().getContext(), LinearLayoutManager.HORIZONTAL, false));
             binding.searchRv.setRecycledViewPool(recycledViewPool);
+            binding.searchRv.setNestedScrollingEnabled(false);
             binding.searchMoreUser.setOnClickListener(v -> {
                 if (moreUserButtonClickListener != null)
                     moreUserButtonClickListener.onMoreUserButtonClicked();

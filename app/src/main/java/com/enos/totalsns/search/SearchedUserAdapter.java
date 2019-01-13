@@ -58,12 +58,6 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
         if (list == null || mFilteredList == null) {
             mFilteredList = list;
             notifyDataSetChanged();
-            return;
-        }
-
-        if (mFilteredList == null) {
-            mFilteredList = list;
-            notifyDataSetChanged();
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 
@@ -107,7 +101,7 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
         public void bind(int position) {
             binding.getRoot().setOnClickListener((view) -> {
-                if (mListener != null) mListener.onUserItemClicked(mItem);
+                if (mListener != null) mListener.onUserItemClicked(binding, mItem);
             });
             binding.itemUserFollowBtn.setOnClickListener((view) -> {
                 if (mListener != null) mListener.onFollowButtonClicked(mItem);

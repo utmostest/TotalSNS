@@ -1,5 +1,6 @@
 package com.enos.totalsns.userlist;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -8,8 +9,9 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
+import com.enos.totalsns.databinding.ItemSearchUserBinding;
+import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.util.SingletonToast;
 
 public class UserListActivity extends AppCompatActivity implements OnUserClickListener {
@@ -35,8 +37,13 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
     }
 
     @Override
-    public void onUserItemClicked(UserInfo item) {
-        startProfileActivity(item);
+    public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
+        ProfileActivity.startWithTransition(this, binding, item);
+    }
+
+    @Override
+    public void onUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
+
     }
 
     @Override
@@ -44,9 +51,17 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
 
     }
 
-    private void startProfileActivity(UserInfo userInfo) {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_INFO, userInfo);
-        startActivity(intent);
+    public static void startFollowList(Context context, long userId, boolean isFollower) {
+        QueryFollow queryFollow = new QueryFollow(QueryFollow.FIRST, userId, -1, isFollower);
+        Intent intent = new Intent(context, UserListActivity.class);
+        intent.putExtra(UserListFragment.ARG_QUERY_FOLLOW, queryFollow);
+        context.startActivity(intent);
+    }
+
+    public static void startUserList(Context context, String query) {
+        QuerySearchUser querySearchUser = new QuerySearchUser(QueryFollow.FIRST, query);
+        Intent intent = new Intent(context, UserListActivity.class);
+        intent.putExtra(UserListFragment.ARG_QUERY_SEARCH_USER, querySearchUser);
+        context.startActivity(intent);
     }
 }

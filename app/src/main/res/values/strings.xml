@@ -39,6 +39,13 @@
     <string name="tran_message">message</string>
     <string name="tran_image_container">imageContainer</string>
 
+    <string name="tran_profile_image_u">imageTransition</string>
+    <string name="tran_user_name_u">nameTransition</string>
+    <string name="tran_user_id_u">idTransition</string>
+    <string name="tran_message_u">msgTransition</string>
+    <string name="tran_follow_btn">btnTransition</string>
+    <string name="tran_profile_back">backTransition</string>
+
     <string name="finish_message">%d초가 지나기 전에 한 번 더 누르시면 종료됩니다.</string>
     <string name="message_write_hint">쪽지 작성하기</string>
     <string name="more_user">유저 더보기</string>

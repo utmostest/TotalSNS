@@ -2,6 +2,7 @@ package com.enos.totalsns.accounts;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -65,22 +66,16 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             finish();
-            Intent intent = new Intent(this, activity);
-            startActivity(intent);
-        }
-    }
-
-    private void finishAndStartActivity(Intent intent) {
-        if (mHasActivityStarted.compareAndSet(false, true)) {
-            finish();
-            startActivity(intent);
+            if (activity.isAssignableFrom(LoginActivity.class)) {
+                LoginActivity.start(this, Constants.TWITTER);
+            } else if (activity.isAssignableFrom(ContentsActivity.class)) {
+                ContentsActivity.start(this);
+            }
         }
     }
 
     private void onLoginFailed(String message) {
-        Intent intent = new Intent(AccountsActivity.this, LoginActivity.class);
-        intent.putExtra(LoginActivity.SNS_TYPE_KEY, Constants.TWITTER);
-        finishAndStartActivity(intent);
+        finishAndStartActivity(LoginActivity.class);
     }
 
     private void onLoginSucceed(Account account) {
@@ -96,9 +91,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
 
     @Override
     public void onNewAccountButtonClicked(int snsType) {
-        Intent intent = new Intent(this, LoginActivity.class);
-        intent.putExtra(LoginActivity.SNS_TYPE_KEY, snsType);
-        finishAndStartActivity(intent);
+        finishAndStartActivity(LoginActivity.class);
     }
 
     private String getSNSTypeString(int snsType) {
@@ -138,5 +131,10 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         fragmentManager.beginTransaction().replace(R.id.accounts_frag_container, AccountFragment.newInstance(snsType)).commit();
 
         return menuSelected;
+    }
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, AccountsActivity.class);
+        context.startActivity(intent);
     }
 }

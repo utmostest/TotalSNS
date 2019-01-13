@@ -8,12 +8,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-
-import com.enos.totalsns.R;
-import com.enos.totalsns.widget.ImageContainerCardView;
 
 import java.util.List;
 
@@ -36,24 +31,6 @@ public class AppCompatUtils {
             @Override
             public void onSharedElementEnd(List<String> names, List<View> elements, List<View> snapshots) {
                 super.onSharedElementEnd(names, elements, snapshots);
-                //Log.i("End", "setExitCallback");
-                if (elements.size() > 0) {
-                    try {
-                        ImageContainerCardView containerCardView = ((ViewGroup) elements.get(0).getParent()).findViewById(R.id.imageContainer);
-                        containerCardView.setVisibility(containerCardView.getImageCount() > 0 ? View.VISIBLE : View.GONE);
-                    } catch (Exception ignored) {
-                    }
-                }
-//                    for (final View view : elements) {
-//                        if (view instanceof ImageContainerCardView) {
-//                            view.post(() -> {
-//                                int visibility = View.GONE;
-//                                if (((ImageContainerCardView) view).getImageCount() > 0)
-//                                    visibility = View.VISIBLE;
-//                                view.setVisibility(visibility);
-//                            });
-//                        }
-//                    }
             }
         });
 
@@ -66,24 +43,6 @@ public class AppCompatUtils {
                                            List<View> elements,
                                            List<View> snapshots) {
                 super.onSharedElementEnd(names, elements, snapshots);
-                //Log.i("End", "setEnterCallback");
-                if (elements.size() > 0) {
-                    try {
-                        ImageContainerCardView containerCardView = ((ViewGroup) elements.get(0).getParent()).findViewById(R.id.imageContainer);
-                        containerCardView.setVisibility(containerCardView.getImageCount() > 0 ? View.VISIBLE : View.GONE);
-                    } catch (Exception ignored) {
-                    }
-                }
-//                    for (final View view : elements) {
-//                        if (view instanceof ImageContainerCardView) {
-//                            view.post(() -> {
-//                                int visibility = View.GONE;
-//                                if (((ImageContainerCardView) view).getImageCount() > 0)
-//                                    visibility = View.VISIBLE;
-//                                view.setVisibility(visibility);
-//                            });
-//                        }
-//                    }
             }
         });
     }

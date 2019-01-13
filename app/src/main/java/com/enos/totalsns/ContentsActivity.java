@@ -1,10 +1,12 @@
 package com.enos.totalsns;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.Nullable;
@@ -12,7 +14,6 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.util.Pair;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -31,40 +32,37 @@ import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
-import com.enos.totalsns.data.source.remote.QueryFollow;
-import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
+import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.mention.MentionListFragment;
 import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
-import com.enos.totalsns.message.detail.MessageDetailFragment;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.send.MessageSendActivity;
 import com.enos.totalsns.nearby.NearbyArticleActivity;
 import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.profile.ProfileFragment;
 import com.enos.totalsns.search.OnMoreUserButtonClickListener;
 import com.enos.totalsns.search.SearchListFragment;
 import com.enos.totalsns.settings.SettingsActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
-import com.enos.totalsns.timeline.detail.TimelineDetailFragment;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
 import com.enos.totalsns.userlist.OnFollowListener;
 import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.userlist.UserListActivity;
-import com.enos.totalsns.userlist.UserListFragment;
-import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ColorUtils;
 import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
+import com.enos.totalsns.util.autolink.AutoLinkMode;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
+import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentsActivity extends AppCompatActivity
@@ -205,16 +203,16 @@ public class ContentsActivity extends AppCompatActivity
             followingNum.setText(String.valueOf(user.getFollowingCount()));
 
             followingLabel.setOnClickListener(v -> {
-                startFollowActivity(user.getLongUserId(), false);
+                UserListActivity.startFollowList(this, user.getLongUserId(), false);
             });
             followingNum.setOnClickListener(v -> {
-                startFollowActivity(user.getLongUserId(), false);
+                UserListActivity.startFollowList(this, user.getLongUserId(), false);
             });
             followerLabel.setOnClickListener(v -> {
-                startFollowActivity(user.getLongUserId(), true);
+                UserListActivity.startFollowList(this, user.getLongUserId(), true);
             });
             followerNum.setOnClickListener(v -> {
-                startFollowActivity(user.getLongUserId(), true);
+                UserListActivity.startFollowList(this, user.getLongUserId(), true);
             });
 
             GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
@@ -260,7 +258,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     private void initFab() {
-        mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+        mDataBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
     }
 
     private void initObserver() {
@@ -268,7 +266,7 @@ public class ContentsActivity extends AppCompatActivity
             if (isFinished != null && isFinished) {
                 if (mSignOutOnce.compareAndSet(false, true)) {
                     finish();
-                    startActivity(new Intent(this, AccountsActivity.class));
+                    AccountsActivity.start(this);
                 }
             }
         });
@@ -279,101 +277,6 @@ public class ContentsActivity extends AppCompatActivity
                 }
             }
         });
-    }
-
-    private void startTimelineDetailActivityWithImage(ItemArticleBinding binding, Article mItem, boolean enableImage) {
-//        AppCompatUtils.setExitCallback(this);
-        if (enableImage) {
-            startTimelineDetailActivity(mItem,
-                    Pair.create(binding.tlProfileImg, getString(R.string.tran_profile_image)),
-                    Pair.create(binding.tlUserName, getString(R.string.tran_user_name)),
-                    Pair.create(binding.tlUserId, getString(R.string.tran_user_id)),
-                    Pair.create(binding.tlTime, getString(R.string.tran_created_at)),
-                    Pair.create(binding.tlMessage, getString(R.string.tran_message)),
-                    Pair.create(binding.imageContainer, getString(R.string.tran_image_container)));
-        } else {
-            startTimelineDetailActivity(mItem,
-                    Pair.create(binding.tlProfileImg, getString(R.string.tran_profile_image)),
-                    Pair.create(binding.tlUserName, getString(R.string.tran_user_name)),
-                    Pair.create(binding.tlUserId, getString(R.string.tran_user_id)),
-                    Pair.create(binding.tlTime, getString(R.string.tran_created_at)),
-                    Pair.create(binding.tlMessage, getString(R.string.tran_message))
-            );
-        }
-    }
-
-    private void startTimelineWriteActivity() {
-        Intent write = new Intent(this, TimelineWriteActivity.class);
-        startActivity(write);
-    }
-
-    private void startTimelineDetailActivity(Article mItem) {
-        Intent intent = new Intent(ContentsActivity.this, TimelineDetailActivity.class);
-        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        startActivity(intent);
-    }
-
-    private void startTimelineDetailActivity(Article mItem, Pair<View, String>... pairs) {
-        Intent intent = new Intent(ContentsActivity.this, TimelineDetailActivity.class);
-        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        AppCompatUtils.startActivityWithTransition(this, intent, pairs);
-    }
-
-    private void startDirectMessageDetailActivity(long senderId) {
-        Intent intent = new Intent(ContentsActivity.this, MessageDetailActivity.class);
-        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
-        startActivity(intent);
-    }
-
-    private void startDirectMessageSendActivity() {
-        Intent intent = new Intent(this, MessageSendActivity.class);
-        startActivity(intent);
-    }
-
-    private void startProfileActivity(UserInfo userInfo) {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_INFO, userInfo);
-        startActivity(intent);
-    }
-
-    private void startProfileActivity(long longUserId) {
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_ID, longUserId);
-        startActivity(intent);
-    }
-
-    private void startProfileActivityWithTransition(ItemSearchUserBinding binding, UserInfo mItem) {
-        AppCompatUtils.setExitCallback(this);
-        Intent intent = new Intent(this, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        AppCompatUtils.startActivityWithTransition(this, intent, Pair.create(binding.itemUserProfile, getString(R.string.tran_profile_image)),
-                Pair.create(binding.itemUserName, getString(R.string.tran_user_name)),
-                Pair.create(binding.itemUserScreenId, getString(R.string.tran_user_id)),
-                Pair.create(binding.itemUserMessage, getString(R.string.tran_message)));
-    }
-
-    private void startFollowActivity(long userId, boolean isFollower) {
-        QueryFollow queryFollow = new QueryFollow(QueryFollow.FIRST, userId, -1, isFollower);
-        Intent intent = new Intent(this, UserListActivity.class);
-        intent.putExtra(UserListFragment.ARG_QUERY_FOLLOW, queryFollow);
-        startActivity(intent);
-    }
-
-    private void startUserListActivity(String query) {
-        QuerySearchUser querySearchUser = new QuerySearchUser(QueryFollow.FIRST, query);
-        Intent intent = new Intent(this, UserListActivity.class);
-        intent.putExtra(UserListFragment.ARG_QUERY_SEARCH_USER, querySearchUser);
-        startActivity(intent);
-    }
-
-    private void startNearByArticleActivity() {
-        Intent intent = new Intent(this, NearbyArticleActivity.class);
-        startActivity(intent);
-    }
-
-    private void startSettingsActivity() {
-        Intent intent = new Intent(this, SettingsActivity.class);
-        startActivity(intent);
     }
 
     private void signOut() {
@@ -438,9 +341,9 @@ public class ContentsActivity extends AppCompatActivity
         } else if (id == R.id.nav_dr_edit) {
 
         } else if (id == R.id.nav_dr_nearby) {
-            startNearByArticleActivity();
+            NearbyArticleActivity.start(this);
         } else if (id == R.id.nav_dr_setting) {
-            startSettingsActivity();
+            SettingsActivity.start(this);
         } else if (id == R.id.nav_dr_sign_out) {
             signOut();
         }
@@ -516,9 +419,9 @@ public class ContentsActivity extends AppCompatActivity
             String current = currentFragment.getClass().getSimpleName();
             if (current.equals(MessageListFragment.class.getSimpleName())) {
                 resource = R.drawable.ic_chat_white_24dp;
-                mDataBinding.appBar.fab.setOnClickListener(view -> startDirectMessageSendActivity());
+                mDataBinding.appBar.fab.setOnClickListener(view -> MessageSendActivity.start(this));
             } else {
-                mDataBinding.appBar.fab.setOnClickListener(view -> startTimelineWriteActivity());
+                mDataBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
             }
         }
         mDataBinding.appBar.fab.setImageResource(resource);
@@ -527,8 +430,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
-//        startTimelineDetailActivity(mItem);
-        startTimelineDetailActivityWithImage(binding, mItem, ConvertUtils.getActualSize(mItem.getImageUrls()) > 0);
+        TimelineDetailActivity.startWithTransition(this, binding, mItem, ConvertUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
     @Override
@@ -539,18 +441,55 @@ public class ContentsActivity extends AppCompatActivity
     @Override
     public void onArticleProfileImgClicked(Article article) {
         if (article != null) {
-            startProfileActivity(article.getLongUserId());
+            ProfileActivity.start(this, article.getLongUserId());
+        }
+    }
+
+    @Override
+    public void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> hashMap) {
+        String matchedText = ActivityUtils.removeUnnecessaryString(text);
+
+        SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
+        Intent intent = new Intent();
+        switch (autoLinkMode) {
+            case MODE_URL:
+                String normalizedString = ActivityUtils.getExpandedUrlFromMap(hashMap, matchedText);
+                intent.setAction(Intent.ACTION_VIEW);
+                intent.setData(Uri.parse(normalizedString));
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_PHONE:
+                intent.setAction(Intent.ACTION_DIAL);
+                intent.setData(Uri.parse("tel:" + matchedText));
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_EMAIL:
+                intent.setAction(Intent.ACTION_SENDTO);
+                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.putExtra(Intent.EXTRA_EMAIL, new String[]{matchedText});
+                ActivityUtils.checkResolveAndStartActivity(intent, this);
+                return;
+            case MODE_HASHTAG:
+            case MODE_MENTION:
+                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+                viewModel.getSearchQuery().postValue(text);
+                return;
         }
     }
 
     @Override
     public void onMessageClicked(Message item) {
-        startDirectMessageDetailActivity(item.getSenderTableId());
+        MessageDetailActivity.start(this, item.getSenderTableId());
     }
 
     @Override
-    public void onUserItemClicked(UserInfo item) {
-        startProfileActivity(item);
+    public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
+        ProfileActivity.startWithTransition(this, binding, item);
+    }
+
+    @Override
+    public void onUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
+        ProfileActivity.startWithTransition(this, binding, item);
     }
 
     @Override
@@ -561,14 +500,19 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onFollowTextClicked(UserInfo info, boolean isFollower) {
-        startFollowActivity(info.getLongUserId(), isFollower);
+        UserListActivity.startFollowList(this, info.getLongUserId(), isFollower);
     }
 
     @Override
     public void onMoreUserButtonClicked() {
         String query = viewModel.getSearchQuery().getValue();
         if (query != null && query.length() > 0) {
-            startUserListActivity(query);
+            UserListActivity.startUserList(this, query);
         }
+    }
+
+    public static void start(Context context) {
+        Intent intent = new Intent(context, ContentsActivity.class);
+        context.startActivity(intent);
     }
 }

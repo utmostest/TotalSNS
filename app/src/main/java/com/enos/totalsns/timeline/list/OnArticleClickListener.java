@@ -4,6 +4,9 @@ import android.widget.ImageView;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.util.autolink.AutoLinkMode;
+
+import java.util.HashMap;
 
 public interface OnArticleClickListener {
     void onArticleClicked(ItemArticleBinding binding, Article mItem, int position);
@@ -11,4 +14,6 @@ public interface OnArticleClickListener {
     void onArticleImageClicked(ImageView iv, Article article, int position);
 
     void onArticleProfileImgClicked(Article article);
+
+    void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> map);
 }

@@ -1,5 +1,7 @@
 package com.enos.totalsns.message.detail;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -48,5 +50,11 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    public static void start(Context context, long senderId) {
+        Intent intent = new Intent(context, MessageDetailActivity.class);
+        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
+        context.startActivity(intent);
     }
 }

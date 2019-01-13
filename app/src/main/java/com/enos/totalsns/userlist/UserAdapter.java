@@ -112,7 +112,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onUserItemClicked(mItem);
+                    mListener.onUserItemClicked(binding, mItem);
                 }
             });
             binding.itemUserFollowBtn.setOnClickListener(v -> {

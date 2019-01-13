@@ -1,6 +1,7 @@
 package com.enos.totalsns.login;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -118,13 +119,19 @@ public class LoginActivity extends AppCompatActivity {
     private void finishAndstartTimelineActivity() {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             finish();
-            Intent intent = new Intent(LoginActivity.this, ContentsActivity.class);
-            startActivity(intent);
+            ContentsActivity.start(this);
         }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public static void start(Context context, int snsType) {
+        Intent intent = new Intent(context, LoginActivity.class);
+        intent.putExtra(LoginActivity.SNS_TYPE_KEY, snsType);
+
+        context.startActivity(intent);
     }
 }
