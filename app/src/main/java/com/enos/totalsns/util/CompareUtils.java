@@ -11,6 +11,7 @@ import java.util.HashMap;
 public class CompareUtils {
 
     public static int compareArticle(Article one, Article other) {
+        if (one == null || other == null) return 0;
         long different = (((Article) other).getArticleId() - ((Article) one).getArticleId());
         if (different > 0) {
             return 1;
@@ -21,6 +22,7 @@ public class CompareUtils {
     }
 
     public static int compareUserInfo(UserInfo one, UserInfo other) {
+        if (one == null || other == null) return 0;
         long different = (((UserInfo) other).getLongUserId() - ((UserInfo) one).getLongUserId());
         if (different > 0) {
             return 1;
@@ -60,11 +62,11 @@ public class CompareUtils {
         return oldAccount.getId() == newAccount.getId() &&
                 oldAccount.getSnsType() == newAccount.getSnsType() &&
                 oldAccount.isCurrent() == newAccount.isCurrent() &&
-                isStringEqual(oldAccount.getName(),newAccount.getName()) &&
-                isStringEqual(oldAccount.getOauthSecret(),newAccount.getOauthSecret()) &&
-                isStringEqual(oldAccount.getOauthKey(),newAccount.getOauthKey()) &&
-                isStringEqual(oldAccount.getProfileImage(),newAccount.getProfileImage()) &&
-                isStringEqual(oldAccount.getScreenName(),newAccount.getScreenName());
+                isStringEqual(oldAccount.getName(), newAccount.getName()) &&
+                isStringEqual(oldAccount.getOauthSecret(), newAccount.getOauthSecret()) &&
+                isStringEqual(oldAccount.getOauthKey(), newAccount.getOauthKey()) &&
+                isStringEqual(oldAccount.getProfileImage(), newAccount.getProfileImage()) &&
+                isStringEqual(oldAccount.getScreenName(), newAccount.getScreenName());
     }
 
     public static boolean isMessageSame(Message oldArticle, Message newArticle) {
@@ -83,11 +85,11 @@ public class CompareUtils {
                 oldMessage.getSenderId() == newMessage.getSenderId() &&
                 oldMessage.getTableUserId() == newMessage.getTableUserId() &&
                 oldMessage.getSenderTableId() == newMessage.getSenderTableId() &&
-                isStringEqual(oldMessage.getMessage(),newMessage.getMessage()) &&
-                isStringEqual(oldMessage.getSenderName(),newMessage.getSenderName()) &&
-                isStringEqual(oldMessage.getSenderScreenId(),newMessage.getSenderScreenId()) &&
-                isStringEqual(oldMessage.getSenderProfile(),newMessage.getSenderProfile()) &&
-                isStringEqual(oldMessage.getUserDmId(),newMessage.getUserDmId());
+                isStringEqual(oldMessage.getMessage(), newMessage.getMessage()) &&
+                isStringEqual(oldMessage.getSenderName(), newMessage.getSenderName()) &&
+                isStringEqual(oldMessage.getSenderScreenId(), newMessage.getSenderScreenId()) &&
+                isStringEqual(oldMessage.getSenderProfile(), newMessage.getSenderProfile()) &&
+                isStringEqual(oldMessage.getUserDmId(), newMessage.getUserDmId());
     }
 
     public static boolean isUserInfoSame(UserInfo oldArticle, UserInfo newArticle) {

@@ -107,7 +107,7 @@ public class Account {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Account) {
-            return CompareUtils.isAccountEqual(this, (Account) obj);
+            return CompareUtils.isAccountSame(this, (Account) obj);
         }
         return false;
     }

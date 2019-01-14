@@ -240,7 +240,7 @@ public class Article implements Parcelable {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Article) {
-            return CompareUtils.isArticleEqual(this, (Article) obj);
+            return CompareUtils.isArticleSame(this, (Article) obj);
         }
         return false;
     }

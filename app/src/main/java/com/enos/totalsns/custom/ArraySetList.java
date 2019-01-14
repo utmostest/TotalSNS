@@ -3,38 +3,59 @@ package com.enos.totalsns.custom;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.function.Predicate;
 
 public class ArraySetList<E> extends ArrayList<E> {
 
-    private HashSet<Object> set = new HashSet<>();
-
-    public ArraySetList(Collection c) {
-        super();
-        addAll(c);
-    }
+    private HashSet<E> set = new HashSet<>();
+    private Comparator<E> comparator = null;
 
     public ArraySetList() {
         super();
     }
 
+    public ArraySetList(Collection c) {
+        super();
+        this.addAll(c);
+    }
+
+    public ArraySetList(Comparator<E> comparator) {
+        super();
+        this.comparator = comparator;
+    }
+
+    public ArraySetList(Collection<? extends E> c, Comparator<E> comparator) {
+        super();
+        this.comparator = comparator;
+        this.addAll(c);
+    }
+
+    public void setComparator(Comparator<E> comparator) {
+        this.comparator = comparator;
+        Collections.sort(this, this.comparator);
+    }
 
     @Override
     public boolean add(E element) {
         if (set.add(element)) {
-            return super.add(element);
+            boolean result = super.add(element);
+            if (comparator != null) Collections.sort(this, comparator);
+            return result;
         }
         return false;
     }
 
     @Override
     public void add(int index, E element) {
-        if (set.add(element)) {
+        if (comparator != null) {
+            this.add(element);
+        } else if (set.add(element)) {
             super.add(index, element);
         }
     }
@@ -50,7 +71,9 @@ public class ArraySetList<E> extends ArrayList<E> {
             }
         }
         if (hasInsert) {
-            return super.addAll(list);
+            boolean result = super.addAll(list);
+            if (comparator != null) Collections.sort(this, comparator);
+            return result;
         }
         return false;
     }
@@ -66,7 +89,9 @@ public class ArraySetList<E> extends ArrayList<E> {
             }
         }
         if (hasInsert) {
-            return super.addAll(index, list);
+            if (comparator != null) {
+                this.addAll(c);
+            } else return super.addAll(index, list);
         }
         return false;
     }
@@ -101,10 +126,13 @@ public class ArraySetList<E> extends ArrayList<E> {
         return super.removeAll(c);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public boolean removeIf(@NonNull Predicate<? super E> filter) {
-        return super.removeIf(filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            set.removeIf(filter);
+            return super.removeIf(filter);
+        }
+        return false;
     }
 
     @Override

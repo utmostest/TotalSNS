@@ -230,7 +230,7 @@ public class UserInfo implements Parcelable {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof UserInfo) {
-            return CompareUtils.isUserInfoEqual(this, (UserInfo) obj);
+            return CompareUtils.isUserInfoSame(this, (UserInfo) obj);
         }
         return false;
     }

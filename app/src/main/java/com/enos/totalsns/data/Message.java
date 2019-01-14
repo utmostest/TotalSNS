@@ -155,7 +155,7 @@ public class Message {
     @Override
     public boolean equals(@Nullable Object obj) {
         if (obj instanceof Message) {
-            return CompareUtils.isMessageEqual(this, (Message) obj);
+            return CompareUtils.isMessageSame(this, (Message) obj);
         }
         return false;
     }
