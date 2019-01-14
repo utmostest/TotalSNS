@@ -6,6 +6,7 @@ import android.os.Parcelable;
 public class QueryFollow implements Parcelable {
     private long userId;
     private boolean isFollower;
+    // -1 is first query cursor
     private long cursor = -1;
     private long nextCursor;
     private long previosCursor;

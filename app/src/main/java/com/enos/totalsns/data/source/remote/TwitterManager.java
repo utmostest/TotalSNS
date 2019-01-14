@@ -342,18 +342,18 @@ public class TwitterManager {
                 queryFollow = follow;
                 break;
             case QueryFollow.PREVIOUS:
-                queryFollow.setCursor(queryFollow.getPreviosCursor());
+                follow.setCursor(queryFollow.getPreviosCursor());
                 break;
             case QueryFollow.NEXT:
-                queryFollow.setCursor(queryFollow.getNextCursor());
+                follow.setCursor(queryFollow.getNextCursor());
                 break;
         }
 
         PagableResponseList<User> list = null;
         if (queryFollow.isFollower()) {
-            list = mTwitter.getFollowersList(queryFollow.getUserId(), queryFollow.getCursor(), Constants.USER_LIST_COUNT);
+            list = mTwitter.getFollowersList(queryFollow.getUserId(), follow.getCursor(), Constants.USER_LIST_COUNT);
         } else {
-            list = mTwitter.getFriendsList(queryFollow.getUserId(), queryFollow.getCursor(), Constants.USER_LIST_COUNT);
+            list = mTwitter.getFriendsList(queryFollow.getUserId(), follow.getCursor(), Constants.USER_LIST_COUNT);
         }
         if (list != null) {
             switch (follow.getQueryType()) {
@@ -362,10 +362,10 @@ public class TwitterManager {
                     queryFollow.setPreviosCursor(list.getPreviousCursor());
                     break;
                 case QueryFollow.PREVIOUS:
-                    queryFollow.setPreviosCursor(list.getPreviousCursor());
+                    queryFollow.setPreviosCursor(list.size() > 0 ? list.getPreviousCursor() : 0);
                     break;
                 case QueryFollow.NEXT:
-                    queryFollow.setNextCursor(list.getNextCursor());
+                    queryFollow.setNextCursor(list.size() > 0 ? list.getNextCursor() : 0);
                     break;
             }
         }
