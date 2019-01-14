@@ -1,5 +1,6 @@
 package com.enos.totalsns;
 
+import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
@@ -84,6 +85,22 @@ public class ContentsActivity extends AppCompatActivity
 
         initUI();
         initObserver();
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        handleIntent(intent);
+    }
+
+    private void handleIntent(Intent intent) {
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            if (mDataBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
+                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+            }
+            viewModel.getSearchQuery().postValue(query);
+        }
     }
 
     private void initUI() {
@@ -265,8 +282,8 @@ public class ContentsActivity extends AppCompatActivity
         viewModel.isSignOutFinished().observe(this, (isFinished) -> {
             if (isFinished != null && isFinished) {
                 if (mSignOutOnce.compareAndSet(false, true)) {
-                    finish();
                     AccountsActivity.start(this);
+                    finish();
                 }
             }
         });
@@ -513,6 +530,14 @@ public class ContentsActivity extends AppCompatActivity
 
     public static void start(Context context) {
         Intent intent = new Intent(context, ContentsActivity.class);
+        context.startActivity(intent);
+    }
+
+    public static void startWithQuery(Context context, String query) {
+        Intent intent = new Intent(context, ContentsActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        intent.setAction(Intent.ACTION_SEARCH);
+        intent.putExtra(SearchManager.QUERY, query);
         context.startActivity(intent);
     }
 }

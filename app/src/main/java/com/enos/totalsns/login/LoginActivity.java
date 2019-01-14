@@ -118,8 +118,8 @@ public class LoginActivity extends AppCompatActivity {
 
     private void finishAndstartTimelineActivity() {
         if (mHasActivityStarted.compareAndSet(false, true)) {
-            finish();
             ContentsActivity.start(this);
+            finish();
         }
     }
 

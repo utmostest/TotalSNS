@@ -84,8 +84,8 @@ public class MessageSendFragment extends Fragment implements OnUserToSendClickLi
     public void onUserToSendClicked(UserInfo userInfo) {
         Activity context = getActivity();
         if (context != null) {
-            context.finish();
             MessageDetailActivity.start(context, userInfo.getLongUserId());
+            context.finish();
         }
     }
 

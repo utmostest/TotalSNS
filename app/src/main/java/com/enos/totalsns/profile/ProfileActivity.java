@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.ImageView;
 
+import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
@@ -116,6 +117,8 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
                 return;
             case MODE_HASHTAG:
             case MODE_MENTION:
+                ContentsActivity.startWithQuery(this, matchedText);
+                finish();
 //                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
 //                viewModel.getSearchQuery().postValue(text);
                 return;

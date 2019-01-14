@@ -1,7 +1,6 @@
 package com.enos.totalsns.intro;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.os.Handler;
@@ -126,12 +125,12 @@ public class IntroActivity extends AppCompatActivity {
 
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
-            finish();
             if (activity.isAssignableFrom(ContentsActivity.class)) {
                 ContentsActivity.start(this);
             }else if(activity.isAssignableFrom(AccountsActivity.class)){
                 AccountsActivity.start(this);
             }
+            finish();
         }
     }
 }

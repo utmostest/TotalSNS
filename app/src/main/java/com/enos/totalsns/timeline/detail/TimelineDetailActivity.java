@@ -120,8 +120,8 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
                 return;
             case MODE_HASHTAG:
             case MODE_MENTION:
-//                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
-//                viewModel.getSearchQuery().postValue(text);
+                ContentsActivity.startWithQuery(this, matchedText);
+                finish();
                 return;
         }
     }

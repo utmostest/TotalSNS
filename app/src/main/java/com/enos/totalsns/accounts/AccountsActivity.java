@@ -65,12 +65,12 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
 
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
-            finish();
             if (activity.isAssignableFrom(LoginActivity.class)) {
                 LoginActivity.start(this, Constants.TWITTER);
             } else if (activity.isAssignableFrom(ContentsActivity.class)) {
                 ContentsActivity.start(this);
             }
+            finish();
         }
     }
 
