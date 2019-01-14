@@ -49,13 +49,9 @@ public class AccountsViewModel extends ViewModel {
         // set by default null, until we get data from the database.
         mObservableAccounts.setValue(null);
 
-        // observe the changes of the products from the database and forward them
         mObservableAccounts.addSource(repository.getAccounts(), mObservableAccounts::setValue);
     }
 
-    /**
-     * Expose the LiveData Products query so the UI can observe it.
-     */
     public LiveData<List<Account>> getAccounts() {
         return mObservableAccounts;
     }

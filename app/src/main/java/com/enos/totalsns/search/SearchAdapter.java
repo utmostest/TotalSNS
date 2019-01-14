@@ -15,19 +15,15 @@ import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchHeaderBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.userlist.OnUserClickListener;
-import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.AutoLinkTextUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.TimeUtils;
 import com.enos.totalsns.widget.HFSupportAdapter;
 
-import java.util.Arrays;
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link UserInfo} and makes a call to the
- * specified {@link OnUserClickListener }.
- * TODO: Replace the implementation with code for your data type.
- */
 public class SearchAdapter extends HFSupportAdapter {
 
     private List<UserInfo> mFilteredList;
@@ -131,7 +127,6 @@ public class SearchAdapter extends HFSupportAdapter {
     }
 
     public void swapTimelineList(List<Article> list) {
-        isItemChanged = true;
         if (list == null || mValues == null) {
             mValues = list;
             notifyDataSetChanged();
@@ -150,30 +145,19 @@ public class SearchAdapter extends HFSupportAdapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mValues.get(oldItemPosition).getTablePlusArticleId().equals(list.get(newItemPosition).getTablePlusArticleId());
+                    return CompareUtils.isArticleSame(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Article oldArticle = mValues.get(oldItemPosition);
-                    Article newArticle = list.get(newItemPosition);
-                    return oldArticle.getTablePlusArticleId().equals(newArticle.getTablePlusArticleId()) &&
-                            oldArticle.getProfileImg().equals(newArticle.getProfileImg()) &&
-                            oldArticle.getUserName().equals(newArticle.getUserName()) &&
-                            oldArticle.getUserId().equals(newArticle.getUserId()) &&
-                            oldArticle.getMessage().equals(newArticle.getMessage()) &&
-                            oldArticle.getTableUserId() == newArticle.getTableUserId() &&
-                            oldArticle.getArticleId() == newArticle.getArticleId() &&
-                            oldArticle.getSnsType() == newArticle.getSnsType() &&
-                            oldArticle.getPostedAt() == newArticle.getPostedAt() &&
-                            Arrays.equals(oldArticle.getImageUrls(), newArticle.getImageUrls()) &&
-                            ConvertUtils.equalsHashMap(oldArticle.getUrlMap(), newArticle.getUrlMap());
+                    return CompareUtils.isArticleEqual(mValues.get(oldItemPosition), list.get(newItemPosition));
 
                 }
             }, true);
             mValues = list;
             result.dispatchUpdatesTo(this);
         }
+        isItemChanged = true;
     }
 
     public void swapUserList(List<UserInfo> list) {
@@ -197,11 +181,10 @@ public class SearchAdapter extends HFSupportAdapter {
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
-            int urlSize = ConvertUtils.getActualSize(imgUrls);
+            int urlSize = StringUtils.getActualSize(imgUrls);
             boolean hasImage = urlSize > 0;
             binding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             binding.imageContainer.setImageCount(urlSize);
-            //Log.i("bind", "urlSize : " + urlSize + ", imgUrls : " + Arrays.toString(imgUrls));
             binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
                 if (mArticleListener != null)
                     mArticleListener.onArticleImageClicked(iv, mItem, pos);
@@ -212,24 +195,15 @@ public class SearchAdapter extends HFSupportAdapter {
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
+            AutoLinkTextUtils.set(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
                 if (mArticleListener != null)
                     mArticleListener.onAutoLinkClicked(autoLinkMode, matchedText, mItem.getUrlMap());
             }));
 
-            binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
+            binding.tlTime.setText(TimeUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());
-            if (mItem.getUrlMap() != null) {
-//                Log.i("url", article.getUrlMap().keySet() + "\n" + article.getUrlMap().values());
-                for (String key : mItem.getUrlMap().keySet()) {
-//                    Log.i("url", key + "\n" + article.getUrlMap().get(key));
-                }
-            }
-
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mArticleListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mArticleListener.onArticleClicked(binding, mItem, position);
                 }
             });
@@ -255,7 +229,6 @@ public class SearchAdapter extends HFSupportAdapter {
             SearchedUserAdapter userAdapter = null;
             if (mUserRecyclerView.getAdapter() != null && mUserRecyclerView.getAdapter() instanceof SearchedUserAdapter) {
                 userAdapter = (SearchedUserAdapter) mUserRecyclerView.getAdapter();
-//                userAdapter.swapUserList(mFilteredList);
             }
             if (userAdapter == null) {
                 userAdapter = new SearchedUserAdapter(mFilteredList, mListener);

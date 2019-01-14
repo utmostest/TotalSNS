@@ -21,12 +21,6 @@ import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.List;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnUserClickListener} {@link OnArticleClickListener}
- * interface.
- */
 public class SearchListFragment extends Fragment {
 
     private OnUserClickListener mListener;
@@ -43,8 +37,6 @@ public class SearchListFragment extends Fragment {
     public SearchListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
     public static SearchListFragment newInstance() {
         SearchListFragment fragment = new SearchListFragment();
         return fragment;
@@ -54,8 +46,6 @@ public class SearchListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-        }
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(SearchViewModel.class);
     }
 

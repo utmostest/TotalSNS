@@ -17,21 +17,14 @@ import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.AutoLinkTextUtils;
+import com.enos.totalsns.util.TimeUtils;
+import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
-/**
- * A fragment representing a single Item detail screen.
- * This fragment is either contained in a {@link ContentsActivity}
- * in two-pane mode (on tablets) or a {@link TimelineDetailActivity}
- * on handsets.
- */
 public class TimelineDetailFragment extends Fragment {
-    /**
-     * The fragment argument representing the item ID that this fragment
-     * represents.
-     */
+
     public static final String ITEM_ARTICLE = "item_article";
 
     private Article mArticle;
@@ -41,10 +34,6 @@ public class TimelineDetailFragment extends Fragment {
     FragmentTimelineDetailBinding mDataBinding;
     private OnArticleClickListener mListener;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public TimelineDetailFragment() {
     }
 
@@ -92,7 +81,7 @@ public class TimelineDetailFragment extends Fragment {
             });
 
             mDataBinding.tldUserId.setText(mArticle.getUserId());
-            mDataBinding.tldTime.setText(ConvertUtils.getDateString(mArticle.getPostedAt()));
+            mDataBinding.tldTime.setText(TimeUtils.getDateString(mArticle.getPostedAt()));
             mDataBinding.tldUserName.setText(mArticle.getUserName());
 
             String[] imgUrls = mArticle.getImageUrls();
@@ -109,7 +98,7 @@ public class TimelineDetailFragment extends Fragment {
                 mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);
             }
 
-            ActivityUtils.setAutoLinkTextView(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), ((autoLinkMode, matchedText) -> {
+            AutoLinkTextUtils.set(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), ((autoLinkMode, matchedText) -> {
                 if (mListener != null)
                     mListener.onAutoLinkClicked(autoLinkMode, matchedText, mArticle.getUrlMap());
             }));

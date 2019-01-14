@@ -9,8 +9,9 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemUserBinding;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.TwitterObjConverter;
 
 import java.util.List;
 
@@ -64,27 +65,12 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mValues.get(oldItemPosition).getLongUserId() == list.get(newItemPosition).getLongUserId();
+                    return CompareUtils.isUserInfoSame(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    UserInfo oldItem = mValues.get(oldItemPosition);
-                    UserInfo newItem = list.get(newItemPosition);
-                    return oldItem.getCreatedAt() == newItem.getCreatedAt() &&
-                            oldItem.getSnsType() == newItem.getSnsType() &&
-                            oldItem.getLongUserId() == newItem.getLongUserId() &&
-                            oldItem.getFollowerCount() == newItem.getFollowerCount() &&
-                            oldItem.getFollowingCount() == newItem.getFollowingCount() &&
-                            ConvertUtils.isStringEqual(oldItem.getUserName(), newItem.getUserName()) &&
-                            ConvertUtils.isStringEqual(oldItem.getUserId(), newItem.getUserId()) &&
-                            ConvertUtils.isStringEqual(oldItem.getProfileBackImg(), newItem.getProfileBackImg()) &&
-                            ConvertUtils.isStringEqual(oldItem.getProfileImg(), newItem.getProfileImg()) &&
-                            ConvertUtils.isStringEqual(oldItem.getProfileBackColor(), newItem.getProfileBackColor()) &&
-                            ConvertUtils.isStringEqual(oldItem.getEmail(), newItem.getEmail()) &&
-                            ConvertUtils.isStringEqual(oldItem.getLocation(), newItem.getLocation()) &&
-                            ConvertUtils.isStringEqual(oldItem.getMessage(), newItem.getMessage()) &&
-                            ConvertUtils.isArticleSame(oldItem.getLastArticle(), newItem.getLastArticle());
+                    return CompareUtils.isUserInfoEqual(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
             });
             mValues = list;
@@ -110,8 +96,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onUserItemClicked(binding, mItem);
                 }
             });

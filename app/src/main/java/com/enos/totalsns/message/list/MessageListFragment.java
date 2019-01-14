@@ -18,36 +18,17 @@ import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnMessageClickListener}
- * interface.
- */
 public class MessageListFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
-    private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
-    private int mColumnCount = 1;
     private OnMessageClickListener mListener;
     private MessageListViewModel mViewModel;
     private FragmentMessageBinding mDataBinding;
 
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
     public MessageListFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static MessageListFragment newInstance(int columnCount) {
+    public static MessageListFragment newInstance() {
         MessageListFragment fragment = new MessageListFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
         return fragment;
     }
 
@@ -55,9 +36,6 @@ public class MessageListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
-        }
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
         mViewModel.fetchDirectMessage();
     }

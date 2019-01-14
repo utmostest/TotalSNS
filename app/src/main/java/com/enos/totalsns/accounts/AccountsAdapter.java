@@ -2,7 +2,6 @@ package com.enos.totalsns.accounts;
 
 import android.content.Context;
 import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -10,15 +9,12 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
 import com.enos.totalsns.databinding.ItemAccountFooterBinding;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.widget.HFSupportAdapter;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link Account} and makes a call to the
- * specified {@link OnSnsAccountListener}.
- */
 public class AccountsAdapter extends HFSupportAdapter {
 
     // TODO SNS별 뷰홀더 추가 및 화면 표시
@@ -99,7 +95,6 @@ public class AccountsAdapter extends HFSupportAdapter {
     }
 
     public void swapAccountsList(List<Account> list) {
-        isItemChanged = true;
         if (mValues == null || list == null) {
             mValues = list;
             notifyDataSetChanged();
@@ -118,26 +113,18 @@ public class AccountsAdapter extends HFSupportAdapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mValues.get(oldItemPosition).getId() == list.get(newItemPosition).getId();
+                    return CompareUtils.isAccountSame(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Account oldAccount = mValues.get(oldItemPosition);
-                    Account newAccount = list.get(newItemPosition);
-                    return oldAccount.getId() == newAccount.getId() &&
-                            oldAccount.getSnsType() == newAccount.getSnsType() &&
-                            oldAccount.isCurrent() == newAccount.isCurrent() &&
-                            oldAccount.getName().equals(newAccount.getName()) &&
-                            oldAccount.getOauthSecret().equals(newAccount.getOauthSecret()) &&
-                            oldAccount.getOauthKey().equals(newAccount.getOauthKey()) &&
-                            oldAccount.getProfileImage().equals(newAccount.getProfileImage()) &&
-                            oldAccount.getScreenName().equals(newAccount.getScreenName());
+                    return CompareUtils.isAccountEqual(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
             });
             mValues = list;
             result.dispatchUpdatesTo(this);
         }
+        isItemChanged = true;
     }
 
     private class AccountItemViewHolder extends ItemViewHolder {
@@ -156,8 +143,6 @@ public class AccountsAdapter extends HFSupportAdapter {
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onAccountClicked(mItem);
                 }
             });
@@ -185,11 +170,6 @@ public class AccountsAdapter extends HFSupportAdapter {
         }
 
         public void bind() {
-            binding.fragmentAccountNewBtn.setOnClickListener(v -> {
-                if (mListener != null) {
-                    mListener.onNewAccountButtonClicked(mSnsType);
-                }
-            });
         }
     }
 }

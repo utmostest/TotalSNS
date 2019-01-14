@@ -43,7 +43,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(AccountsViewModel.class);
 
         mDataBinding.navigation.setOnNavigationItemSelectedListener(this);
-        mDataBinding.acAccFab.setOnClickListener((v) -> onNewAccountButtonClicked(snsType));
+        mDataBinding.acAccFab.setOnClickListener((v) -> finishAndStartActivity(LoginActivity.class));
         initFragment();
     }
 
@@ -66,7 +66,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             if (activity.isAssignableFrom(LoginActivity.class)) {
-                LoginActivity.start(this, Constants.TWITTER);
+                LoginActivity.start(this, snsType);
             } else if (activity.isAssignableFrom(ContentsActivity.class)) {
                 ContentsActivity.start(this);
             }
@@ -87,11 +87,6 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         if (item.getSnsType() == Constants.TWITTER) {
             loginTwitter(item);
         }
-    }
-
-    @Override
-    public void onNewAccountButtonClicked(int snsType) {
-        finishAndStartActivity(LoginActivity.class);
     }
 
     private String getSNSTypeString(int snsType) {

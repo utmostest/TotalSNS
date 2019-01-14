@@ -44,7 +44,6 @@ public class LoginActivity extends AppCompatActivity {
         Intent data = getIntent();
         if (data != null) {
             int snsType = data.getIntExtra(SNS_TYPE_KEY, -1);
-            SingletonToast.getInstance().log("SNS Type : " + snsType);
         }
 
         setupUI();

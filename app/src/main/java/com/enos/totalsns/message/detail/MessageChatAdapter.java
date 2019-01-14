@@ -11,8 +11,9 @@ import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ItemMessageDetailInBinding;
 import com.enos.totalsns.databinding.ItemMessageDetailOutBinding;
 import com.enos.totalsns.message.OnMessageClickListener;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.TimeUtils;
 
 import java.util.List;
 
@@ -87,25 +88,12 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mValues.get(oldItemPosition).getUserDmId().equals(list.get(newItemPosition).getUserDmId());
+                    return CompareUtils.isMessageSame(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Message oldMessage = mValues.get(oldItemPosition);
-                    Message newMessage = list.get(newItemPosition);
-                    return oldMessage.getCreatedAt() == newMessage.getCreatedAt() &&
-                            oldMessage.getSnsType() == newMessage.getSnsType() &&
-                            oldMessage.getMessageId() == newMessage.getMessageId() &&
-                            oldMessage.getReceiverId() == newMessage.getReceiverId() &&
-                            oldMessage.getSenderId() == newMessage.getSenderId() &&
-                            oldMessage.getTableUserId() == newMessage.getTableUserId() &&
-                            oldMessage.getSenderTableId() == newMessage.getSenderTableId() &&
-                            oldMessage.getMessage().equals(newMessage.getMessage()) &&
-                            oldMessage.getSenderName().equals(newMessage.getSenderName()) &&
-                            oldMessage.getSenderScreenId().equals(newMessage.getSenderScreenId()) &&
-                            oldMessage.getSenderProfile().equals(newMessage.getSenderProfile()) &&
-                            oldMessage.getUserDmId().equals(newMessage.getUserDmId());
+                    return CompareUtils.isMessageEqual(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
             });
             mValues = list;
@@ -124,7 +112,7 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public void bind() {
             binding.messageItemMsg.setText(mItem.getMessage());
-            binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+            binding.messageItemTime.setText(TimeUtils.getDateString(mItem.getCreatedAt()));
             binding.getRoot().setOnClickListener(v -> {
                 if (mListener != null) mListener.onMessageClicked(mItem);
             });
@@ -142,7 +130,7 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
         public void bind() {
             binding.messageItemMsg.setText(mItem.getMessage());
-            binding.messageItemTime.setText(ConvertUtils.getDateString(mItem.getCreatedAt()));
+            binding.messageItemTime.setText(TimeUtils.getDateString(mItem.getCreatedAt()));
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile, R.drawable.ic_account_circle_black_36dp);
             binding.getRoot().setOnClickListener(v -> {
                 if (mListener != null) mListener.onMessageClicked(mItem);

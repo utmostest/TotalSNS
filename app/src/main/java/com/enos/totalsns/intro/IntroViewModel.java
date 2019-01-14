@@ -11,9 +11,6 @@ import com.enos.totalsns.util.SingleLiveEvent;
 
 public class IntroViewModel extends ViewModel {
 
-    private MutableLiveData<LoginResult> loginResultList = new MutableLiveData<LoginResult>();
-
-    private AppExecutors mAppExecutors = new AppExecutors();
     private TotalSnsRepository mRepository;
     private Context mContext;
     private SingleLiveEvent<LoginResult> loginResultMutableLiveData;

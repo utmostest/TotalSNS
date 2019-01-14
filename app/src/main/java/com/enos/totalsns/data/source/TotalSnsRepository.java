@@ -108,9 +108,6 @@ public class TotalSnsRepository {
         return sInstance;
     }
 
-    /**
-     * Get the list of products from the database and get notified when the data changes.
-     */
     public LiveData<List<Account>> getAccounts() {
         return mDatabase.accountDao().loadAccounts();
     }
@@ -229,7 +226,6 @@ public class TotalSnsRepository {
     }
 
     public MutableLiveData<List<Article>> getHomeTimeline() {
-//        fetchTimeline(paging);
         return mObservableTimelines;
     }
 
@@ -542,13 +538,8 @@ public class TotalSnsRepository {
         return mSearchQuery;
     }
 
-    // start of search user
     public MutableLiveData<List<UserInfo>> getSearchUserList() {
         return mObservableSearchUser;
-    }
-
-    public void fetchSearchUser(QuerySearchUser query) {
-        fetchSearchUser(query, mObservableSearchUser);
     }
 
     public synchronized void fetchSearchUser(QuerySearchUser query, MutableLiveData<List<UserInfo>> liveData) {

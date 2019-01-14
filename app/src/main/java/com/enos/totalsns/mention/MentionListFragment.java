@@ -20,12 +20,6 @@ import com.enos.totalsns.timeline.list.TimelineAdapter;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
-/**
- * A fragment representing a list of Items.
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnArticleClickListener}
- * interface.
- */
 public class MentionListFragment extends Fragment {
 
     private MentionListViewModel mViewModel;
@@ -47,14 +41,12 @@ public class MentionListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mention, container, false);
-        //Log.i("list", "onCreateView");
         return mDataBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //Log.i("list", "onActivityCreated");
         initContentUI();
     }
 

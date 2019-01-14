@@ -69,7 +69,6 @@ public class ImageContainerCardView extends CardView {
 
     private void clearLayoutAndFillImageView(int imageCount) {
         if (imageContainer == null) return;
-        //Log.i("image", "orientation : " + imageOrientation + ", imagecount : " + imageCount);
 
         imageViewMap.clear();
         imageContainer.removeAllViews();

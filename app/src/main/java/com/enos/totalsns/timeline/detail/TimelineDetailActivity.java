@@ -21,18 +21,12 @@ import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.AppCompatUtils;
 import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 
-/**
- * An activity representing a single Item detail screen. This
- * activity is only used on narrow width devices. On tablet-size devices,
- * item details are presented side-by-side with a list of items
- * in a {@link ContentsActivity}.
- */
 public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener {
 
     ActivityTimelineDetailBinding mDataBinding;
@@ -43,14 +37,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
         setSupportActionBar(mDataBinding.detailToolbar);
 
-//        AppCompatUtils.setEnterCallback(this);
-
-        mDataBinding.fab.setOnClickListener(view -> {
-            Snackbar.make(view, "Replace with your own detail action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show();
-        });
-
-        // Show the Up button in the action bar.
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
@@ -71,8 +57,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-
-//            navigateUpTo(new Intent(this, ContentsActivity.class));
             supportFinishAfterTransition();
             return true;
         }
@@ -96,13 +80,13 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
 
     @Override
     public void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> hashMap) {
-        String matchedText = ActivityUtils.removeUnnecessaryString(text);
+        String matchedText = StringUtils.removeUnnecessaryString(text);
 
         SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
         Intent intent = new Intent();
         switch (autoLinkMode) {
             case MODE_URL:
-                String normalizedString = ActivityUtils.getExpandedUrlFromMap(hashMap, matchedText);
+                String normalizedString = StringUtils.getExpandedUrlFromMap(hashMap, matchedText);
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(normalizedString));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
@@ -127,7 +111,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     }
 
     public static void startWithTransition(AppCompatActivity context, ItemArticleBinding binding, Article mItem, boolean enableImage) {
-//        AppCompatUtils.setExitCallback(this);
         if (enableImage) {
             start(context, mItem,
                     Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)),
@@ -156,6 +139,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     public static void start(AppCompatActivity context, Article mItem, Pair<View, String>... pairs) {
         Intent intent = new Intent(context, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        AppCompatUtils.startActivityWithTransition(context, intent, pairs);
+        ActivityUtils.startActivityWithTransition(context, intent, pairs);
     }
 }

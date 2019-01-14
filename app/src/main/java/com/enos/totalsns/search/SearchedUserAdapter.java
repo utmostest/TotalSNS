@@ -11,17 +11,14 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.userlist.OnUserClickListener;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.CompareUtils;
+import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 
 import java.util.List;
 
-/**
- * {@link RecyclerView.Adapter} that can display a {@link UserInfo} and makes a call to the
- * specified {@link OnUserClickListener }.
- * TODO: Replace the implementation with code for your data type.
- */
 public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<UserInfo> mFilteredList;
@@ -44,7 +41,7 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder vh, final int position) {
         if (mFilteredList == null) return;
         UserViewHolder holder = (UserViewHolder) vh;
-        holder.mItem = (UserInfo) mFilteredList.get(position);
+        holder.mItem = mFilteredList.get(position);
         holder.bind(position);
     }
 
@@ -73,16 +70,12 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    UserInfo oldSearch = mFilteredList.get(oldItemPosition);
-                    UserInfo newSearch = list.get(newItemPosition);
-                    return oldSearch.getLongUserId() == newSearch.getLongUserId();
+                    return CompareUtils.isUserInfoSame(mFilteredList.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    UserInfo oldSearch = mFilteredList.get(oldItemPosition);
-                    UserInfo newSearch = list.get(newItemPosition);
-                    return ConvertUtils.isUserInfoSame(oldSearch, newSearch);
+                    return CompareUtils.isUserInfoEqual(mFilteredList.get(oldItemPosition), list.get(newItemPosition));
                 }
             }, true);
             mFilteredList = list;
@@ -110,9 +103,9 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
             binding.itemUserName.setText(mItem.getUserName());
             binding.itemUserScreenId.setText(mItem.getUserId());
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.itemUserProfile);
-            if (ConvertUtils.isStringValid(mItem.getProfileBackImg())) {
+            if (StringUtils.isStringValid(mItem.getProfileBackImg())) {
                 GlideUtils.loadBackImage(binding.getRoot().getContext(), mItem.getProfileBackImg(), binding.itemUserProfileBack);
-            } else if (ConvertUtils.isStringValid(mItem.getProfileBackColor())) {
+            } else if (StringUtils.isStringValid(mItem.getProfileBackColor())) {
                 SingletonToast.getInstance().log("backcolor", mItem.getProfileBackColor());
                 binding.itemUserProfileBack.setImageDrawable(null);
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + mItem.getProfileBackColor()));

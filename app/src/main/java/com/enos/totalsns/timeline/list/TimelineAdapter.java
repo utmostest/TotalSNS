@@ -7,28 +7,18 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
-import com.bumptech.glide.request.RequestOptions;
-import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
-import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.AutoLinkTextUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.TimeUtils;
 
-import java.util.Arrays;
 import java.util.List;
 
-
-/**
- * {@link RecyclerView.Adapter} that can display a {@link Article} and makes a call to the
- * specified {@link OnArticleClickListener}.
- * TODO: Replace the implementation with code for your data type.
- */
 public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<Article> mFilteredList;
@@ -74,25 +64,12 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mFilteredList.get(oldItemPosition).getTablePlusArticleId().equals(list.get(newItemPosition).getTablePlusArticleId());
+                    return CompareUtils.isArticleSame(mFilteredList.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Article oldArticle = mFilteredList.get(oldItemPosition);
-                    Article newArticle = list.get(newItemPosition);
-                    return oldArticle.getTablePlusArticleId().equals(newArticle.getTablePlusArticleId()) &&
-                            oldArticle.getProfileImg().equals(newArticle.getProfileImg()) &&
-                            oldArticle.getUserName().equals(newArticle.getUserName()) &&
-                            oldArticle.getUserId().equals(newArticle.getUserId()) &&
-                            oldArticle.getMessage().equals(newArticle.getMessage()) &&
-                            oldArticle.getTableUserId() == newArticle.getTableUserId() &&
-                            oldArticle.getArticleId() == newArticle.getArticleId() &&
-                            oldArticle.getSnsType() == newArticle.getSnsType() &&
-                            oldArticle.getPostedAt() == newArticle.getPostedAt() &&
-                            Arrays.equals(oldArticle.getImageUrls(), newArticle.getImageUrls()) &&
-                            ConvertUtils.equalsHashMap(oldArticle.getUrlMap(), newArticle.getUrlMap());
-
+                    return CompareUtils.isArticleEqual(mFilteredList.get(oldItemPosition), list.get(newItemPosition));
                 }
             }, true);
             mFilteredList = list;
@@ -119,11 +96,10 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
-            int urlSize = ConvertUtils.getActualSize(imgUrls);
+            int urlSize = StringUtils.getActualSize(imgUrls);
             boolean hasImage = urlSize > 0;
             binding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             binding.imageContainer.setImageCount(urlSize);
-            //Log.i("bind", "urlSize : " + urlSize + ", imgUrls : " + Arrays.toString(imgUrls));
             binding.imageContainer.setOnImageClickedListener((iv, pos) -> {
                 if (mListener != null) mListener.onArticleImageClicked(iv, mItem, pos);
             });
@@ -133,24 +109,16 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), (autoLinkMode, autoLinkText) -> {
+            AutoLinkTextUtils.set(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), (autoLinkMode, autoLinkText) -> {
                 if (mListener != null)
                     mListener.onAutoLinkClicked(autoLinkMode, autoLinkText, mItem.getUrlMap());
             });
 
-            binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
+            binding.tlTime.setText(TimeUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());
-            if (mItem.getUrlMap() != null) {
-//                Log.i("url", article.getUrlMap().keySet() + "\n" + article.getUrlMap().values());
-                for (String key : mItem.getUrlMap().keySet()) {
-//                    Log.i("url", key + "\n" + article.getUrlMap().get(key));
-                }
-            }
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
-                    // Notify the active callbacks interface (the activity, if the
-                    // fragment is attached to one) that an item has been selected.
                     mListener.onArticleClicked(binding, mItem, position);
                 }
             });

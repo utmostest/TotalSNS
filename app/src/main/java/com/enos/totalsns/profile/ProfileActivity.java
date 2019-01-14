@@ -22,8 +22,7 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.userlist.OnFollowListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.AppCompatUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.autolink.AutoLinkMode;
 
@@ -76,7 +75,7 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
-        TimelineDetailActivity.startWithTransition(this, binding, mItem, ConvertUtils.getActualSize(mItem.getImageUrls()) > 0);
+        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
     @Override
@@ -93,13 +92,13 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> hashMap) {
-        String matchedText = ActivityUtils.removeUnnecessaryString(text);
+        String matchedText = StringUtils.removeUnnecessaryString(text);
 
         SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
         Intent intent = new Intent();
         switch (autoLinkMode) {
             case MODE_URL:
-                String normalizedString = ActivityUtils.getExpandedUrlFromMap(hashMap, matchedText);
+                String normalizedString = StringUtils.getExpandedUrlFromMap(hashMap, matchedText);
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(normalizedString));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
@@ -119,8 +118,6 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
             case MODE_MENTION:
                 ContentsActivity.startWithQuery(this, matchedText);
                 finish();
-//                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
-//                viewModel.getSearchQuery().postValue(text);
                 return;
         }
     }
@@ -141,7 +138,7 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 //        AppCompatUtils.setExitCallback(this);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        AppCompatUtils.startActivityWithTransition(context, intent, Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)),
+        ActivityUtils.startActivityWithTransition(context, intent, Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)),
                 Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)),
                 Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)),
                 Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)),
@@ -152,7 +149,7 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 //        AppCompatUtils.setExitCallback(this);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        AppCompatUtils.startActivityWithTransition(context, intent, Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)),
+        ActivityUtils.startActivityWithTransition(context, intent, Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)),
                 Pair.create(binding.itemUserProfileBack, context.getString(R.string.tran_profile_back)),
                 Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)),
                 Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)),

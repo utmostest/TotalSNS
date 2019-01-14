@@ -1,5 +1,6 @@
 package com.enos.totalsns.intro;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -17,10 +18,6 @@ import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- */
 public class IntroActivity extends AppCompatActivity {
 
     /**
@@ -28,11 +25,11 @@ public class IntroActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
-    private static final int START_ACTIVITY_DELAY = 1000;
 
     private ActivityIntroBinding mDataBinding;
 
     private final Handler mHideHandler = new Handler();
+    @SuppressLint("InlinedApi")
     private final Runnable mHidePart2Runnable = () -> {
         // Delayed removal of status and navigation bar
 
@@ -45,13 +42,10 @@ public class IntroActivity extends AppCompatActivity {
                 | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
-        startActivityDelayed(START_ACTIVITY_DELAY);
+        attemptLogin();
     };
 
     private final Runnable mHideRunnable = this::hide;
-
-    private final Handler mActivityHandler = new Handler(Looper.myLooper());
-    private final Runnable mStartActivityRunnalbe = this::attemptLogin;
 
     private AtomicBoolean mHasActivityStarted = new AtomicBoolean(false);
 
@@ -84,7 +78,6 @@ public class IntroActivity extends AppCompatActivity {
     private void removeCallbacks() {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.removeCallbacks(mHidePart2Runnable);
-        mActivityHandler.removeCallbacks(mStartActivityRunnalbe);
     }
 
     private void hide() {
@@ -118,16 +111,11 @@ public class IntroActivity extends AppCompatActivity {
         });
     }
 
-    private void startActivityDelayed(int delayMillis) {
-        mActivityHandler.removeCallbacks(mStartActivityRunnalbe);
-        mActivityHandler.postDelayed(mStartActivityRunnalbe, delayMillis);
-    }
-
     private void finishAndStartActivity(Class<?> activity) {
         if (mHasActivityStarted.compareAndSet(false, true)) {
             if (activity.isAssignableFrom(ContentsActivity.class)) {
                 ContentsActivity.start(this);
-            }else if(activity.isAssignableFrom(AccountsActivity.class)){
+            } else if (activity.isAssignableFrom(AccountsActivity.class)) {
                 AccountsActivity.start(this);
             }
             finish();

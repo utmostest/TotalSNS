@@ -21,7 +21,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
-import com.enos.totalsns.util.AppCompatUtils;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -352,7 +352,7 @@ public class NearbyArticleFragment extends Fragment
     }
 
     private boolean requestPermissionIfNeeded() {
-        return AppCompatUtils.requestPermissionIfNeeded(getActivity(), REQUEST_USED_PERMISSION, needPermissions);
+        return ActivityUtils.requestPermissionIfNeeded(getActivity(), REQUEST_USED_PERMISSION, needPermissions);
     }
 
     private void updateZoomLevel(LatLng location) {

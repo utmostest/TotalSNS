@@ -15,13 +15,14 @@ import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemProfileHeaderBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.userlist.OnFollowListener;
-import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.AutoLinkTextUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.TimeUtils;
 import com.enos.totalsns.widget.HFSupportAdapter;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class ProfileAdapter extends HFSupportAdapter {
@@ -116,7 +117,6 @@ public class ProfileAdapter extends HFSupportAdapter {
     }
 
     public void swapTimelineList(List<Article> list) {
-        isItemChanged = true;
         if (list == null || mValues == null) {
             mValues = list;
             notifyDataSetChanged();
@@ -135,30 +135,18 @@ public class ProfileAdapter extends HFSupportAdapter {
 
                 @Override
                 public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-                    return mValues.get(oldItemPosition).getTablePlusArticleId().equals(list.get(newItemPosition).getTablePlusArticleId());
+                    return CompareUtils.isArticleSame(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
 
                 @Override
                 public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-                    Article oldArticle = mValues.get(oldItemPosition);
-                    Article newArticle = list.get(newItemPosition);
-                    return oldArticle.getTablePlusArticleId().equals(newArticle.getTablePlusArticleId()) &&
-                            oldArticle.getProfileImg().equals(newArticle.getProfileImg()) &&
-                            oldArticle.getUserName().equals(newArticle.getUserName()) &&
-                            oldArticle.getUserId().equals(newArticle.getUserId()) &&
-                            oldArticle.getMessage().equals(newArticle.getMessage()) &&
-                            oldArticle.getTableUserId() == newArticle.getTableUserId() &&
-                            oldArticle.getArticleId() == newArticle.getArticleId() &&
-                            oldArticle.getSnsType() == newArticle.getSnsType() &&
-                            oldArticle.getPostedAt() == newArticle.getPostedAt() &&
-                            Arrays.equals(oldArticle.getImageUrls(), newArticle.getImageUrls()) &&
-                            ConvertUtils.equalsHashMap(oldArticle.getUrlMap(), newArticle.getUrlMap());
-
+                    return CompareUtils.isArticleEqual(mValues.get(oldItemPosition), list.get(newItemPosition));
                 }
             }, true);
             mValues = list;
             result.dispatchUpdatesTo(this);
         }
+        isItemChanged = true;
     }
 
     private class ArticleViewHolder extends ItemViewHolder {
@@ -174,7 +162,7 @@ public class ProfileAdapter extends HFSupportAdapter {
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
-            int urlSize = ConvertUtils.getActualSize(imgUrls);
+            int urlSize = StringUtils.getActualSize(imgUrls);
             boolean hasImage = urlSize > 0;
             binding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
             binding.imageContainer.setImageCount(urlSize);
@@ -189,12 +177,12 @@ public class ProfileAdapter extends HFSupportAdapter {
 
             binding.tlUserId.setText(mItem.getUserId());
 
-            ActivityUtils.setAutoLinkTextView(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
+            AutoLinkTextUtils.set(binding.getRoot().getContext(), binding.tlMessage, mItem.getMessage(), ((autoLinkMode, matchedText) -> {
                 if (mArticleListener != null)
                     mArticleListener.onAutoLinkClicked(autoLinkMode, matchedText, mItem.getUrlMap());
             }));
 
-            binding.tlTime.setText(ConvertUtils.getDateString(mItem.getPostedAt()));
+            binding.tlTime.setText(TimeUtils.getDateString(mItem.getPostedAt()));
             binding.tlUserName.setText(mItem.getUserName());
 
             binding.getRoot().setOnClickListener(v -> {
@@ -223,7 +211,7 @@ public class ProfileAdapter extends HFSupportAdapter {
         public void bind() {
             if (item == null) return;
             binding.profileAddress.setText(item.getLocation());
-            binding.profileCreated.setText(ConvertUtils.getDateString(item.getCreatedAt()));
+            binding.profileCreated.setText(TimeUtils.getDateString(item.getCreatedAt()));
             binding.profileFollowerNum.setText(String.valueOf(item.getFollowerCount()));
             binding.profileFollowingNum.setText(String.valueOf(item.getFollowingCount()));
             binding.profileFollowingNum.setOnClickListener(v -> {
@@ -244,9 +232,9 @@ public class ProfileAdapter extends HFSupportAdapter {
 
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), item.getProfileImg(), binding.itemUserProfile);
 
-            if (ConvertUtils.isStringValid(item.getProfileBackImg())) {
+            if (StringUtils.isStringValid(item.getProfileBackImg())) {
                 GlideUtils.loadBackImage(binding.getRoot().getContext(), item.getProfileBackImg(), binding.itemUserProfileBack);
-            } else if (ConvertUtils.isStringValid(item.getProfileBackColor())) {
+            } else if (StringUtils.isStringValid(item.getProfileBackColor())) {
                 SingletonToast.getInstance().log("backcolor", item.getProfileBackColor());
                 binding.itemUserProfileBack.setImageDrawable(null);
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + item.getProfileBackColor()));

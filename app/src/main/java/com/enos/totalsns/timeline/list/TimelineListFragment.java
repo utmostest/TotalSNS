@@ -39,14 +39,12 @@ public class TimelineListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_list, container, false);
-        //Log.i("list", "onCreateView");
         return mDataBinding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        //Log.i("list", "onActivityCreated");
         initContentUI();
     }
 

@@ -56,7 +56,8 @@ import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ColorUtils;
-import com.enos.totalsns.util.ConvertUtils;
+import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -133,7 +134,7 @@ public class ContentsActivity extends AppCompatActivity
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else if (clazz.isAssignableFrom(MessageListFragment.class)) {
-            Fragment insert = current == null ? MessageListFragment.newInstance(1) : current;
+            Fragment insert = current == null ? MessageListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
         } else {
@@ -234,7 +235,7 @@ public class ContentsActivity extends AppCompatActivity
 
             GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
             String profileBackImg = user.getProfileBackImg();
-            if (ConvertUtils.isStringValid(profileBackImg)) {
+            if (StringUtils.isStringValid(profileBackImg)) {
                 GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
                         new RequestListener<Bitmap>() {
                             @Override
@@ -250,7 +251,7 @@ public class ContentsActivity extends AppCompatActivity
                                 return false;
                             }
                         });
-            } else if (ConvertUtils.isStringValid(user.getProfileBackColor())) {
+            } else if (StringUtils.isStringValid(user.getProfileBackColor())) {
                 headerBackground.setImageDrawable(null);
                 int backGround = Color.parseColor("#" + user.getProfileBackColor());
                 headerBackground.setBackgroundColor(backGround);
@@ -331,7 +332,6 @@ public class ContentsActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_search) {
             return true;
         }
@@ -447,7 +447,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
-        TimelineDetailActivity.startWithTransition(this, binding, mItem, ConvertUtils.getActualSize(mItem.getImageUrls()) > 0);
+        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
     @Override
@@ -464,13 +464,13 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onAutoLinkClicked(AutoLinkMode autoLinkMode, String text, HashMap<String, String> hashMap) {
-        String matchedText = ActivityUtils.removeUnnecessaryString(text);
+        String matchedText = StringUtils.removeUnnecessaryString(text);
 
         SingletonToast.getInstance().log(autoLinkMode + " : " + matchedText);
         Intent intent = new Intent();
         switch (autoLinkMode) {
             case MODE_URL:
-                String normalizedString = ActivityUtils.getExpandedUrlFromMap(hashMap, matchedText);
+                String normalizedString = StringUtils.getExpandedUrlFromMap(hashMap, matchedText);
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(normalizedString));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
@@ -482,7 +482,7 @@ public class ContentsActivity extends AppCompatActivity
                 return;
             case MODE_EMAIL:
                 intent.setAction(Intent.ACTION_SENDTO);
-                intent.setData(Uri.parse("mailto:")); // only email apps should handle this
+                intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{matchedText});
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
                 return;

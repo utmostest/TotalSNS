@@ -33,7 +33,6 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
                         .commitNow();
             }
         }
-        SingletonToast.getInstance().log("instance_id", this.hashCode() + "");
     }
 
     @Override

@@ -12,8 +12,8 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.util.AppExecutors;
-import com.enos.totalsns.util.ConvertUtils;
 import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.util.TimeUtils;
 
 public class ContentsViewModel extends ViewModel {
     @SuppressLint("StaticFieldLeak")
@@ -52,7 +52,7 @@ public class ContentsViewModel extends ViewModel {
         } else {
             Toast.makeText(
                     mContext,
-                    mContext.getString(R.string.finish_message, ConvertUtils.getSecondsByMilli(Constants.QUIT_DELAY_MILLI)),
+                    mContext.getString(R.string.finish_message, TimeUtils.getSecondsByMilli(Constants.QUIT_DELAY_MILLI)),
                     Toast.LENGTH_SHORT).show();
             isBackPressed.postValue(true);
         }

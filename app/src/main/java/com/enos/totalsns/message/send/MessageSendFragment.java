@@ -56,7 +56,7 @@ public class MessageSendFragment extends Fragment implements OnUserToSendClickLi
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         MessageSendAdapter adapter = new MessageSendAdapter(null, this);
-        adapter.setEnableHeader(true, true, null);
+        adapter.setEnableHeader(true, true);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         dataBinding.msgSendRv.addItemDecoration(dividerItemDecoration);
