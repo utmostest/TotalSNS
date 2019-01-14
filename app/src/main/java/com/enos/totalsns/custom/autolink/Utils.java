@@ -1,4 +1,4 @@
-package com.enos.totalsns.util.autolink;
+package com.enos.totalsns.custom.autolink;
 
 import android.util.Log;
 

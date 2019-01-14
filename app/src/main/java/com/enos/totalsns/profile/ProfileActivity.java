@@ -24,7 +24,7 @@ import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.SingletonToast;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 

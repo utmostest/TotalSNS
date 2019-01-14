@@ -1,4 +1,4 @@
-package com.enos.totalsns.widget;
+package com.enos.totalsns.custom;
 
 import android.widget.ImageView;
 

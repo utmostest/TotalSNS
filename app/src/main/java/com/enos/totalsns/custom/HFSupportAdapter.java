@@ -1,4 +1,4 @@
-package com.enos.totalsns.widget;
+package com.enos.totalsns.custom;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;

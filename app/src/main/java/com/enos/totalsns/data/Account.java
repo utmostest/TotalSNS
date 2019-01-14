@@ -3,6 +3,9 @@ package com.enos.totalsns.data;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.Nullable;
+
+import com.enos.totalsns.util.CompareUtils;
 
 @Entity(tableName = "account")
 public class Account {
@@ -94,5 +97,18 @@ public class Account {
 
     public void setCurrent(boolean current) {
         isCurrent = current;
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(this.id).hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Account) {
+            return CompareUtils.isAccountEqual(this, (Account) obj);
+        }
+        return false;
     }
 }

@@ -7,17 +7,10 @@ import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.SharedElementCallback;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
-import com.enos.totalsns.R;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
-import com.enos.totalsns.util.autolink.AutoLinkOnClickListener;
-import com.enos.totalsns.util.autolink.AutoLinkTextView;
-
-import java.util.HashMap;
 import java.util.List;
 
 public class ActivityUtils {

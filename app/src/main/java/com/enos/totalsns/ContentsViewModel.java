@@ -11,8 +11,7 @@ import android.widget.Toast;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
-import com.enos.totalsns.util.AppExecutors;
-import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.custom.SingleLiveEvent;
 import com.enos.totalsns.util.TimeUtils;
 
 public class ContentsViewModel extends ViewModel {

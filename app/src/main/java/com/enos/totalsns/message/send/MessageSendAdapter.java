@@ -11,7 +11,7 @@ import com.enos.totalsns.databinding.ItemMessageSendBinding;
 import com.enos.totalsns.databinding.ItemMessageSendHeaderBinding;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
-import com.enos.totalsns.widget.HFSupportAdapter;
+import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 

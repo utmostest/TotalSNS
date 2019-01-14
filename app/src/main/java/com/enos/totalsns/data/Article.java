@@ -8,6 +8,8 @@ import android.os.Parcelable;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.enos.totalsns.util.CompareUtils;
+
 import java.util.HashMap;
 
 @Entity(tableName = "article")
@@ -233,5 +235,13 @@ public class Article implements Parcelable {
     @Override
     public int hashCode() {
         return tablePlusArticleId.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Article) {
+            return CompareUtils.isArticleEqual(this, (Article) obj);
+        }
+        return false;
     }
 }

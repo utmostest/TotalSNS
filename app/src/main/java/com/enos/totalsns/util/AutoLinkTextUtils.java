@@ -4,9 +4,9 @@ import android.content.Context;
 import android.support.v4.content.ContextCompat;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
-import com.enos.totalsns.util.autolink.AutoLinkOnClickListener;
-import com.enos.totalsns.util.autolink.AutoLinkTextView;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
+import com.enos.totalsns.custom.autolink.AutoLinkOnClickListener;
+import com.enos.totalsns.custom.autolink.AutoLinkTextView;
 
 public class AutoLinkTextUtils {
     public static void set(final Context context, final AutoLinkTextView autoLinkTextView, final String message, AutoLinkOnClickListener listener) {

@@ -6,7 +6,7 @@ import android.content.Context;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.custom.SingleLiveEvent;
 
 public class LoginViewModel extends ViewModel {
     private TotalSnsRepository mRepository;

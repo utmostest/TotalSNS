@@ -1,13 +1,11 @@
 package com.enos.totalsns.intro;
 
 import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.source.TotalSnsRepository;
-import com.enos.totalsns.util.AppExecutors;
-import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.custom.SingleLiveEvent;
 
 public class IntroViewModel extends ViewModel {
 

@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.ArraySetList;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentSearchBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;

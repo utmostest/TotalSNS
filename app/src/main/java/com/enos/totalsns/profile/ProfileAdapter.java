@@ -21,7 +21,7 @@ import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
-import com.enos.totalsns.widget.HFSupportAdapter;
+import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 

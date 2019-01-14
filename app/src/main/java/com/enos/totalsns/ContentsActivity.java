@@ -57,11 +57,10 @@ import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ColorUtils;
 import com.enos.totalsns.util.StringUtils;
-import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
 import java.util.HashMap;

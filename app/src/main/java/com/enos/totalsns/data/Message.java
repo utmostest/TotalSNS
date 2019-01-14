@@ -3,6 +3,9 @@ package com.enos.totalsns.data;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+
+import com.enos.totalsns.util.CompareUtils;
 
 @Entity(tableName = "message")
 public class Message {
@@ -142,5 +145,18 @@ public class Message {
 
     public void setMaxCreatedAt(long maxCreatedAt) {
         this.maxCreatedAt = maxCreatedAt;
+    }
+
+    @Override
+    public int hashCode() {
+        return userDmId.hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof Message) {
+            return CompareUtils.isMessageEqual(this, (Message) obj);
+        }
+        return false;
     }
 }

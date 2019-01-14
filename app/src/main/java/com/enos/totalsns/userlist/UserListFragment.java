@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.ArraySetList;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
@@ -116,9 +117,10 @@ public class UserListFragment extends Fragment {
 
         mViewModel.getUserFollowList().observe(this, list -> {
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
-            if (list == null) return;
-            if (current != null) list.addAll(0, current);
-            adapter.swapUserList(list);
+            ArraySetList<UserInfo> temp = new ArraySetList<>();
+            if (current != null) temp.addAll(current);
+            if (list != null) temp.addAll(list);
+            adapter.swapUserList(temp);
         });
         mViewModel.isNetworkOnUse().observe(this, onUse -> {
             dataBinding.swipeContainer.setRefreshing(onUse);

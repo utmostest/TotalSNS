@@ -23,8 +23,8 @@ import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 import com.enos.totalsns.data.source.remote.QueryUserTimeline;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.util.AppExecutors;
-import com.enos.totalsns.util.SingleLiveEvent;
+import com.enos.totalsns.AppExecutors;
+import com.enos.totalsns.custom.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;

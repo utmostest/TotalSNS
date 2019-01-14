@@ -1,4 +1,4 @@
-package com.enos.totalsns.util.autolink;
+package com.enos.totalsns.custom.autolink;
 
 /**
  * Created by Chatikyan on 25.09.2016-21:24.

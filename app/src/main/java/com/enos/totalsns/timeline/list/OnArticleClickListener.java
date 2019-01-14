@@ -4,7 +4,7 @@ import android.widget.ImageView;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 

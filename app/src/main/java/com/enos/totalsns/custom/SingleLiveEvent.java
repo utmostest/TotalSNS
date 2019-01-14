@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package com.enos.totalsns.util;
+package com.enos.totalsns.custom;
 
 import android.arch.lifecycle.LifecycleOwner;
 import android.arch.lifecycle.MutableLiveData;

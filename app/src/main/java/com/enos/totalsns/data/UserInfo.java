@@ -2,6 +2,9 @@ package com.enos.totalsns.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.Nullable;
+
+import com.enos.totalsns.util.CompareUtils;
 
 // 타인의 개인정보라 룸에 저장하지 않음
 public class UserInfo implements Parcelable {
@@ -147,11 +150,6 @@ public class UserInfo implements Parcelable {
         this.snsType = snsType;
     }
 
-    @Override
-    public int hashCode() {
-        return userId.hashCode();
-    }
-
     public String getLocation() {
         return location;
     }
@@ -222,5 +220,18 @@ public class UserInfo implements Parcelable {
         dest.writeParcelable(lastArticle, flags);
         dest.writeInt(followerCount);
         dest.writeInt(followingCount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Long.valueOf(longUserId).hashCode();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if (obj instanceof UserInfo) {
+            return CompareUtils.isUserInfoEqual(this, (UserInfo) obj);
+        }
+        return false;
     }
 }

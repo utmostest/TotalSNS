@@ -60,11 +60,11 @@ public class CompareUtils {
         return oldAccount.getId() == newAccount.getId() &&
                 oldAccount.getSnsType() == newAccount.getSnsType() &&
                 oldAccount.isCurrent() == newAccount.isCurrent() &&
-                oldAccount.getName().equals(newAccount.getName()) &&
-                oldAccount.getOauthSecret().equals(newAccount.getOauthSecret()) &&
-                oldAccount.getOauthKey().equals(newAccount.getOauthKey()) &&
-                oldAccount.getProfileImage().equals(newAccount.getProfileImage()) &&
-                oldAccount.getScreenName().equals(newAccount.getScreenName());
+                isStringEqual(oldAccount.getName(),newAccount.getName()) &&
+                isStringEqual(oldAccount.getOauthSecret(),newAccount.getOauthSecret()) &&
+                isStringEqual(oldAccount.getOauthKey(),newAccount.getOauthKey()) &&
+                isStringEqual(oldAccount.getProfileImage(),newAccount.getProfileImage()) &&
+                isStringEqual(oldAccount.getScreenName(),newAccount.getScreenName());
     }
 
     public static boolean isMessageSame(Message oldArticle, Message newArticle) {
@@ -83,11 +83,11 @@ public class CompareUtils {
                 oldMessage.getSenderId() == newMessage.getSenderId() &&
                 oldMessage.getTableUserId() == newMessage.getTableUserId() &&
                 oldMessage.getSenderTableId() == newMessage.getSenderTableId() &&
-                oldMessage.getMessage().equals(newMessage.getMessage()) &&
-                oldMessage.getSenderName().equals(newMessage.getSenderName()) &&
-                oldMessage.getSenderScreenId().equals(newMessage.getSenderScreenId()) &&
-                oldMessage.getSenderProfile().equals(newMessage.getSenderProfile()) &&
-                oldMessage.getUserDmId().equals(newMessage.getUserDmId());
+                isStringEqual(oldMessage.getMessage(),newMessage.getMessage()) &&
+                isStringEqual(oldMessage.getSenderName(),newMessage.getSenderName()) &&
+                isStringEqual(oldMessage.getSenderScreenId(),newMessage.getSenderScreenId()) &&
+                isStringEqual(oldMessage.getSenderProfile(),newMessage.getSenderProfile()) &&
+                isStringEqual(oldMessage.getUserDmId(),newMessage.getUserDmId());
     }
 
     public static boolean isUserInfoSame(UserInfo oldArticle, UserInfo newArticle) {

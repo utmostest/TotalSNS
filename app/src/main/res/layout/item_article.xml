@@ -86,7 +86,7 @@
             app:layout_constraintVertical_bias="0.0"
             tools:text="2017년 6월 21일" />
 
-        <com.enos.totalsns.util.autolink.AutoLinkTextView
+        <com.enos.totalsns.custom.autolink.AutoLinkTextView
             android:id="@+id/tlMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -107,7 +107,7 @@
             app:layout_constraintVertical_bias="0.0"
             tools:text="소셜 네트워크 서비스에는 트위터, 페이스북, 인스타그램 등이 있으며 전세계의 수많은 사람과 소통할 수 있으며 컴퓨터나 모바일 기기 어디에서 사용할 수 있다." />
 
-        <com.enos.totalsns.widget.ImageContainerCardView
+        <com.enos.totalsns.custom.ImageContainerCardView
             android:id="@+id/imageContainer"
             android:layout_width="0dp"
             android:layout_height="0dp"

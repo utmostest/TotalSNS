@@ -1,4 +1,4 @@
-package com.enos.totalsns.widget;
+package com.enos.totalsns.custom;
 
 import com.bumptech.glide.annotation.GlideModule;
 import com.bumptech.glide.module.AppGlideModule;

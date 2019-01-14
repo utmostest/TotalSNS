@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -23,7 +22,7 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
-import com.enos.totalsns.util.autolink.AutoLinkMode;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 
