@@ -89,7 +89,6 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
         public void bind() {
             binding.mUserId.setText(mItem.getSenderScreenId());
             binding.mUserName.setText(mItem.getSenderName());
-            AutoLinkTextUtils.set(binding.getRoot().getContext(), binding.mMessage, mItem.getMessage(), null);
             binding.mMessage.setText(mItem.getMessage());
             binding.mTime.setText(TimeUtils.getDateString(mItem.getCreatedAt()));
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.mProfileImg);

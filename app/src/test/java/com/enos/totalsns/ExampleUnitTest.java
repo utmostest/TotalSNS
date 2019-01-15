@@ -1,10 +1,14 @@
 package com.enos.totalsns;
 
+import com.enos.totalsns.custom.ArraySetList;
+import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.local.HashMapStringConverter;
 import com.enos.totalsns.data.source.local.StringArrayConverter;
 
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
@@ -44,6 +48,65 @@ public class ExampleUnitTest {
         }
         for (String value2 : hashMap2.values()) {
             assertTrue(hashMap.containsValue(value2));
+        }
+    }
+
+    @Test
+    public void testArraySetList() {
+        ArrayList<Account> accounts2 = new ArrayList<>();
+        for (int i = 0; i < 8; i++) {
+            Account account = new Account();
+            account.setId(i);
+            account.setName("david" + i);
+            accounts2.add(account);
+        }
+
+        ArraySetList<Account> accounts = new ArraySetList<>(accounts2);
+
+        for (int i = 10; i < 15; i++) {
+            Account account = new Account();
+            account.setId(i);
+            account.setName("john" + i);
+            accounts.add(account);
+        }
+
+        for (int i = 5; i < 12; i++) {
+            Account account = new Account();
+            account.setId(i);
+            account.setName("nick" + i);
+            accounts.add(account);
+        }
+
+        accounts.addAll(accounts2);
+
+        for (Account acc : accounts) {
+            System.out.println(acc.getId() + acc.getName());
+        }
+
+        accounts.setComparator(Comparator.comparingLong(Account::getId).reversed());
+        for (Account acc : accounts) {
+            System.out.println(acc.getId() + acc.getName());
+        }
+
+        accounts.setComparator(Comparator.comparingLong(Account::getId));
+        for (Account acc : accounts) {
+            System.out.println(acc.getId() + acc.getName());
+        }
+
+        accounts.setComparator((o1, o2) -> {
+            if (o1 == null || o2 == null) return 0;
+            return o1.getName().compareTo(o2.getName());
+        });
+        for (Account acc : accounts) {
+            System.out.println(acc.getId() + acc.getName());
+        }
+
+        accounts.setComparator(((Comparator<Account>) (o1, o2) -> {
+            if (o1 == null || o2 == null) return 0;
+            return o1.getName().compareTo(o2.getName());
+        }).reversed());
+        for (Account acc : accounts) {
+            System.out.println(acc.getId() + acc.getName());
         }
     }
 }

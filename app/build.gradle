@@ -9,6 +9,18 @@ try {
 
 android {
     compileSdkVersion 28
+//    build 실패시
+//    lintOptions {
+//        abortOnError false
+//    }
+//    signingConfigs {
+//        release{
+//            storeFile file("release.keystore")
+//            storePassword "xxxxxxx"
+//            keyAlias "androidreleasekey"
+//            keyPassword "xxxxxxxx"
+//        }
+//    }
     defaultConfig {
         applicationId "com.enos.totalsns"
         minSdkVersion 16
@@ -35,7 +47,7 @@ android {
         release {
             buildConfigField "String", "CONSUMER_KEY", "\"${props.getProperty("twitterConsumerKey")}\""
             buildConfigField "String", "CONSUMER_SECRET", "\"${props.getProperty("twitterConsumerSecret")}\""
-            minifyEnabled false
+            minifyEnabled false //프로가드 비활성
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

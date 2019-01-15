@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/batang_white"
+        android:foreground="?android:attr/selectableItemBackground"
         android:paddingHorizontal="16dp"
         android:paddingVertical="16dp"
         tools:context=".ContentsActivity">
@@ -86,7 +87,7 @@
             app:layout_constraintVertical_bias="0.0"
             tools:text="2017년 6월 21일" />
 
-        <com.enos.totalsns.custom.autolink.AutoLinkTextView
+        <TextView
             android:id="@+id/mMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"

@@ -6,19 +6,20 @@
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
-        android:background="@color/batang_white">
+        android:background="@color/batang_white"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="16dp">
 
         <ImageView
             android:id="@+id/accProfileImg"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:srcCompat="@drawable/ic_account_circle_black_48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <TextView
             android:id="@+id/accUserName"

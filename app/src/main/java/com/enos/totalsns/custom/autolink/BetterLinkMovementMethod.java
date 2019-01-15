@@ -1,6 +1,10 @@
 package com.enos.totalsns.custom.autolink;
 
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.RippleDrawable;
+import android.os.Build;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.Selection;
@@ -255,7 +259,17 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                 if (!wasLongPressRegistered && !touchStartedOverAClickableSpan && clickableSpanUnderTouch == clickableSpanUnderTouchOnActionDown) {
                     try {
                         View parent = (View) textView.getParent();
+
+                        Drawable background = parent.getBackground();
+                        if (Build.VERSION.SDK_INT >= 21 && background instanceof RippleDrawable) {
+                            final RippleDrawable rippleDrawable = (RippleDrawable) background;
+                            rippleDrawable.setHotspot(event.getX() + textView.getLeft(), event.getY() + textView.getTop());
+                        }
+                        background.setState(new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled});
                         parent.callOnClick();
+                        Handler handler = new Handler();
+                        handler.postDelayed(() -> background.setState(new int[]{}), 150);
+
                     } catch (Exception e) {
                     }
                 }
