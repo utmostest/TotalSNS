@@ -61,10 +61,9 @@ public class ProfileFragment extends Fragment {
         }
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(ProfileViewModel.class);
         if (userInfo != null) {
-            mViewModel.fetchUserTimelineFirst(userInfo.getLongUserId());
+            fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
             mViewModel.fetchProfile(userId);
-            mViewModel.fetchUserTimelineFirst(userId);
         }
     }
 
@@ -108,10 +107,18 @@ public class ProfileFragment extends Fragment {
         dataBinding.swipeContainer.setOnRefreshListener(direction -> {
             switch (direction) {
                 case TOP:
-                    mViewModel.fetchUserTimelineRecent();
+                    if (isUserTimelineAvailable()) {
+                        mViewModel.fetchUserTimelineRecent();
+                    } else {
+                        dataBinding.swipeContainer.setRefreshing(false);
+                    }
                     break;
                 case BOTTOM:
-                    mViewModel.fetchUserTimelinePast();
+                    if (isUserTimelineAvailable()) {
+                        mViewModel.fetchUserTimelinePast();
+                    } else {
+                        dataBinding.swipeContainer.setRefreshing(false);
+                    }
                     break;
             }
         });
@@ -144,8 +151,20 @@ public class ProfileFragment extends Fragment {
             dataBinding.swipeContainer.setRefreshing(refresh);
         });
         mViewModel.getUserProfile().observe(this, profile -> {
-            userInfo = profile;
-            if (userInfo != null) initView();
+            if (userInfo == null && profile != null) {
+                userInfo = profile;
+                fetchUserTimelineFirst(profile.getLongUserId());
+                initView();
+            }
         });
+    }
+
+    private boolean isUserTimelineAvailable() {
+        if (userInfo == null) return false;
+        return !userInfo.isProtected();
+    }
+
+    private void fetchUserTimelineFirst(long userId) {
+        if (isUserTimelineAvailable()) mViewModel.fetchUserTimelineFirst(userId);
     }
 }

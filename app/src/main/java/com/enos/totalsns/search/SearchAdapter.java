@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
@@ -20,7 +21,6 @@ import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
-import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 
@@ -163,7 +163,8 @@ public class SearchAdapter extends HFSupportAdapter {
     public void swapUserList(List<UserInfo> list) {
         mFilteredList = list;
         if (mUserRecyclerView != null) {
-            headerViewHolder.getRoot().setVisibility(mFilteredList == null || mFilteredList.size() <= 0 ? View.GONE : View.VISIBLE);
+            boolean hasUser = mFilteredList != null && mFilteredList.size() > 0;
+            headerViewHolder.searchHeaderContainer.setVisibility(hasUser ? View.VISIBLE : View.GONE);
             ((SearchedUserAdapter) mUserRecyclerView.getAdapter()).swapUserList(list);
         }
     }
@@ -221,7 +222,8 @@ public class SearchAdapter extends HFSupportAdapter {
             super(view.getRoot());
             binding = view;
             headerViewHolder = view;
-            headerViewHolder.getRoot().setVisibility(mFilteredList == null || mFilteredList.size() <= 0 ? View.GONE : View.VISIBLE);
+            boolean hasUser = mFilteredList != null && mFilteredList.size() > 0;
+            headerViewHolder.searchHeaderContainer.setVisibility(hasUser ? View.VISIBLE : View.GONE);
         }
 
         public void bind() {

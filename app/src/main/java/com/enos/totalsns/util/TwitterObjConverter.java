@@ -95,7 +95,7 @@ public class TwitterObjConverter {
             id[0] = Math.min(id[0], status.getId());
             id[1] = Math.max(id[1], status.getId());
         }
-        if (id[0] > 0) id[0] -= 1;
+        if (id[0] > 2) id[0] -= 1;
         return id;
     }
 
@@ -108,7 +108,7 @@ public class TwitterObjConverter {
             id[0] = Math.min(id[0], status.getId());
             id[1] = Math.max(id[1], status.getId());
         }
-        if (id[0] > 0) id[0] -= 1;
+        if (id[0] > 2) id[0] -= 1;
         return id;
     }
 
@@ -242,7 +242,7 @@ public class TwitterObjConverter {
         }
         UserInfo userInfo = new UserInfo(user.getId(), user.getScreenName(), user.getName(), user.getDescription(),
                 user.get400x400ProfileImageURL(), user.getProfileBackgroundImageURL(), user.getProfileBackgroundColor(),
-                user.isFollowRequestSent(), Constants.TWITTER, user.getLocation(), user.getCreatedAt().getTime(),
+                user.isProtected(), Constants.TWITTER, user.getLocation(), user.getCreatedAt().getTime(),
                 user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount());
         return userInfo;
     }

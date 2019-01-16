@@ -18,6 +18,7 @@ import java.util.Date;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
+import twitter4j.Friendship;
 import twitter4j.GeoLocation;
 import twitter4j.GeoQuery;
 import twitter4j.PagableResponseList;
@@ -25,6 +26,7 @@ import twitter4j.Paging;
 import twitter4j.Place;
 import twitter4j.Query;
 import twitter4j.QueryResult;
+import twitter4j.Relationship;
 import twitter4j.ResponseList;
 import twitter4j.Status;
 import twitter4j.StatusUpdate;
@@ -382,7 +384,7 @@ public class TwitterManager {
                 paging.setSinceId(queryUserTimeline.getSinceId());
                 break;
             case QueryUserTimeline.PAST:
-                paging.setMaxId(queryUserTimeline.getMaxId() - 1);
+                paging.setMaxId(queryUserTimeline.getMaxId());
                 break;
         }
         ResponseList<Status> list = mTwitter.getUserTimeline(queryUserTimeline.getUserId(), paging);
@@ -404,5 +406,15 @@ public class TwitterManager {
         }
         long currentUserId = getLoggedInUser().getLongUserId();
         return TwitterObjConverter.toArticleList(list, currentUserId, false);
+    }
+
+    // TODO 검색, 팔로우리스트 유저정보에 프렌드쉽 추가
+    public ResponseList<Friendship> getFriendship(long... ids) throws TwitterException {
+        return mTwitter.lookupFriendships(ids);
+    }
+
+    // TODO 프로필 유저정보에 릴레이션쉽 추가
+    public Relationship getRelationShip(long id) throws TwitterException {
+        return mTwitter.showFriendship(getLoggedInUser().getLongUserId(), id);
     }
 }

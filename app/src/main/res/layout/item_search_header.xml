@@ -3,41 +3,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/search_rv"
+        <android.support.constraint.ConstraintLayout
+            android:id="@+id/search_header_container"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layoutManager="LinearLayoutManager"
-            tools:context=".search.SearchListFragment"
-            tools:listitem="@layout/item_search_user" />
+            android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/divider_first"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/search_rv" />
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/search_rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="LinearLayoutManager"
+                tools:context=".search.SearchListFragment"
+                tools:listitem="@layout/item_search_user" />
 
-        <Button
-            android:foreground="?android:attr/selectableItemBackground"
-            android:id="@+id/search_more_user"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:text="@string/more_user"
-            app:layout_constraintTop_toBottomOf="@+id/divider_first" />
+            <View
+                android:id="@+id/divider_first"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintTop_toBottomOf="@+id/search_rv" />
 
-        <View
-            android:id="@+id/divider_second"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorPrimary"
-            app:layout_constraintTop_toBottomOf="@+id/search_more_user" />
+            <Button
+                android:id="@+id/search_more_user"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:text="@string/more_user"
+                app:layout_constraintTop_toBottomOf="@+id/divider_first" />
 
-    </android.support.constraint.ConstraintLayout>
+            <View
+                android:id="@+id/divider_second"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorPrimary"
+                app:layout_constraintTop_toBottomOf="@+id/search_more_user" />
+
+        </android.support.constraint.ConstraintLayout>
+    </LinearLayout>
 </layout>

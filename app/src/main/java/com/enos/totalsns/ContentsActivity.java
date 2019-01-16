@@ -23,12 +23,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 import com.enos.totalsns.accounts.AccountsActivity;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.Message;
@@ -56,11 +58,10 @@ import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ColorUtils;
-import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.ViewModelFactory;
-import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.ferfalk.simplesearchview.SimpleSearchView;
 
 import java.util.HashMap;
@@ -219,19 +220,11 @@ public class ContentsActivity extends AppCompatActivity
             followerNum.setText(String.valueOf(user.getFollowerCount()));
             followingNum.setText(String.valueOf(user.getFollowingCount()));
 
-            followingLabel.setOnClickListener(v -> {
-                UserListActivity.startFollowList(this, user.getLongUserId(), false);
-            });
-            followingNum.setOnClickListener(v -> {
-                UserListActivity.startFollowList(this, user.getLongUserId(), false);
-            });
-            followerLabel.setOnClickListener(v -> {
-                UserListActivity.startFollowList(this, user.getLongUserId(), true);
-            });
-            followerNum.setOnClickListener(v -> {
-                UserListActivity.startFollowList(this, user.getLongUserId(), true);
-            });
-
+            followingLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
+            followingNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
+            followerLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
+            followerNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
+            headerProfile.setOnClickListener(v -> ProfileActivity.start(this, user));
             GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
             String profileBackImg = user.getProfileBackImg();
             if (StringUtils.isStringValid(profileBackImg)) {
@@ -417,7 +410,7 @@ public class ContentsActivity extends AppCompatActivity
     private void hideFabDelayedShow() {
         hideFab();
         handler.removeCallbacks(mRunnable);
-        handler.postDelayed(mRunnable, Constants.CROSS_FADE_MILLI);
+        handler.postDelayed(mRunnable, Constants.FAB_DELAY_MILLI);
     }
 
     private final Handler handler = new Handler();
@@ -516,7 +509,11 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onFollowTextClicked(UserInfo info, boolean isFollower) {
-        UserListActivity.startFollowList(this, info.getLongUserId(), isFollower);
+        if (info.isProtected()) {
+            Toast.makeText(this, "This user is protected", Toast.LENGTH_SHORT).show();
+        } else {
+            UserListActivity.startFollowList(this, info.getLongUserId(), isFollower);
+        }
     }
 
     @Override

@@ -24,6 +24,7 @@ import android.view.Window;
 import android.widget.TextView;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.data.Constants;
 
 /**
  * Handles URL clicks on TextViews. Unlike the default implementation, this:
@@ -268,7 +269,7 @@ public class BetterLinkMovementMethod extends LinkMovementMethod {
                         background.setState(new int[]{android.R.attr.state_pressed, android.R.attr.state_enabled});
                         parent.callOnClick();
                         Handler handler = new Handler();
-                        handler.postDelayed(() -> background.setState(new int[]{}), 150);
+                        handler.postDelayed(() -> background.setState(new int[]{}), Constants.SHORT_ANIM_MILLI);
 
                     } catch (Exception e) {
                     }

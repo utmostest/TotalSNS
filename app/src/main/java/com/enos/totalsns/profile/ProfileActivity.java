@@ -9,9 +9,11 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
@@ -22,9 +24,8 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.userlist.OnFollowListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.SingletonToast;
-import com.enos.totalsns.custom.autolink.AutoLinkMode;
+import com.enos.totalsns.util.StringUtils;
 
 import java.util.HashMap;
 
@@ -70,7 +71,11 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onFollowTextClicked(UserInfo info, boolean isFollower) {
-        UserListActivity.startFollowList(this, info.getLongUserId(), isFollower);
+        if (info.isProtected()) {
+            Toast.makeText(this, "This user is protected", Toast.LENGTH_SHORT).show();
+        } else {
+            UserListActivity.startFollowList(this, info.getLongUserId(), isFollower);
+        }
     }
 
     @Override
@@ -85,9 +90,6 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onArticleProfileImgClicked(Article article) {
-        if (article.getLongUserId() != userId) {
-            start(this, article.getLongUserId());
-        }
     }
 
     @Override

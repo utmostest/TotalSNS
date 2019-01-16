@@ -25,5 +25,8 @@ public class Constants {
     public static final double DEFAULT_LONGITUDE = 127.044714;
     public static final double DEFAULT_LATITUDE = 37.533141;
     public static final double DEFAULT_RADIUS_KM = 1;
+    public static final int FAB_DELAY_MILLI = 350;
     public static boolean IS_TWITTER_DEBUG = false;
+
+    public static final int SHORT_ANIM_MILLI = 120;
 }

@@ -17,7 +17,7 @@ public class UserInfo implements Parcelable {
     private String profileBackImg;
     private String profileBackColor;
     private int snsType;
-    private boolean isFollowed;
+    private boolean isProtected;
     private String location;
     private long createdAt;
     private String email;
@@ -29,7 +29,7 @@ public class UserInfo implements Parcelable {
     }
 
     public UserInfo(long longUserId, String userId, String userName, String message, String profileImg,
-                    String profileBackImg, String profileBackColor, boolean isFollowed, int snsType,
+                    String profileBackImg, String profileBackColor, boolean isProtected, int snsType,
                     String location, long createdAt, String email, Article lastArticle, int followerCount, int followingCount) {
         this.longUserId = longUserId;
         this.userId = userId;
@@ -38,7 +38,7 @@ public class UserInfo implements Parcelable {
         this.profileImg = profileImg;
         this.profileBackImg = profileBackImg;
         this.profileBackColor = profileBackColor;
-        this.isFollowed = isFollowed;
+        this.isProtected = isProtected;
         this.snsType = snsType;
         this.location = location;
         this.createdAt = createdAt;
@@ -57,7 +57,7 @@ public class UserInfo implements Parcelable {
         profileBackImg = in.readString();
         profileBackColor = in.readString();
         snsType = in.readInt();
-        isFollowed = in.readByte() != 0;
+        isProtected = in.readByte() != 0;
         location = in.readString();
         createdAt = in.readLong();
         email = in.readString();
@@ -138,12 +138,12 @@ public class UserInfo implements Parcelable {
         this.profileBackColor = profileBackColor;
     }
 
-    public boolean isFollowed() {
-        return isFollowed;
+    public boolean isProtected() {
+        return isProtected;
     }
 
-    public void setFollowed(boolean followed) {
-        isFollowed = followed;
+    public void setProtected(boolean followed) {
+        isProtected = followed;
     }
 
     public void setSnsType(int snsType) {
@@ -213,7 +213,7 @@ public class UserInfo implements Parcelable {
         dest.writeString(profileBackImg);
         dest.writeString(profileBackColor);
         dest.writeInt(snsType);
-        dest.writeByte((byte) (isFollowed ? 1 : 0));
+        dest.writeByte((byte) (isProtected ? 1 : 0));
         dest.writeString(location);
         dest.writeLong(createdAt);
         dest.writeString(email);
