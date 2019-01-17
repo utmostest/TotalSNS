@@ -10,7 +10,6 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ItemMessageBinding;
 import com.enos.totalsns.message.OnMessageClickListener;
-import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.TimeUtils;
@@ -36,8 +35,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         if (mValues == null) return;
-        holder.mItem = mValues.get(position);
-        holder.bind();
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -79,14 +77,13 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ItemMessageBinding binding;
-        private Message mItem;
 
         ViewHolder(ItemMessageBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(Message mItem) {
             binding.mUserId.setText(mItem.getSenderScreenId());
             binding.mUserName.setText(mItem.getSenderName());
             binding.mMessage.setText(mItem.getMessage());

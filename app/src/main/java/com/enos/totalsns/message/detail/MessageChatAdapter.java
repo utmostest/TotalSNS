@@ -48,12 +48,10 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         if (mValues == null) return;
         if (vh instanceof InViewHolder) {
             InViewHolder holder = (InViewHolder) vh;
-            holder.mItem = mValues.get(position);
-            holder.bind();
+            holder.bind(mValues.get(position));
         } else if (vh instanceof OutViewHolder) {
             OutViewHolder holder = (OutViewHolder) vh;
-            holder.mItem = mValues.get(position);
-            holder.bind();
+            holder.bind(mValues.get(position));
         }
     }
 
@@ -103,14 +101,13 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public class InViewHolder extends RecyclerView.ViewHolder {
         public final ItemMessageDetailInBinding binding;
-        private Message mItem;
 
         InViewHolder(ItemMessageDetailInBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(Message mItem) {
             binding.messageItemMsg.setText(mItem.getMessage());
             binding.messageItemTime.setText(TimeUtils.getDateString(mItem.getCreatedAt()));
             binding.getRoot().setOnClickListener(v -> {
@@ -121,14 +118,13 @@ public class MessageChatAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
 
     public class OutViewHolder extends RecyclerView.ViewHolder {
         private ItemMessageDetailOutBinding binding;
-        private Message mItem;
 
         public OutViewHolder(ItemMessageDetailOutBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind() {
+        public void bind(Message mItem) {
             binding.messageItemMsg.setText(mItem.getMessage());
             binding.messageItemTime.setText(TimeUtils.getDateString(mItem.getCreatedAt()));
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getSenderProfile(), binding.messageItemProfile, R.drawable.ic_account_circle_black_36dp);

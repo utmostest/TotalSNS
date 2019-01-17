@@ -4,7 +4,9 @@ import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
@@ -12,10 +14,9 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.util.CompareUtils;
-import com.enos.totalsns.util.StringUtils;
-import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.StringUtils;
 
 import java.util.List;
 
@@ -39,10 +40,10 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     @Override
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder vh, final int position) {
+        Log.i("onBindViewHolder", "list size : " + mFilteredList.size() + " , position : " + position);
         if (mFilteredList == null) return;
         UserViewHolder holder = (UserViewHolder) vh;
-        holder.mItem = mFilteredList.get(position);
-        holder.bind(position);
+        holder.bind(mFilteredList.get(position));
     }
 
     @Override
@@ -85,20 +86,23 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private class UserViewHolder extends RecyclerView.ViewHolder {
         public final ItemSearchUserBinding binding;
-        private UserInfo mItem;
 
         UserViewHolder(ItemSearchUserBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind(int position) {
+        public void bind(UserInfo mItem) {
             binding.getRoot().setOnClickListener((view) -> {
-                if (mListener != null) mListener.onUserItemClicked(binding, mItem);
+                if (mListener != null) mListener.onSearchUserItemClicked(binding, mItem);
             });
             binding.itemUserFollowBtn.setOnClickListener((view) -> {
                 if (mListener != null) mListener.onFollowButtonClicked(mItem);
             });
+            binding.itemUserFollowBtn.setVisibility(mItem.getFollowInfo() != null && mItem.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
+            binding.itemUserFollowBtn.setText(mItem.getFollowInfo() != null && mItem.getFollowInfo().isFollowing() ?
+                    R.string.title_following : R.string.do_follow);
+
             binding.itemUserMessage.setText(mItem.getMessage());
             binding.itemUserName.setText(mItem.getUserName());
             binding.itemUserScreenId.setText(mItem.getUserId());

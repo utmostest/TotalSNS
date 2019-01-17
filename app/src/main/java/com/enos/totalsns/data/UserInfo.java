@@ -24,13 +24,19 @@ public class UserInfo implements Parcelable {
     private Article lastArticle;
     private int followerCount;
     private int followingCount;
+    private boolean isFollowReqSend;
+
+    private FollowInfo followInfo = null;
+    private RelationInfo relationInfo = null;
 
     public UserInfo() {
     }
 
     public UserInfo(long longUserId, String userId, String userName, String message, String profileImg,
                     String profileBackImg, String profileBackColor, boolean isProtected, int snsType,
-                    String location, long createdAt, String email, Article lastArticle, int followerCount, int followingCount) {
+                    String location, long createdAt, String email, Article lastArticle, int followerCount,
+                    int followingCount, boolean isFollowReqSend) {
+
         this.longUserId = longUserId;
         this.userId = userId;
         this.userName = userName;
@@ -46,6 +52,7 @@ public class UserInfo implements Parcelable {
         this.lastArticle = lastArticle;
         this.followerCount = followerCount;
         this.followingCount = followingCount;
+        this.isFollowReqSend = isFollowReqSend;
     }
 
     protected UserInfo(Parcel in) {
@@ -64,6 +71,12 @@ public class UserInfo implements Parcelable {
         lastArticle = in.readParcelable(Article.class.getClassLoader());
         followerCount = in.readInt();
         followingCount = in.readInt();
+        isFollowReqSend = in.readByte() != 0;
+        boolean isFollowNotNull = in.readByte() != 0;
+        if (isFollowNotNull) followInfo = in.readParcelable(FollowInfo.class.getClassLoader());
+        boolean isRelationInfoNotNull = in.readByte() != 0;
+        if (isRelationInfoNotNull)
+            relationInfo = in.readParcelable(RelationInfo.class.getClassLoader());
     }
 
     public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
@@ -198,6 +211,30 @@ public class UserInfo implements Parcelable {
         this.followingCount = followingCount;
     }
 
+    public boolean isFollowReqSend() {
+        return isFollowReqSend;
+    }
+
+    public void setFollowReqSend(boolean followReqSend) {
+        isFollowReqSend = followReqSend;
+    }
+
+    public FollowInfo getFollowInfo() {
+        return followInfo;
+    }
+
+    public void setFollowInfo(FollowInfo followInfo) {
+        this.followInfo = followInfo;
+    }
+
+    public RelationInfo getRelationInfo() {
+        return relationInfo;
+    }
+
+    public void setRelationInfo(RelationInfo relationInfo) {
+        this.relationInfo = relationInfo;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -220,6 +257,15 @@ public class UserInfo implements Parcelable {
         dest.writeParcelable(lastArticle, flags);
         dest.writeInt(followerCount);
         dest.writeInt(followingCount);
+        dest.writeByte((byte) (isFollowReqSend ? 1 : 0));
+
+        boolean isFollowInfoNotNull = followInfo != null;
+        dest.writeByte((byte) (isFollowInfoNotNull ? 1 : 0));
+        if (isFollowInfoNotNull) dest.writeParcelable(followInfo, flags);
+
+        boolean isRelationInfoNotNull = relationInfo != null;
+        dest.writeByte((byte) (isRelationInfoNotNull ? 1 : 0));
+        if (isRelationInfoNotNull) dest.writeParcelable(relationInfo, flags);
     }
 
     @Override

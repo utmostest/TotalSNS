@@ -4,11 +4,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -29,6 +32,7 @@ import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
@@ -56,18 +60,19 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         UserInfo userInfo = getIntent().getParcelableExtra(ProfileFragment.ARG_USER_INFO);
         userId = getIntent().getLongExtra(ProfileFragment.ARG_USER_ID, ProfileFragment.INVALID_ID);
         if (userInfo != null) {
+            Log.i("layout", "load started");
             //이미지가 로드될때까지 트랜지션 연기
             ActivityCompat.postponeEnterTransition(this);
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, ProfileFragment.newInstance(userInfo)).commitNow();
+            getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userInfo)).commitNow();
         } else if (userId > ProfileFragment.INVALID_ID)
-            getSupportFragmentManager().beginTransaction().replace(R.id.container, ProfileFragment.newInstance(userId)).commitNow();
+            getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userId)).commitNow();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            supportFinishAfterTransition();
+            ActivityCompat.finishAfterTransition(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -83,7 +88,7 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     }
 
     @Override
-    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem) {
         TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
@@ -141,31 +146,35 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     }
 
     public static void startWithTransition(AppCompatActivity context, ItemUserBinding binding, UserInfo mItem) {
-//        AppCompatUtils.setExitCallback(this);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        ActivityUtils.startActivityWithTransition(context, intent, Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)),
-                Pair.create(binding.fFollowBtn, context.getString(R.string.tran_follow_btn)),
-                Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)),
-                Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)),
-                Pair.create(binding.fMessage, context.getString(R.string.tran_message_u)));
+        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
+        pairs.add(Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)));
+        pairs.add(Pair.create(binding.fFollowBtn, context.getString(R.string.tran_follow_btn)));
+        pairs.add(Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)));
+        pairs.add(Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)));
+        pairs.add(Pair.create(binding.fMessage, context.getString(R.string.tran_message_u)));
+        ActivityUtils.startActivityWithTransition(context, intent, pairs);
     }
 
     public static void startWithTransition(AppCompatActivity context, ItemSearchUserBinding binding, UserInfo mItem) {
-//        AppCompatUtils.setExitCallback(this);
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        ActivityUtils.startActivityWithTransition(context, intent, Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)),
-                Pair.create(binding.itemUserProfileBack, context.getString(R.string.tran_profile_back)),
-                Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)),
-                Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)),
-                Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)),
-                Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
+        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
+        pairs.add(Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)));
+        pairs.add(Pair.create(binding.itemUserProfileBack, context.getString(R.string.tran_profile_back)));
+        pairs.add(Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)));
+        pairs.add(Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)));
+        pairs.add(Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)));
+        pairs.add(Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
+        ActivityUtils.startActivityWithTransition(context, intent, pairs);
     }
 
+    @MainThread
     @Override
     public void onLayoutLoaded() {
         //이미지가 로드된 후 트랜지션 개시
+        Log.i("layout", "load finished");
         ActivityCompat.startPostponedEnterTransition(this);
     }
 }

@@ -41,8 +41,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     public void onBindViewHolder(@NonNull final RecyclerView.ViewHolder vh, final int position) {
         if (mFilteredList == null) return;
         ItemViewHolder holder = (ItemViewHolder) vh;
-        holder.mItem = mFilteredList.get(position);
-        holder.bind(position);
+        holder.bind(mFilteredList.get(position));
     }
 
     public void swapTimelineList(List<Article> list) {
@@ -85,14 +84,13 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private class ItemViewHolder extends RecyclerView.ViewHolder {
         public final ItemArticleBinding binding;
-        private Article mItem;
 
         ItemViewHolder(ItemArticleBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind(int position) {
+        public void bind(Article mItem) {
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
@@ -119,7 +117,7 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mListener) {
-                    mListener.onArticleClicked(binding, mItem, position);
+                    mListener.onArticleClicked(binding, mItem);
                 }
             });
             binding.tlProfileImg.setOnClickListener(v -> {

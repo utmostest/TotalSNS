@@ -4,6 +4,7 @@ import android.databinding.DataBindingUtil;
 import android.support.v7.util.DiffUtil;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
@@ -11,7 +12,6 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
-import com.enos.totalsns.util.TwitterObjConverter;
 
 import java.util.List;
 
@@ -33,8 +33,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         if (mValues == null) return;
-        holder.mItem = mValues.get(position);
-        holder.bind();
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -80,18 +79,20 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ItemUserBinding binding;
-        private UserInfo mItem;
 
         ViewHolder(ItemUserBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(UserInfo mItem) {
             binding.fUserId.setText(mItem.getUserId());
             binding.fUserName.setText(mItem.getUserName());
             binding.fMessage.setText(mItem.getMessage());
             binding.fMessage.setText(mItem.getMessage());
+            binding.fFollowBtn.setVisibility(mItem.getFollowInfo() != null && mItem.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
+            binding.fFollowBtn.setText(mItem.getFollowInfo() != null && mItem.getFollowInfo().isFollowing() ?
+                    R.string.title_following : R.string.do_follow);
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.fProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {

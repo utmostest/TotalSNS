@@ -249,13 +249,17 @@ public class TwitterManager {
                 break;
         }
 
-        ResponseList<User> result = null;
-        result = mTwitter.searchUsers(querySearchUser.getQuery(), querySearchUser.getPage());
-        if (result != null) {
-            if (querySearchUser.getPage() < 1) querySearchUser.setPage(1);
-            querySearchUser.setMaxPage(querySearchUser.getPage() + 1);
-        }
-        return TwitterObjConverter.toUserInfoList(result, getLoggedInUser().getLongUserId());
+        ResponseList<User> result = mTwitter.searchUsers(querySearchUser.getQuery(), querySearchUser.getPage());
+
+        if (result == null || result.size() <= 0) return null;
+
+        long[] userIds = TwitterObjConverter.getUserIdList(result);
+        ResponseList<Friendship> friendships = mTwitter.lookupFriendships(userIds);
+
+        if (querySearchUser.getPage() < 1) querySearchUser.setPage(1);
+        querySearchUser.setMaxPage(querySearchUser.getPage() + 1);
+
+        return TwitterObjConverter.toUserInfoList(result, friendships, getLoggedInUser().getLongUserId());
     }
 
     public ArrayList<Article> getSearch(QuerySearchArticle query) throws TwitterException {
@@ -357,21 +361,26 @@ public class TwitterManager {
         } else {
             list = mTwitter.getFriendsList(queryFollow.getUserId(), follow.getCursor(), Constants.USER_LIST_COUNT);
         }
-        if (list != null) {
-            switch (follow.getQueryType()) {
-                case QueryFollow.FIRST:
-                    queryFollow.setNextCursor(list.getNextCursor());
-                    queryFollow.setPreviosCursor(list.getPreviousCursor());
-                    break;
-                case QueryFollow.PREVIOUS:
-                    queryFollow.setPreviosCursor(list.size() > 0 ? list.getPreviousCursor() : 0);
-                    break;
-                case QueryFollow.NEXT:
-                    queryFollow.setNextCursor(list.size() > 0 ? list.getNextCursor() : 0);
-                    break;
-            }
+
+        if (list == null || list.size() <= 0) return null;
+
+        long[] userIds = TwitterObjConverter.getUserIdList(list);
+        ResponseList<Friendship> friendships = mTwitter.lookupFriendships(userIds);
+
+        switch (follow.getQueryType()) {
+            case QueryFollow.FIRST:
+                queryFollow.setNextCursor(list.getNextCursor());
+                queryFollow.setPreviosCursor(list.getPreviousCursor());
+                break;
+            case QueryFollow.PREVIOUS:
+                queryFollow.setPreviosCursor(list.size() > 0 ? list.getPreviousCursor() : 0);
+                break;
+            case QueryFollow.NEXT:
+                queryFollow.setNextCursor(list.size() > 0 ? list.getNextCursor() : 0);
+                break;
         }
-        return TwitterObjConverter.toUserInfoList(list, getLoggedInUser().getLongUserId());
+
+        return TwitterObjConverter.toUserInfoList(list, friendships, getLoggedInUser().getLongUserId());
     }
 
     public ArrayList<Article> getUserTimeline(QueryUserTimeline query) throws TwitterException {
@@ -406,11 +415,6 @@ public class TwitterManager {
         }
         long currentUserId = getLoggedInUser().getLongUserId();
         return TwitterObjConverter.toArticleList(list, currentUserId, false);
-    }
-
-    // TODO 검색, 팔로우리스트 유저정보에 프렌드쉽 추가
-    public ResponseList<Friendship> getFriendship(long... ids) throws TwitterException {
-        return mTwitter.lookupFriendships(ids);
     }
 
     // TODO 프로필 유저정보에 릴레이션쉽 추가

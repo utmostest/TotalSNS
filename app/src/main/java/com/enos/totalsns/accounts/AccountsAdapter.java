@@ -5,13 +5,13 @@ import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
 import com.enos.totalsns.databinding.ItemAccountFooterBinding;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
-import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 
@@ -85,8 +85,7 @@ public class AccountsAdapter extends HFSupportAdapter {
     @Override
     public void onBindItemViewHolder(ItemViewHolder vh, int position) {
         AccountItemViewHolder holder = (AccountItemViewHolder) vh;
-        holder.mItem = mValues.get(position);
-        holder.bind();
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -129,14 +128,13 @@ public class AccountsAdapter extends HFSupportAdapter {
 
     private class AccountItemViewHolder extends ItemViewHolder {
         public final ItemAccountBinding binding;
-        private Account mItem;
 
         AccountItemViewHolder(ItemAccountBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(Account mItem) {
             binding.accUserId.setText(mItem.getScreenName());
             binding.accUserName.setText(mItem.getName());
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImage(), binding.accProfileImg);

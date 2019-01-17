@@ -7,7 +7,7 @@ import com.enos.totalsns.databinding.ItemUserBinding;
 public interface OnUserClickListener {
     void onUserItemClicked(ItemUserBinding binding, UserInfo item);
 
-    void onUserItemClicked(ItemSearchUserBinding binding, UserInfo item);
+    void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item);
 
     void onFollowButtonClicked(UserInfo info);
 }

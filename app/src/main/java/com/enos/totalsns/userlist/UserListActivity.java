@@ -41,7 +41,7 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
     }
 
     @Override
-    public void onUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
+    public void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
 
     }
 

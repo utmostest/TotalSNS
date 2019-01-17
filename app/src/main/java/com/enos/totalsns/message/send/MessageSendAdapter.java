@@ -5,13 +5,13 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemMessageSendBinding;
 import com.enos.totalsns.databinding.ItemMessageSendHeaderBinding;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
-import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 
@@ -82,8 +82,7 @@ public class MessageSendAdapter extends HFSupportAdapter {
     @Override
     public void onBindItemViewHolder(HFSupportAdapter.ItemViewHolder vh, int position) {
         ItemViewHolder holder = (ItemViewHolder) vh;
-        holder.mItem = mValues.get(position);
-        holder.bind();
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -126,14 +125,13 @@ public class MessageSendAdapter extends HFSupportAdapter {
 
     private class ItemViewHolder extends HFSupportAdapter.ItemViewHolder {
         public final ItemMessageSendBinding binding;
-        private UserInfo mItem;
 
         ItemViewHolder(ItemMessageSendBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(UserInfo mItem) {
             binding.msUserId.setText(mItem.getUserId());
             binding.msUserName.setText(mItem.getUserName());
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.msProfileImg);

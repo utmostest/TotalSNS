@@ -24,6 +24,7 @@ public class GlideUtils {
                 .load(imageUrl)
                 .apply(
                         new RequestOptions()
+                                .placeholder(R.drawable.ic_account_circle_black_48dp)
                                 .dontTransform()
                                 .optionalCircleCrop()
                 )

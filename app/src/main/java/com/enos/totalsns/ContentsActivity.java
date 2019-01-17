@@ -18,6 +18,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -438,7 +439,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem) {
         TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
     }
 
@@ -493,11 +494,13 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
+        Log.i("layout","onSearchUserItemClicked");
         ProfileActivity.startWithTransition(this, binding, item);
     }
 
     @Override
-    public void onUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
+    public void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
+        Log.i("layout","onSearchUserItemClicked");
         ProfileActivity.startWithTransition(this, binding, item);
     }
 

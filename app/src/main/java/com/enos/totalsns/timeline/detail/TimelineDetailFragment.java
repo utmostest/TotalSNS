@@ -40,6 +40,14 @@ public class TimelineDetailFragment extends Fragment {
 
     private LayoutLoad layoutLoad;
 
+    public static TimelineDetailFragment newInstance(Article article) {
+        Bundle arguments = new Bundle();
+        arguments.putParcelable(ITEM_ARTICLE, article);
+        TimelineDetailFragment fragment = new TimelineDetailFragment();
+        fragment.setArguments(arguments);
+        return fragment;
+    }
+
     public TimelineDetailFragment() {
     }
 

@@ -117,8 +117,7 @@ public class SearchAdapter extends HFSupportAdapter {
     public void onBindItemViewHolder(ItemViewHolder vh, int position) {
         if (mValues == null) return;
         ArticleViewHolder holder = (ArticleViewHolder) vh;
-        holder.mItem = mValues.get(position);
-        holder.bind(position);
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -178,7 +177,7 @@ public class SearchAdapter extends HFSupportAdapter {
             binding = view;
         }
 
-        public void bind(int position) {
+        public void bind(Article mItem) {
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
@@ -205,7 +204,7 @@ public class SearchAdapter extends HFSupportAdapter {
             binding.tlUserName.setText(mItem.getUserName());
             binding.getRoot().setOnClickListener(v -> {
                 if (null != mArticleListener) {
-                    mArticleListener.onArticleClicked(binding, mItem, position);
+                    mArticleListener.onArticleClicked(binding, mItem);
                 }
             });
             binding.tlProfileImg.setOnClickListener(v -> {

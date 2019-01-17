@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.MainThread;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
@@ -26,6 +27,7 @@ import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener, OnLoadLayoutListener {
@@ -45,10 +47,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
 
         if (savedInstanceState == null) {
             ActivityCompat.postponeEnterTransition(this);
-            Bundle arguments = new Bundle();
-            arguments.putParcelable(TimelineDetailFragment.ITEM_ARTICLE, getIntent().getParcelableExtra(TimelineDetailFragment.ITEM_ARTICLE));
-            TimelineDetailFragment fragment = new TimelineDetailFragment();
-            fragment.setArguments(arguments);
+            TimelineDetailFragment fragment = TimelineDetailFragment.newInstance(getIntent().getParcelableExtra(TimelineDetailFragment.ITEM_ARTICLE));
             getSupportFragmentManager().beginTransaction().add(R.id.item_detail_container, fragment).commit();
         }
     }
@@ -57,14 +56,14 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            supportFinishAfterTransition();
+            ActivityCompat.finishAfterTransition(this);
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     @Override
-    public void onArticleClicked(ItemArticleBinding binding, Article mItem, int position) {
+    public void onArticleClicked(ItemArticleBinding binding, Article mItem) {
 
     }
 
@@ -111,23 +110,17 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     }
 
     public static void startWithTransition(AppCompatActivity context, ItemArticleBinding binding, Article mItem, boolean enableImage) {
-        if (enableImage) {
-            start(context, mItem,
-                    Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)),
-                    Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)),
-                    Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)),
-                    Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)),
-                    Pair.create(binding.tlMessage, context.getString(R.string.tran_message)),
-                    Pair.create(binding.imageContainer, context.getString(R.string.tran_image_container)));
-        } else {
-            start(context, mItem,
-                    Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)),
-                    Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)),
-                    Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)),
-                    Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)),
-                    Pair.create(binding.tlMessage, context.getString(R.string.tran_message))
-            );
-        }
+
+        ArrayList<Pair<View, String>> pairList = new ArrayList<>();
+        pairList.add(Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)));
+        pairList.add(Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)));
+        pairList.add(Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)));
+        pairList.add(Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)));
+        pairList.add(Pair.create(binding.tlMessage, context.getString(R.string.tran_message)));
+        pairList.add(Pair.create(binding.imageContainer, context.getString(R.string.tran_image_container)));
+        Intent intent = new Intent(context, TimelineDetailActivity.class);
+        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+        ActivityUtils.startActivityWithTransition(context, intent, pairList);
     }
 
     public static void start(Context context, Article mItem) {
@@ -136,12 +129,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         context.startActivity(intent);
     }
 
-    public static void start(AppCompatActivity context, Article mItem, Pair<View, String>... pairs) {
-        Intent intent = new Intent(context, TimelineDetailActivity.class);
-        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        ActivityUtils.startActivityWithTransition(context, intent, pairs);
-    }
-
+    @MainThread
     @Override
     public void onLayoutLoaded() {
         ActivityCompat.startPostponedEnterTransition(this);

@@ -9,7 +9,7 @@ import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import java.util.HashMap;
 
 public interface OnArticleClickListener {
-    void onArticleClicked(ItemArticleBinding binding, Article mItem, int position);
+    void onArticleClicked(ItemArticleBinding binding, Article mItem);
 
     void onArticleImageClicked(ImageView iv, Article article, int position);
 

@@ -67,7 +67,7 @@ public class ProfileFragment extends Fragment {
         if (userInfo != null) {
             fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
-            layoutLoad.setNotTransitionAndCallbackIfLaoded();
+            layoutLoad.setNotTransition();
             mViewModel.fetchProfile(userId);
         }
     }

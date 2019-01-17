@@ -2,9 +2,12 @@ package com.enos.totalsns.util;
 
 import android.annotation.SuppressLint;
 import android.support.v4.util.ArraySet;
+import android.support.v4.util.LongSparseArray;
+import android.util.Log;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.FollowInfo;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 
@@ -14,6 +17,7 @@ import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
+import twitter4j.Friendship;
 import twitter4j.GeoLocation;
 import twitter4j.MediaEntity;
 import twitter4j.Place;
@@ -75,10 +79,10 @@ public class TwitterObjConverter {
         return result;
     }
 
-    public static HashMap<Long, UserInfo> getUserIdMap(ResponseList<User> userList, long longUserId) {
+    public static LongSparseArray<UserInfo> getUserIdMap(ResponseList<User> userList, long longUserId) {
         if (userList == null) return null;
 
-        @SuppressLint("UseSparseArrays") HashMap<Long, UserInfo> userHashMap = new HashMap<>();
+        LongSparseArray<UserInfo> userHashMap = new LongSparseArray<>();
         for (User user : userList) {
             UserInfo userInfo = toUserInfo(user, longUserId);
             userHashMap.put(user.getId(), userInfo);
@@ -193,7 +197,7 @@ public class TwitterObjConverter {
         }
     }
 
-    public static ArrayList<Message> toMessageList(DirectMessageList list, long currentUserId, HashMap<Long, UserInfo> userMap) {
+    public static ArrayList<Message> toMessageList(DirectMessageList list, long currentUserId, LongSparseArray<UserInfo> userMap) {
 
         ArrayList<Message> dmList = new ArrayList<Message>();
         for (DirectMessage dm : list) {
@@ -220,15 +224,23 @@ public class TwitterObjConverter {
     }
 
     public static ArrayList<UserInfo> toUserInfoList(ResponseList<User> list, long currentUserId) {
+        return toUserInfoList(list, null, currentUserId);
+    }
+
+    public static ArrayList<UserInfo> toUserInfoList(ResponseList<User> list, ResponseList<Friendship> friendships, long currentUserId) {
         if (list == null) return null;
+        LongSparseArray<FollowInfo> followInfos = getFollowMap(friendships, currentUserId);
+
         ArrayList<UserInfo> userList = new ArrayList<UserInfo>();
         for (User user : list) {
-            userList.add(toUserInfo(user, currentUserId));
+            FollowInfo followInfo = followInfos == null ? null : followInfos.get(user.getId());
+            UserInfo userInfo = toUserInfo(user, followInfo, currentUserId);
+            userList.add(userInfo);
         }
         return userList;
     }
 
-    public static UserInfo toUserInfo(User user, long currentUserId) {
+    public static UserInfo toUserInfo(User user, FollowInfo followInfo, long currentUserId) {
         Status status = user.getStatus();
 
         Article article = null;
@@ -243,7 +255,32 @@ public class TwitterObjConverter {
         UserInfo userInfo = new UserInfo(user.getId(), user.getScreenName(), user.getName(), user.getDescription(),
                 user.get400x400ProfileImageURL(), user.getProfileBackgroundImageURL(), user.getProfileBackgroundColor(),
                 user.isProtected(), Constants.TWITTER, user.getLocation(), user.getCreatedAt().getTime(),
-                user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount());
+                user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount(), user.isFollowRequestSent());
+        userInfo.setFollowInfo(followInfo);
         return userInfo;
+    }
+
+    public static UserInfo toUserInfo(User user, long currentUserId) {
+        return toUserInfo(user, null, currentUserId);
+    }
+
+    public static long[] getUserIdList(ResponseList<User> users) {
+        if (users == null) return null;
+        long[] userIds = new long[users.size()];
+        for (int i = 0; i < users.size(); i++) {
+            userIds[i] = users.get(i).getId();
+        }
+        return userIds;
+    }
+
+    public static LongSparseArray<FollowInfo> getFollowMap(ResponseList<Friendship> friendships, long myId) {
+        if (friendships == null) return null;
+        LongSparseArray<FollowInfo> followInfos = new LongSparseArray<>();
+        for (int i = 0; i < friendships.size(); i++) {
+            Friendship fs = friendships.get(i);
+            Log.i(fs.getName(), fs.getId() + "," + myId);
+            followInfos.put(fs.getId(), new FollowInfo(fs.isFollowedBy(), fs.isFollowing(), myId == fs.getId()));
+        }
+        return followInfos;
     }
 }

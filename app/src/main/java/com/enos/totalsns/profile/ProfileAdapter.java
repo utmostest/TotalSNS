@@ -4,6 +4,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -82,7 +83,6 @@ public class ProfileAdapter extends HFSupportAdapter {
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         ItemProfileHeaderBinding itemHeaderBinding = ItemProfileHeaderBinding.inflate(inflater, parent, false);
         ProfileHeaderViewHolder holder = new ProfileHeaderViewHolder(itemHeaderBinding);
-        holder.item = userInfo;
         return holder;
     }
 
@@ -103,7 +103,7 @@ public class ProfileAdapter extends HFSupportAdapter {
     @Override
     public void onBindHeaderViewHolder(HeaderViewHolder vh, int pos) {
         ProfileHeaderViewHolder holder = (ProfileHeaderViewHolder) vh;
-        holder.bind();
+        holder.bind(userInfo);
     }
 
     @Override
@@ -116,8 +116,7 @@ public class ProfileAdapter extends HFSupportAdapter {
     public void onBindItemViewHolder(ItemViewHolder vh, int position) {
         if (mValues == null) return;
         ArticleViewHolder holder = (ArticleViewHolder) vh;
-        holder.mItem = mValues.get(position);
-        holder.bind(position);
+        holder.bind(mValues.get(position));
     }
 
     @Override
@@ -160,14 +159,13 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private class ArticleViewHolder extends ItemViewHolder {
         public final ItemArticleBinding binding;
-        private Article mItem;
 
         ArticleViewHolder(ItemArticleBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind(int position) {
+        public void bind(Article mItem) {
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.tlProfileImg);
 
             final String[] imgUrls = mItem.getImageUrls();
@@ -198,7 +196,7 @@ public class ProfileAdapter extends HFSupportAdapter {
                 if (null != mArticleListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mArticleListener.onArticleClicked(binding, mItem, position);
+                    mArticleListener.onArticleClicked(binding, mItem);
                 }
             });
             binding.tlProfileImg.setOnClickListener(v -> {
@@ -210,14 +208,13 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private class ProfileHeaderViewHolder extends HeaderViewHolder {
         public final ItemProfileHeaderBinding binding;
-        private UserInfo item;
 
         ProfileHeaderViewHolder(ItemProfileHeaderBinding view) {
             super(view.getRoot());
             binding = view;
         }
 
-        public void bind() {
+        public void bind(UserInfo item) {
             if (item == null) return;
             binding.profileAddress.setText(item.getLocation());
             binding.profileCreated.setText(TimeUtils.getDateString(item.getCreatedAt()));
@@ -235,6 +232,9 @@ public class ProfileAdapter extends HFSupportAdapter {
             binding.profileFollowerLabel.setOnClickListener(v -> {
                 if (mListener != null) mListener.onFollowTextClicked(item, true);
             });
+            binding.itemUserFollowBtn.setVisibility(item.getFollowInfo() != null && item.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
+            binding.itemUserFollowBtn.setText(item.getFollowInfo() != null && item.getFollowInfo().isFollowing() ?
+                    R.string.title_following : R.string.do_follow);
             binding.itemUserMessage.setText(item.getMessage());
             binding.itemUserName.setText(item.getUserName());
             binding.itemUserScreenId.setText(item.getUserId());
@@ -269,22 +269,26 @@ public class ProfileAdapter extends HFSupportAdapter {
                             }
                         });
             } else if (StringUtils.isStringValid(item.getProfileBackColor())) {
-                setLayoutLoaded(LayoutLoad.BACK);
                 SingletonToast.getInstance().log("backcolor", item.getProfileBackColor());
                 binding.itemUserProfileBack.setImageDrawable(null);
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + item.getProfileBackColor()));
-            } else {
                 setLayoutLoaded(LayoutLoad.BACK);
+            } else {
                 binding.itemUserProfileBack.setImageResource(R.drawable.side_nav_bar);
+                setLayoutLoaded(LayoutLoad.BACK);
             }
         }
     }
 
     private void setLayoutLoaded(int target) {
         if (layoutLoad != null) {
-            if (target == LayoutLoad.IMAGE)
+            if (target == LayoutLoad.IMAGE) {
+                Log.i("layout","image");
                 layoutLoad.setImgLoadAndCallbackIfLaoded();
-            else layoutLoad.setBackLoadAndCallbackIfLaoded();
+            } else {
+                Log.i("layout","back");
+                layoutLoad.setBackLoadAndCallbackIfLaoded();
+            }
         }
     }
 
