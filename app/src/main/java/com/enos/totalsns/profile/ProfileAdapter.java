@@ -1,13 +1,21 @@
 package com.enos.totalsns.profile;
 
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.Nullable;
 import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
+import com.enos.totalsns.LayoutLoad;
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
@@ -21,7 +29,6 @@ import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
-import com.enos.totalsns.custom.HFSupportAdapter;
 
 import java.util.List;
 
@@ -31,6 +38,7 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private OnArticleClickListener mArticleListener;
     private OnFollowListener mListener;
+    private LayoutLoad layoutLoad;
 
     private final int TYPE_TWITTER = Constants.TWITTER;
     private final int TYPE_FACEBOOK = Constants.FACEBOOK;
@@ -42,11 +50,12 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private boolean isItemChanged = false;
 
-    public ProfileAdapter(UserInfo userInfo, List<Article> list, OnArticleClickListener articleClickListener, OnFollowListener follow) {
+    public ProfileAdapter(UserInfo userInfo, List<Article> list, OnArticleClickListener articleClickListener, OnFollowListener follow, LayoutLoad load) {
         this.userInfo = userInfo;
         mValues = list;
         this.mArticleListener = articleClickListener;
         this.mListener = follow;
+        this.layoutLoad = load;
     }
 
     @Override
@@ -230,17 +239,52 @@ public class ProfileAdapter extends HFSupportAdapter {
             binding.itemUserName.setText(item.getUserName());
             binding.itemUserScreenId.setText(item.getUserId());
 
-            GlideUtils.loadProfileImage(binding.getRoot().getContext(), item.getProfileImg(), binding.itemUserProfile);
+            GlideUtils.loadProfileImage(binding.getRoot().getContext(), item.getProfileImg(), binding.itemUserProfile, new RequestListener<Drawable>() {
+                @Override
+                public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                    setLayoutLoaded(LayoutLoad.IMAGE);
+                    return false;
+                }
+
+                @Override
+                public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                    setLayoutLoaded(LayoutLoad.IMAGE);
+                    return false;
+                }
+            });
 
             if (StringUtils.isStringValid(item.getProfileBackImg())) {
-                GlideUtils.loadBackImage(binding.getRoot().getContext(), item.getProfileBackImg(), binding.itemUserProfileBack);
+                GlideUtils.loadBackImage(binding.getRoot().getContext(), item.getProfileBackImg(), binding.itemUserProfileBack,
+                        new RequestListener<Drawable>() {
+                            @Override
+                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
+                                setLayoutLoaded(LayoutLoad.BACK);
+                                return false;
+                            }
+
+                            @Override
+                            public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
+                                setLayoutLoaded(LayoutLoad.BACK);
+                                return false;
+                            }
+                        });
             } else if (StringUtils.isStringValid(item.getProfileBackColor())) {
+                setLayoutLoaded(LayoutLoad.BACK);
                 SingletonToast.getInstance().log("backcolor", item.getProfileBackColor());
                 binding.itemUserProfileBack.setImageDrawable(null);
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + item.getProfileBackColor()));
             } else {
+                setLayoutLoaded(LayoutLoad.BACK);
                 binding.itemUserProfileBack.setImageResource(R.drawable.side_nav_bar);
             }
+        }
+    }
+
+    private void setLayoutLoaded(int target) {
+        if (layoutLoad != null) {
+            if (target == LayoutLoad.IMAGE)
+                layoutLoad.setImgLoadAndCallbackIfLaoded();
+            else layoutLoad.setBackLoadAndCallbackIfLaoded();
         }
     }
 

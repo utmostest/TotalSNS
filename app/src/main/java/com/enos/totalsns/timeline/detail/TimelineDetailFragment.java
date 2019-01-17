@@ -3,7 +3,10 @@ package com.enos.totalsns.timeline.detail;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.databinding.DataBindingUtil;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -11,16 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.bumptech.glide.Glide;
-import com.enos.totalsns.ContentsActivity;
+import com.bumptech.glide.request.target.SimpleTarget;
+import com.bumptech.glide.request.transition.Transition;
+import com.enos.totalsns.LayoutLoad;
+import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.AutoLinkTextUtils;
-import com.enos.totalsns.util.TimeUtils;
-import com.enos.totalsns.util.TwitterObjConverter;
 import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.TimeUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineDetailFragment extends Fragment {
@@ -33,6 +37,8 @@ public class TimelineDetailFragment extends Fragment {
 
     FragmentTimelineDetailBinding mDataBinding;
     private OnArticleClickListener mListener;
+
+    private LayoutLoad layoutLoad;
 
     public TimelineDetailFragment() {
     }
@@ -62,10 +68,17 @@ public class TimelineDetailFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnArticleClickListener) {
+        if (context instanceof OnArticleClickListener && context instanceof OnLoadLayoutListener) {
             mListener = (OnArticleClickListener) context;
+            layoutLoad = new LayoutLoad(true, false, (OnLoadLayoutListener) context);
         } else {
-            throw new IllegalArgumentException("you must implement OnArticleClickListener");
+            throw new IllegalArgumentException("you must implement OnArticleClickListener and OnLoadLayoutListener");
+        }
+    }
+
+    private void setLayoutLoaded() {
+        if (layoutLoad != null) {
+            layoutLoad.setImgLoadAndCallbackIfLaoded();
         }
     }
 
@@ -75,7 +88,13 @@ public class TimelineDetailFragment extends Fragment {
             if (appBarLayout != null && mArticle != null) {
                 appBarLayout.setTitle(getString(R.string.title_timeline_detail));
             }
-            GlideUtils.loadProfileImage(getContext(), mArticle.getProfileImg(), mDataBinding.tldProfileImg);
+            GlideUtils.loadProfileImage(getContext(), mArticle.getProfileImg(), new SimpleTarget<Drawable>() {
+                @Override
+                public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
+                    mDataBinding.tldProfileImg.setImageDrawable(resource);
+                    setLayoutLoaded();
+                }
+            });
             mDataBinding.tldProfileImg.setOnClickListener((v) -> {
                 if (mListener != null) mListener.onArticleProfileImgClicked(mArticle);
             });

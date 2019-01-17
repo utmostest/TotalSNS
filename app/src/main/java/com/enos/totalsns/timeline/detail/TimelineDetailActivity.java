@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,9 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.enos.totalsns.ContentsActivity;
+import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
@@ -22,11 +25,10 @@ import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
-import com.enos.totalsns.custom.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 
-public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener {
+public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener, OnLoadLayoutListener {
 
     ActivityTimelineDetailBinding mDataBinding;
 
@@ -42,8 +44,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         }
 
         if (savedInstanceState == null) {
-            // Create the detail fragment and add it to the activity
-            // using a fragment transaction.
+            ActivityCompat.postponeEnterTransition(this);
             Bundle arguments = new Bundle();
             arguments.putParcelable(TimelineDetailFragment.ITEM_ARTICLE, getIntent().getParcelableExtra(TimelineDetailFragment.ITEM_ARTICLE));
             TimelineDetailFragment fragment = new TimelineDetailFragment();
@@ -139,5 +140,10 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         Intent intent = new Intent(context, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
         ActivityUtils.startActivityWithTransition(context, intent, pairs);
+    }
+
+    @Override
+    public void onLayoutLoaded() {
+        ActivityCompat.startPostponedEnterTransition(this);
     }
 }

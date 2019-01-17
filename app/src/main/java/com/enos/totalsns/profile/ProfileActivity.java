@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.enos.totalsns.ContentsActivity;
+import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
@@ -29,7 +31,7 @@ import com.enos.totalsns.util.StringUtils;
 
 import java.util.HashMap;
 
-public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener {
+public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
 
     long userId = ProfileFragment.INVALID_ID;
 
@@ -53,9 +55,11 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     private void initFragment() {
         UserInfo userInfo = getIntent().getParcelableExtra(ProfileFragment.ARG_USER_INFO);
         userId = getIntent().getLongExtra(ProfileFragment.ARG_USER_ID, ProfileFragment.INVALID_ID);
-        if (userInfo != null)
+        if (userInfo != null) {
+            //이미지가 로드될때까지 트랜지션 연기
+            ActivityCompat.postponeEnterTransition(this);
             getSupportFragmentManager().beginTransaction().replace(R.id.container, ProfileFragment.newInstance(userInfo)).commitNow();
-        else if (userId > ProfileFragment.INVALID_ID)
+        } else if (userId > ProfileFragment.INVALID_ID)
             getSupportFragmentManager().beginTransaction().replace(R.id.container, ProfileFragment.newInstance(userId)).commitNow();
     }
 
@@ -141,7 +145,7 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
         ActivityUtils.startActivityWithTransition(context, intent, Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)),
-                Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)),
+                Pair.create(binding.fFollowBtn, context.getString(R.string.tran_follow_btn)),
                 Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)),
                 Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)),
                 Pair.create(binding.fMessage, context.getString(R.string.tran_message_u)));
@@ -157,5 +161,11 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
                 Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)),
                 Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)),
                 Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
+    }
+
+    @Override
+    public void onLayoutLoaded() {
+        //이미지가 로드된 후 트랜지션 개시
+        ActivityCompat.startPostponedEnterTransition(this);
     }
 }

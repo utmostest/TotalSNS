@@ -13,6 +13,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.enos.totalsns.LayoutLoad;
+import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
@@ -35,6 +37,8 @@ public class ProfileFragment extends Fragment {
     private OnArticleClickListener articleListener;
     private UserInfo userInfo;
     private long userId = INVALID_ID;
+
+    private LayoutLoad layoutLoad;
 
     public static ProfileFragment newInstance(UserInfo userInfo) {
         Bundle arguments = new Bundle();
@@ -63,6 +67,7 @@ public class ProfileFragment extends Fragment {
         if (userInfo != null) {
             fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
+            layoutLoad.setNotTransitionAndCallbackIfLaoded();
             mViewModel.fetchProfile(userId);
         }
     }
@@ -85,11 +90,12 @@ public class ProfileFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFollowListener && context instanceof OnArticleClickListener) {
+        if (context instanceof OnFollowListener && context instanceof OnArticleClickListener && context instanceof OnLoadLayoutListener) {
             mListener = (OnFollowListener) context;
             articleListener = (OnArticleClickListener) context;
+            layoutLoad = new LayoutLoad(true, true, (OnLoadLayoutListener) context);
         } else {
-            throw new RuntimeException(context.toString() + " must implement OnFollowListener and OnArticleClickListener");
+            throw new RuntimeException(context.toString() + " must implement OnFollowListener and OnArticleClickListener and OnLoadLayoutListener");
         }
     }
 
@@ -98,7 +104,7 @@ public class ProfileFragment extends Fragment {
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-        ProfileAdapter searchAdapter = new ProfileAdapter(userInfo, mViewModel.getUserTimeline().getValue(), articleListener, mListener);
+        ProfileAdapter searchAdapter = new ProfileAdapter(userInfo, mViewModel.getUserTimeline().getValue(), articleListener, mListener, layoutLoad);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         searchAdapter.setEnableHeader(true, true);

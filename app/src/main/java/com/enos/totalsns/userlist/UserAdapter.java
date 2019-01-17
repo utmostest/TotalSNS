@@ -99,7 +99,7 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                     mListener.onUserItemClicked(binding, mItem);
                 }
             });
-            binding.itemUserFollowBtn.setOnClickListener(v -> {
+            binding.fFollowBtn.setOnClickListener(v -> {
                 if (null != mListener) {
                     mListener.onFollowButtonClicked(mItem);
                 }

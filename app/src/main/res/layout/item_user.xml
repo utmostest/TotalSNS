@@ -24,7 +24,7 @@
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <Button
-            android:id="@+id/item_user_follow_btn"
+            android:id="@+id/fFollowBtn"
             android:layout_width="wrap_content"
             android:layout_height="32dp"
             android:background="@drawable/rounded_btn"
@@ -51,7 +51,7 @@
             android:textStyle="bold"
             android:transitionName="@string/tran_user_name_u"
             app:layout_constrainedWidth="true"
-            app:layout_constraintEnd_toStartOf="@+id/item_user_follow_btn"
+            app:layout_constraintEnd_toStartOf="@+id/fFollowBtn"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toEndOf="@+id/fProfileImg"
@@ -69,7 +69,7 @@
             android:maxLines="1"
             android:textColor="@color/colorPrimary"
             android:transitionName="@string/tran_user_id_u"
-            app:layout_constraintEnd_toStartOf="@+id/item_user_follow_btn"
+            app:layout_constraintEnd_toStartOf="@+id/fFollowBtn"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/fUserName"
             app:layout_constraintTop_toBottomOf="@+id/fUserName"
