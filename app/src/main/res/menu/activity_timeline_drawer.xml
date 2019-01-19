@@ -6,23 +6,23 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_dr_all"
-            android:icon="@drawable/ic_menu_camera"
+            android:icon="@drawable/ic_border_all_black_24dp"
             android:title="@string/title_all" />
         <item
             android:id="@+id/nav_dr_selected"
-            android:icon="@drawable/ic_menu_gallery"
+            android:icon="@drawable/ic_select"
             android:title="@string/title_selected" />
         <item
             android:id="@+id/nav_dr_twitter"
-            android:icon="@drawable/ic_menu_slideshow"
+            android:icon="@drawable/ic_twitter"
             android:title="@string/title_twitter" />
         <item
             android:id="@+id/nav_dr_facebook"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_facebook_logo"
             android:title="@string/title_facebook" />
         <item
             android:id="@+id/nav_dr_instagram"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_instagram"
             android:title="@string/title_instagram" />
     </group>
 
@@ -30,19 +30,19 @@
         <menu>
             <item
                 android:id="@+id/nav_dr_edit"
-                android:icon="@drawable/ic_menu_manage"
+                android:icon="@drawable/ic_push_pin"
                 android:title="@string/title_edit" />
             <item
                 android:id="@+id/nav_dr_nearby"
-                android:icon="@drawable/ic_menu_share"
+                android:icon="@drawable/ic_nearby"
                 android:title="@string/nearby_artilce" />
             <item
                 android:id="@+id/nav_dr_setting"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_settings_black_24dp"
                 android:title="@string/setting" />
             <item
                 android:id="@+id/nav_dr_sign_out"
-                android:icon="@drawable/ic_menu_send"
+                android:icon="@drawable/ic_logout"
                 android:title="@string/sign_out" />
         </menu>
     </item>

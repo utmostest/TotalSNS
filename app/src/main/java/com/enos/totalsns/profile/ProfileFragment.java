@@ -74,7 +74,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
         if (userInfo != null) {
             fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
-            layoutLoad.setDontTransition();
+//            layoutLoad.setDontTransition();
             mViewModel.fetchProfile(userId);
         }
     }

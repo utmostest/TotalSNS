@@ -1,5 +1,6 @@
 package com.enos.totalsns.profile;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -30,13 +31,15 @@ import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
+import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 
 public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
 
-    long userId = ProfileFragment.INVALID_ID;
+    private long userId = ProfileFragment.INVALID_ID;
+    private UserInfo userInfo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,15 +59,20 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     }
 
     private void initFragment() {
-        UserInfo userInfo = getIntent().getParcelableExtra(ProfileFragment.ARG_USER_INFO);
+        userInfo = getIntent().getParcelableExtra(ProfileFragment.ARG_USER_INFO);
         userId = getIntent().getLongExtra(ProfileFragment.ARG_USER_ID, ProfileFragment.INVALID_ID);
         if (userInfo != null) {
             Log.i("layout", "load started");
             //이미지가 로드될때까지 트랜지션 연기
             ActivityCompat.postponeEnterTransition(this);
             getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userInfo)).commitNow();
-        } else if (userId > ProfileFragment.INVALID_ID)
+            setTitle(getString(R.string.title_profile, userInfo.getUserId()));
+        } else if (userId > ProfileFragment.INVALID_ID) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userId)).commitNow();
+            ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+            userInfo = viewModel.getuserFromCache(userId);
+            setTitle(getString(R.string.title_profile, userInfo == null ? "USER" : userInfo.getUserId()));
+        }
     }
 
     @Override
@@ -112,23 +120,23 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(normalizedString));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_PHONE:
                 intent.setAction(Intent.ACTION_DIAL);
                 intent.setData(Uri.parse("tel:" + matchedText));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_EMAIL:
                 intent.setAction(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:")); // only email apps should handle this
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{matchedText});
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_HASHTAG:
             case MODE_MENTION:
                 ContentsActivity.startWithQuery(this, matchedText);
                 finish();
-                return;
+                break;
         }
     }
 
@@ -137,7 +145,13 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     public void onLayoutLoaded() {
         //이미지가 로드된 후 트랜지션 개시
         Log.i("layout", "load finished");
-        ActivityCompat.startPostponedEnterTransition(this);
+        if (userInfo == null) {
+            ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+            UserInfo current = viewModel.getuserFromCache(userId);
+            setTitle(getString(R.string.title_profile, current == null ? "USER" : current.getUserId()));
+        } else {
+            ActivityCompat.startPostponedEnterTransition(this);
+        }
     }
 
     public static void start(AppCompatActivity context, UserInfo userInfo) {

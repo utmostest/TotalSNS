@@ -6,6 +6,7 @@ import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.QueryMessage;
 import com.enos.totalsns.data.source.remote.QueryUploadMessage;
@@ -57,6 +58,10 @@ public class MessageDetailViewModel extends ViewModel {
 
     public LiveData<Message> getCurrentUploadingDM() {
         return mRepository.getCurrentUploadingDM();
+    }
+
+    public UserInfo getUserFromCache(long id) {
+        return mRepository.getUserFromCache(id);
     }
 
     @Override

@@ -45,6 +45,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
 
         mDataBinding.navigation.setOnNavigationItemSelectedListener(this);
         mDataBinding.acAccFab.setOnClickListener((v) -> finishAndStartActivity(LoginActivity.class));
+        setTitle(R.string.title_activity_accounts);
         initFragment();
     }
 

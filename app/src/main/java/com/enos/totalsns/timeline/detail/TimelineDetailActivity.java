@@ -38,6 +38,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         super.onCreate(savedInstanceState);
         mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
         setSupportActionBar(mDataBinding.detailToolbar);
+        setTitle(R.string.title_timeline_detail);
 
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {

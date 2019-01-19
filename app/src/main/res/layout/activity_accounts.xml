@@ -39,6 +39,7 @@
             android:clickable="true"
             app:layout_constraintBottom_toTopOf="@+id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:srcCompat="@android:drawable/stat_notify_more" />
+            app:tint="@color/batang_white"
+            app:srcCompat="@drawable/ic_person_add_black_24dp" />
     </android.support.constraint.ConstraintLayout>
 </layout>

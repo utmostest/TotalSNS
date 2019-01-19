@@ -73,4 +73,8 @@ public class ProfileViewModel extends ViewModel {
     private void clearViewModel() {
         userProfile.postValue(null);
     }
+
+    public UserInfo getuserFromCache(long userId) {
+        return mRepository.getUserFromCache(userId);
+    }
 }

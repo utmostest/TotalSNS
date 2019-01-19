@@ -1,5 +1,6 @@
 package com.enos.totalsns.userlist;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,7 +12,9 @@ import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.listener.OnUserClickListener;
 import com.enos.totalsns.profile.ProfileActivity;
+import com.enos.totalsns.profile.ProfileViewModel;
 import com.enos.totalsns.util.ActivityUtils;
+import com.enos.totalsns.util.ViewModelFactory;
 
 public class UserListActivity extends AppCompatActivity implements OnUserClickListener {
 
@@ -23,10 +26,16 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
             QueryFollow queryFollow = getIntent().getParcelableExtra(UserListFragment.ARG_QUERY_FOLLOW);
             QuerySearchUser querySearchUser = getIntent().getParcelableExtra(UserListFragment.ARG_QUERY_SEARCH_USER);
             if (queryFollow != null) {
+                ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+                UserInfo current = viewModel.getuserFromCache(queryFollow.getUserId());
+                setTitle(queryFollow.isFollower() ?
+                        getString(R.string.title_follower_list, current == null ? "User" : current.getUserId()) :
+                        getString(R.string.title_following_list, current == null ? "User" : current.getUserId()));
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, UserListFragment.newInstance(queryFollow))
                         .commitNow();
             } else if (querySearchUser != null) {
+                setTitle(getString(R.string.title_search_user_list, querySearchUser.getQuery()));
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.container, UserListFragment.newInstance(querySearchUser))
                         .commitNow();

@@ -13,6 +13,7 @@ public class MessageSendActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_send);
+        setTitle(R.string.title_dm_send_to);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, MessageSendFragment.newInstance())

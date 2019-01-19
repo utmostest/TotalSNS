@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -210,9 +211,7 @@ public class ContentsActivity extends AppCompatActivity
     private void initNavigation() {
         mDataBinding.navView.setNavigationItemSelectedListener(this);
 
-        viewModel.getLoggedInUser().observe(this, user -> {
-            updateHeaderView(user);
-        });
+        viewModel.getLoggedInUser().observe(this, this::updateHeaderView);
         viewModel.getUserCache().observe(this, cache -> {
             UserInfo user = viewModel.getLoggedInUser().getValue();
             if (user == null || cache == null) return;
@@ -315,10 +314,9 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (mDataBinding.appBar.searchView.onBackPressed()) {
-            return;
-        } else if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
+        if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
             mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (mDataBinding.appBar.searchView.onBackPressed()) {
         } else {
             viewModel.onBackPressed();
 //            super.onBackPressed();
@@ -352,7 +350,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         boolean menuSelected = false;
@@ -368,7 +366,7 @@ public class ContentsActivity extends AppCompatActivity
         } else if (id == R.id.nav_dr_instagram) {
             menuSelected = true;
         } else if (id == R.id.nav_dr_edit) {
-
+            edit();
         } else if (id == R.id.nav_dr_nearby) {
             NearbyArticleActivity.start(this);
         } else if (id == R.id.nav_dr_setting) {
@@ -379,6 +377,9 @@ public class ContentsActivity extends AppCompatActivity
 
         mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
         return menuSelected;
+    }
+
+    private void edit() {
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -398,7 +399,7 @@ public class ContentsActivity extends AppCompatActivity
                 menuSelected = true;
                 clazz = SearchListFragment.class;
                 break;
-            case R.id.navigation_notificate:
+            case R.id.navigation_to_me:
                 menuType = Constants.INFO;
                 menuSelected = true;
                 clazz = MentionListFragment.class;
@@ -410,7 +411,7 @@ public class ContentsActivity extends AppCompatActivity
                 break;
         }
 
-        if (menuSelected && clazz != null) {
+        if (menuSelected) {
             Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.timeline_frag_container);
 
             if (currentFragment != null) {
@@ -486,23 +487,23 @@ public class ContentsActivity extends AppCompatActivity
                 intent.setAction(Intent.ACTION_VIEW);
                 intent.setData(Uri.parse(normalizedString));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_PHONE:
                 intent.setAction(Intent.ACTION_DIAL);
                 intent.setData(Uri.parse("tel:" + matchedText));
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_EMAIL:
                 intent.setAction(Intent.ACTION_SENDTO);
                 intent.setData(Uri.parse("mailto:"));
                 intent.putExtra(Intent.EXTRA_EMAIL, new String[]{matchedText});
                 ActivityUtils.checkResolveAndStartActivity(intent, this);
-                return;
+                break;
             case MODE_HASHTAG:
             case MODE_MENTION:
                 mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
                 viewModel.getSearchQuery().postValue(text);
-                return;
+                break;
         }
     }
 

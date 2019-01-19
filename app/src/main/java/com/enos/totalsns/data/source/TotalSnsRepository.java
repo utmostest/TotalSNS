@@ -117,6 +117,7 @@ public class TotalSnsRepository {
     }
 
     public void addUserToCache(UserInfo user) {
+        if (user == null) return;
         LongSparseArray<UserInfo> users = userCache.getValue();
         if (users == null) users = new LongSparseArray<>();
         users.put(user.getLongUserId(), user);
@@ -124,6 +125,7 @@ public class TotalSnsRepository {
     }
 
     public void addUserListToCache(List<UserInfo> users) {
+        if (users == null) return;
         LongSparseArray<UserInfo> current = userCache.getValue();
         if (current == null) current = new LongSparseArray<>();
         for (UserInfo user : users) {

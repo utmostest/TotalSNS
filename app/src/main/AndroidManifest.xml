@@ -42,14 +42,13 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".login.LoginActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme" />
+            android:screenOrientation="portrait" />
         <activity
             android:name=".ContentsActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan" >
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -132,7 +131,8 @@
         <activity
             android:name=".settings.SettingsActivity"
             android:label="@string/title_activity_settings"
-            android:parentActivityName=".ContentsActivity">
+            android:parentActivityName=".ContentsActivity"
+            android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
