@@ -9,6 +9,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineWriteBinding;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineWriteActivity extends AppCompatActivity {
@@ -46,8 +47,9 @@ public class TimelineWriteActivity extends AppCompatActivity {
         });
     }
 
-    public static void start(Context context) {
+    public static void start(AppCompatActivity context) {
         Intent write = new Intent(context, TimelineWriteActivity.class);
-        context.startActivity(write);
+//        context.startActivity(write);
+        ActivityUtils.startActivity(context,write);
     }
 }

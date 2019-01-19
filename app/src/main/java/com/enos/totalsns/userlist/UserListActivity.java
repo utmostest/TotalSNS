@@ -12,7 +12,7 @@ import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.util.SingletonToast;
+import com.enos.totalsns.util.ActivityUtils;
 
 public class UserListActivity extends AppCompatActivity implements OnUserClickListener {
 
@@ -50,17 +50,19 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
 
     }
 
-    public static void startFollowList(Context context, long userId, boolean isFollower) {
+    public static void startFollowList(AppCompatActivity context, long userId, boolean isFollower) {
         QueryFollow queryFollow = new QueryFollow(QueryFollow.FIRST, userId, -1, isFollower);
         Intent intent = new Intent(context, UserListActivity.class);
         intent.putExtra(UserListFragment.ARG_QUERY_FOLLOW, queryFollow);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 
-    public static void startUserList(Context context, String query) {
+    public static void startUserList(AppCompatActivity context, String query) {
         QuerySearchUser querySearchUser = new QuerySearchUser(QueryFollow.FIRST, query);
         Intent intent = new Intent(context, UserListActivity.class);
         intent.putExtra(UserListFragment.ARG_QUERY_SEARCH_USER, querySearchUser);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 }

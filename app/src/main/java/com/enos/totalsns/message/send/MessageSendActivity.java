@@ -1,11 +1,11 @@
 package com.enos.totalsns.message.send;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.util.ActivityUtils;
 
 public class MessageSendActivity extends AppCompatActivity {
 
@@ -20,8 +20,9 @@ public class MessageSendActivity extends AppCompatActivity {
         }
     }
 
-    public static void start(Context context) {
+    public static void start(AppCompatActivity context) {
         Intent intent = new Intent(context, MessageSendActivity.class);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 }

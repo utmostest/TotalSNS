@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.message.OnMessageClickListener;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 
 public class MessageDetailActivity extends AppCompatActivity implements OnMessageClickListener {
@@ -52,9 +53,10 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
         return super.onOptionsItemSelected(item);
     }
 
-    public static void start(Context context, long senderId) {
+    public static void start(AppCompatActivity context, long senderId) {
         Intent intent = new Intent(context, MessageDetailActivity.class);
         intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context,intent);
     }
 }

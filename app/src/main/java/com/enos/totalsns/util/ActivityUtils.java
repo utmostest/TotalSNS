@@ -1,7 +1,6 @@
 package com.enos.totalsns.util;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
@@ -16,18 +15,18 @@ import java.util.List;
 
 public class ActivityUtils {
 
-    public static void startActivity(Intent intent, Context context) {
+    public static void startActivity(AppCompatActivity context, Intent intent) {
         context.startActivity(intent);
     }
 
-    public static void checkResolveAndStartActivity(Intent intent, Context context) {
+    public static void checkResolveAndStartActivity(Intent intent, AppCompatActivity context) {
         if (intent.resolveActivity(context.getPackageManager()) != null) {
-            context.startActivity(intent);
+//            context.startActivity(intent);
+            startActivity(context, intent);
         }
     }
 
     public static void startActivityWithTransition(AppCompatActivity context, Intent intent, List<Pair<View, String>> pairList) {
-
         // call before activity setContsView
         // Apply activity transition inside your activity (if you did not enable transitions in your theme)
 //            context.getWindow().requestFeature(Window.FEATURE_CONTENT_TRANSITIONS);

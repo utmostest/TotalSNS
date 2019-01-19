@@ -494,13 +494,13 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
-        Log.i("layout","onSearchUserItemClicked");
+        Log.i("layout", "onSearchUserItemClicked");
         ProfileActivity.startWithTransition(this, binding, item);
     }
 
     @Override
     public void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
-        Log.i("layout","onSearchUserItemClicked");
+        Log.i("layout", "onSearchUserItemClicked");
         ProfileActivity.startWithTransition(this, binding, item);
     }
 
@@ -527,16 +527,18 @@ public class ContentsActivity extends AppCompatActivity
         }
     }
 
-    public static void start(Context context) {
+    public static void start(AppCompatActivity context) {
         Intent intent = new Intent(context, ContentsActivity.class);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 
-    public static void startWithQuery(Context context, String query) {
+    public static void startWithQuery(AppCompatActivity context, String query) {
         Intent intent = new Intent(context, ContentsActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.setAction(Intent.ACTION_SEARCH);
         intent.putExtra(SearchManager.QUERY, query);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 }

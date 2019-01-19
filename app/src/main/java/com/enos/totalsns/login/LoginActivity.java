@@ -14,6 +14,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.databinding.ActivityLoginBinding;
 import com.enos.totalsns.intro.LoginResult;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
@@ -127,10 +128,11 @@ public class LoginActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    public static void start(Context context, int snsType) {
+    public static void start(AppCompatActivity context, int snsType) {
         Intent intent = new Intent(context, LoginActivity.class);
         intent.putExtra(LoginActivity.SNS_TYPE_KEY, snsType);
 
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 }

@@ -123,10 +123,11 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         ActivityUtils.startActivityWithTransition(context, intent, pairList);
     }
 
-    public static void start(Context context, Article mItem) {
+    public static void start(AppCompatActivity context, Article mItem) {
         Intent intent = new Intent(context, TimelineDetailActivity.class);
         intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 
     @MainThread

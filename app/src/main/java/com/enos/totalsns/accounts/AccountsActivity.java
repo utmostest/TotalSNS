@@ -19,6 +19,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ActivityAccountsBinding;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.login.LoginActivity;
+import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -128,8 +129,9 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         return menuSelected;
     }
 
-    public static void start(Context context) {
+    public static void start(AppCompatActivity context) {
         Intent intent = new Intent(context, AccountsActivity.class);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context,intent);
     }
 }

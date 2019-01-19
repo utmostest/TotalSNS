@@ -1,6 +1,5 @@
 package com.enos.totalsns.profile;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -133,16 +132,18 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         }
     }
 
-    public static void start(Context context, UserInfo userInfo) {
+    public static void start(AppCompatActivity context, UserInfo userInfo) {
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, userInfo);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 
-    public static void start(Context context, long longUserId) {
+    public static void start(AppCompatActivity context, long longUserId) {
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_ID, longUserId);
-        context.startActivity(intent);
+//        context.startActivity(intent);
+        ActivityUtils.startActivity(context, intent);
     }
 
     public static void startWithTransition(AppCompatActivity context, ItemUserBinding binding, UserInfo mItem) {
