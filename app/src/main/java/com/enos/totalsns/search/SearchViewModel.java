@@ -5,6 +5,7 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.support.v4.util.LongSparseArray;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
@@ -20,12 +21,14 @@ public class SearchViewModel extends ViewModel {
     private Context mContext;
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isNetworkOnUse;
+    private MutableLiveData<UserInfo> userProfile;
 
     public SearchViewModel(Context application, TotalSnsRepository repository) {
 
         mContext = application;
         mRepository = repository;
         isNetworkOnUse = new MediatorLiveData<>();
+        userProfile = new MutableLiveData<>();
         isNetworkOnUse.addSource(mRepository.isSnsNetworkOnUse(), (onUse) -> isNetworkOnUse.postValue(onUse));
     }
 
@@ -57,6 +60,18 @@ public class SearchViewModel extends ViewModel {
 
     public MutableLiveData<List<UserInfo>> getSearchUserList() {
         return mRepository.getSearchUserList();
+    }
+
+    public LiveData<UserInfo> getFollowUser() {
+        return userProfile;
+    }
+
+    public void fetchFollow(long id, boolean isFollow) {
+        mRepository.fetchFollow(id, isFollow, userProfile);
+    }
+
+    public LiveData<LongSparseArray<UserInfo>> getUserCache() {
+        return mRepository.getUserCache();
     }
 
     @Override

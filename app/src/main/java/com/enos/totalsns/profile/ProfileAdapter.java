@@ -22,8 +22,9 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemProfileHeaderBinding;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.userlist.OnFollowListener;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnFollowListener;
 import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
@@ -39,6 +40,7 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private OnArticleClickListener mArticleListener;
     private OnFollowListener mListener;
+    private OnFollowBtnClickListener followBtnClickListener;
     private LayoutLoad layoutLoad;
 
     private final int TYPE_TWITTER = Constants.TWITTER;
@@ -51,12 +53,18 @@ public class ProfileAdapter extends HFSupportAdapter {
 
     private boolean isItemChanged = false;
 
-    public ProfileAdapter(UserInfo userInfo, List<Article> list, OnArticleClickListener articleClickListener, OnFollowListener follow, LayoutLoad load) {
+    public ProfileAdapter(UserInfo userInfo, List<Article> list, OnArticleClickListener articleClickListener,
+                          OnFollowListener follow, OnFollowBtnClickListener followBtnListener, LayoutLoad load) {
         this.userInfo = userInfo;
         mValues = list;
         this.mArticleListener = articleClickListener;
         this.mListener = follow;
         this.layoutLoad = load;
+        this.followBtnClickListener = followBtnListener;
+    }
+
+    public void setUserInfo(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     @Override
@@ -234,7 +242,12 @@ public class ProfileAdapter extends HFSupportAdapter {
             });
             binding.itemUserFollowBtn.setVisibility(item.getFollowInfo() != null && item.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
             binding.itemUserFollowBtn.setText(item.getFollowInfo() != null && item.getFollowInfo().isFollowing() ?
-                    R.string.title_following : R.string.do_follow);
+                    R.string.title_following : (item.isFollowReqSend() ? R.string.wait_follow : R.string.do_follow));
+            binding.itemUserFollowBtn.setEnabled(!item.isFollowReqSend());
+            binding.itemUserFollowBtn.setOnClickListener(v -> {
+                if (followBtnClickListener != null)
+                    followBtnClickListener.onFollowButtonClicked(item);
+            });
             binding.itemUserMessage.setText(item.getMessage());
             binding.itemUserName.setText(item.getUserName());
             binding.itemUserScreenId.setText(item.getUserId());
@@ -283,10 +296,10 @@ public class ProfileAdapter extends HFSupportAdapter {
     private void setLayoutLoaded(int target) {
         if (layoutLoad != null) {
             if (target == LayoutLoad.IMAGE) {
-                Log.i("layout","image");
+                Log.i("layout", "image");
                 layoutLoad.setImgLoadAndCallbackIfLaoded();
             } else {
-                Log.i("layout","back");
+                Log.i("layout", "back");
                 layoutLoad.setBackLoadAndCallbackIfLaoded();
             }
         }

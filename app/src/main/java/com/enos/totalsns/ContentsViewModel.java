@@ -6,6 +6,7 @@ import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.support.v4.util.LongSparseArray;
 import android.widget.Toast;
 
 import com.enos.totalsns.data.Constants;
@@ -86,5 +87,9 @@ public class ContentsViewModel extends ViewModel {
     private void clearViewModel() {
         isShouldQuit.postValue(null);
         mRepository.getSearchQuery().postValue(null);
+    }
+
+    public LiveData<LongSparseArray<UserInfo>> getUserCache() {
+        return mRepository.getUserCache();
     }
 }

@@ -1,6 +1,5 @@
 package com.enos.totalsns.timeline.detail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
@@ -15,14 +14,14 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.enos.totalsns.ContentsActivity;
-import com.enos.totalsns.OnLoadLayoutListener;
+import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
+import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;

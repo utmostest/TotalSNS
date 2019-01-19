@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.FragmentTimelineListBinding;
+import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 

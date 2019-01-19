@@ -7,8 +7,10 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +21,16 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
 import com.enos.totalsns.databinding.FragmentFollowListBinding;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnUserClickListener;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class UserListFragment extends Fragment {
+public class UserListFragment extends Fragment implements OnFollowBtnClickListener {
 
     public static String ARG_QUERY_FOLLOW = "query-follow";
     public static String ARG_QUERY_SEARCH_USER = "query-search-user";
@@ -92,6 +98,7 @@ public class UserListFragment extends Fragment {
     }
 
     private void initView() {
+        initCommonView();
         if (follow != null) {
             initViewForFollowList();
         } else if (searchUser != null) {
@@ -107,23 +114,14 @@ public class UserListFragment extends Fragment {
                 mViewModel.fetchNextFollowList();
             }
         });
-        LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        dataBinding.msgRv.setLayoutManager(manager);
-        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
-                manager.getOrientation());
-        dataBinding.msgRv.addItemDecoration(dividerItemDecoration);
-        UserAdapter adapter = new UserAdapter(null, mListener);
-        dataBinding.msgRv.setAdapter(adapter);
-
         mViewModel.getUserFollowList().observe(this, list -> {
+            UserAdapter adapter = (UserAdapter) dataBinding.msgRv.getAdapter();
+            if (list == null || adapter == null) return;
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             ArraySetList<UserInfo> temp = new ArraySetList<>();
             if (current != null) temp.addAll(current);
-            if (list != null) temp.addAll(list);
+            temp.addAll(list);
             adapter.swapUserList(temp);
-        });
-        mViewModel.isNetworkOnUse().observe(this, onUse -> {
-            dataBinding.swipeContainer.setRefreshing(onUse);
         });
     }
 
@@ -135,22 +133,69 @@ public class UserListFragment extends Fragment {
                 mViewModel.fetchNextSearchedUserList();
             }
         });
+        mViewModel.getSearchedUserList().observe(this, list -> {
+            UserAdapter adapter = (UserAdapter) dataBinding.msgRv.getAdapter();
+            if (list == null || adapter == null) return;
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            ArraySetList<UserInfo> temp = new ArraySetList<>();
+            if (current != null) temp.addAll(current);
+            temp.addAll(list);
+            adapter.swapUserList(temp);
+        });
+    }
+
+    private void initCommonView() {
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         dataBinding.msgRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
         dataBinding.msgRv.addItemDecoration(dividerItemDecoration);
-        UserAdapter adapter = new UserAdapter(null, mListener);
+        UserAdapter adapter = new UserAdapter(null, mListener, this);
         dataBinding.msgRv.setAdapter(adapter);
 
-        mViewModel.getSearchedUserList().observe(this, list -> {
-            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
-            if (list == null) return;
-            if (current != null) list.addAll(0, current);
-            adapter.swapUserList(list);
-        });
         mViewModel.isNetworkOnUse().observe(this, onUse -> {
             dataBinding.swipeContainer.setRefreshing(onUse);
         });
+        mViewModel.getFollowUser().observe(this, user -> {
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            if (current != null) adapter.swapUserList(replaceChangedUser(current, user));
+        });
+        mViewModel.getUserCache().observe(this, cache -> {
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            LongSparseArray<UserInfo> changed = new LongSparseArray<>();
+            if (current == null || cache == null) return;
+            Log.i("userCache", cache.size() + " user");
+            for (UserInfo user : current) {
+                if (!CompareUtils.isUserInfoEqual(user, cache.get(user.getLongUserId()))) {
+                    UserInfo changedUser = cache.get(user.getLongUserId());
+                    changed.put(changedUser.getLongUserId(), changedUser);
+                }
+            }
+            if (changed.size() > 0) {
+                ArrayList<UserInfo> changedList = new ArrayList<>(current);
+                for (int i = 0; i < changed.size(); i++) {
+                    UserInfo userInfo = changed.get(changed.keyAt(i));
+                    int index = changedList.indexOf(userInfo);
+                    changedList.remove(index);
+                    changedList.add(index, userInfo);
+                }
+                adapter.swapUserList(changedList);
+            }
+        });
+    }
+
+    private List<UserInfo> replaceChangedUser(ArrayList<UserInfo> current, UserInfo user) {
+        ArrayList<UserInfo> users = new ArrayList<>(current);
+        int index = current.indexOf(user);
+        users.remove(index);
+        users.add(index, user);
+        return users;
+    }
+
+    @Override
+    public void onFollowButtonClicked(UserInfo info) {
+        if (!info.getFollowInfo().isMe()) {
+            mViewModel.fetchFollow(info.getLongUserId(), !info.getFollowInfo().isFollowing());
+        }
     }
 }

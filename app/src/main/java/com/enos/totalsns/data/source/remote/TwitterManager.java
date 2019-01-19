@@ -2,11 +2,13 @@ package com.enos.totalsns.data.source.remote;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.util.Log;
 
 import com.enos.totalsns.BuildConfig;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.data.FollowInfo;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.util.TwitterObjConverter;
@@ -124,7 +126,7 @@ public class TwitterManager {
 
         User credential = mTwitter.verifyCredentials();
 
-        loggedInUser = TwitterObjConverter.toUserInfo(credential, credential.getId());
+        loggedInUser = TwitterObjConverter.toUserInfo(credential, new FollowInfo(false, false, true), credential.getId());
 
         return new Account(loggedInUser.getLongUserId(), loggedInUser.getUserId(), token.getToken(), token.getSecret(),
                 loggedInUser.getProfileImg(), loggedInUser.getUserName(), Constants.TWITTER, true);
@@ -209,7 +211,7 @@ public class TwitterManager {
         }
         DirectMessage dm = mediaId <= 0 ? mTwitter.sendDirectMessage(query.getUserId(), query.getMessage()) :
                 mTwitter.sendDirectMessage(query.getUserId(), query.getMessage(), mediaId);
-        return TwitterObjConverter.toMessage(dm, getLoggedInUser().getLongUserId(), user);
+        return TwitterObjConverter.toMessage(dm, getLoggedInUser().getLongUserId(), user.getSenderName(), user.getSenderScreenId(), user.getSenderProfile());
     }
 
     public void signOut() {
@@ -219,15 +221,23 @@ public class TwitterManager {
     public UserInfo getLoggedInUser() throws TwitterException {
         if (loggedInUser == null) {
             User user = mTwitter.verifyCredentials();
-            loggedInUser = TwitterObjConverter.toUserInfo(user, user.getId());
+            loggedInUser = TwitterObjConverter.toUserInfo(user, new FollowInfo(false, false, true), user.getId());
         }
         return loggedInUser;
     }
 
     public UserInfo getUserInfo(long userId) throws TwitterException {
+        long loggedInUserId = getLoggedInUser().getLongUserId();
+        if (loggedInUserId == userId) return getLoggedInUser();
+
         ResponseList<User> users = mTwitter.lookupUsers(userId);
-        ArrayList<UserInfo> userArrayList = TwitterObjConverter.toUserInfoList(users, getLoggedInUser().getLongUserId());
-        return userArrayList.get(0);
+        Relationship relationship = mTwitter.showFriendship(getLoggedInUser().getLongUserId(), userId);
+        FollowInfo followInfo = new FollowInfo(relationship.isSourceFollowedByTarget(), relationship.isSourceFollowingTarget(),
+                relationship.getTargetUserId() == relationship.getSourceUserId());
+        if (users != null && users.size() > 0)
+            return TwitterObjConverter.toUserInfo(users.get(0), followInfo, getLoggedInUser().getLongUserId());
+
+        return null;
     }
 
     public ResponseList<Place> search(GeoQuery geoQuery) throws TwitterException {
@@ -417,8 +427,27 @@ public class TwitterManager {
         return TwitterObjConverter.toArticleList(list, currentUserId, false);
     }
 
-    // TODO 프로필 유저정보에 릴레이션쉽 추가
-    public Relationship getRelationShip(long id) throws TwitterException {
-        return mTwitter.showFriendship(getLoggedInUser().getLongUserId(), id);
+    public UserInfo followUser(long id) throws TwitterException {
+        User user = mTwitter.createFriendship(id);
+
+        Relationship relationship = mTwitter.showFriendship(getLoggedInUser().getLongUserId(), id);
+        FollowInfo followInfo = new FollowInfo(relationship.isSourceFollowedByTarget(), relationship.isSourceFollowingTarget(),
+                relationship.getTargetUserId() == relationship.getSourceUserId());
+        Log.i(user.getScreenName(), user.getFollowersCount() + "," + user.getFriendsCount());
+        if (user != null)
+            return TwitterObjConverter.toUserInfo(user, followInfo, getLoggedInUser().getLongUserId());
+        return null;
+    }
+
+    public UserInfo unfollowUser(long id) throws TwitterException {
+        User user = mTwitter.destroyFriendship(id);
+
+        Relationship relationship = mTwitter.showFriendship(getLoggedInUser().getLongUserId(), id);
+        FollowInfo followInfo = new FollowInfo(relationship.isSourceFollowedByTarget(), relationship.isSourceFollowingTarget(),
+                relationship.getTargetUserId() == relationship.getSourceUserId());
+        Log.i(user.getScreenName(), user.getFollowersCount() + "," + user.getFriendsCount());
+        if (user != null)
+            return TwitterObjConverter.toUserInfo(user, followInfo, getLoggedInUser().getLongUserId());
+        return null;
     }
 }

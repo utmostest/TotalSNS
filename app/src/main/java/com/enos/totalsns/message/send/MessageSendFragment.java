@@ -19,10 +19,11 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.databinding.FragmentMessageSendBinding;
+import com.enos.totalsns.listener.OnMessageSendListener;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.util.ViewModelFactory;
 
-public class MessageSendFragment extends Fragment implements OnUserToSendClickListener {
+public class MessageSendFragment extends Fragment implements OnMessageSendListener {
 
     private MessageSendViewModel mViewModel;
     private FragmentMessageSendBinding dataBinding;

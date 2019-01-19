@@ -3,7 +3,10 @@ package com.enos.totalsns.data.source;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MediatorLiveData;
 import android.arch.lifecycle.MutableLiveData;
+import android.support.v4.util.LongSparseArray;
 
+import com.enos.totalsns.AppExecutors;
+import com.enos.totalsns.custom.SingleLiveEvent;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
@@ -23,8 +26,6 @@ import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 import com.enos.totalsns.data.source.remote.QueryUserTimeline;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
-import com.enos.totalsns.AppExecutors;
-import com.enos.totalsns.custom.SingleLiveEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -78,6 +79,8 @@ public class TotalSnsRepository {
 
     private MutableLiveData<List<Article>> nearbyArticle;
 
+    private MutableLiveData<LongSparseArray<UserInfo>> userCache;
+
     private TotalSnsRepository(final TotalSnsDatabase database, final TwitterManager twitterManager) {
         mDatabase = database;
         mTwitterManager = twitterManager;
@@ -95,6 +98,7 @@ public class TotalSnsRepository {
         mSearchQuery = new SingleLiveEvent<>();
         loggedInUser = new MutableLiveData<>();
         nearbyArticle = new MutableLiveData<>();
+        userCache = new MutableLiveData<>();
     }
 
     public synchronized static TotalSnsRepository getInstance(final TotalSnsDatabase database, final TwitterManager twitterManager) {
@@ -110,6 +114,27 @@ public class TotalSnsRepository {
 
     public LiveData<List<Account>> getAccounts() {
         return mDatabase.accountDao().loadAccounts();
+    }
+
+    public void addUserToCache(UserInfo user) {
+        LongSparseArray<UserInfo> users = userCache.getValue();
+        if (users == null) users = new LongSparseArray<>();
+        users.put(user.getLongUserId(), user);
+        userCache.postValue(users);
+    }
+
+    public void addUserListToCache(List<UserInfo> users) {
+        LongSparseArray<UserInfo> current = userCache.getValue();
+        if (current == null) current = new LongSparseArray<>();
+        for (UserInfo user : users) {
+            current.put(user.getLongUserId(), user);
+        }
+        userCache.postValue(current);
+    }
+
+    public UserInfo getUserFromCache(long userId) {
+        LongSparseArray<UserInfo> users = userCache.getValue();
+        return users.get(userId);
     }
 
     public void init() {
@@ -179,6 +204,7 @@ public class TotalSnsRepository {
                 Account account = mTwitterManager.signInWithOauthToken(token);
                 if (mHasSourceAdded.compareAndSet(false, true)) {
                     UserInfo user = mTwitterManager.getLoggedInUser();
+                    addUserToCache(user);
                     addTimelineSource(user.getLongUserId());
                     addDirectMessageSource(user.getLongUserId());
                     addMentionSource(user.getLongUserId());
@@ -481,12 +507,12 @@ public class TotalSnsRepository {
         return currentUploadDM;
     }
 
-    public synchronized void sendDirectMessage(QueryUploadMessage query, Message userInfo) {
+    public synchronized void sendDirectMessage(QueryUploadMessage query, Message msg) {
         isSnsNetworkOnUse.postValue(true);
         mAppExecutors.networkIO().execute(() -> {
             Message message = null;
             try {
-                message = mTwitterManager.sendDirectMessage(query, userInfo);
+                message = mTwitterManager.sendDirectMessage(query, msg);
                 final Message message1 = message;
                 mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessage(message1));
             } catch (TwitterException e) {
@@ -508,6 +534,7 @@ public class TotalSnsRepository {
                 articles = mTwitterManager.getSearch(new QuerySearchArticle(QuerySearchArticle.FIRST, count.getQuery()));
                 mObservableSearch.postValue(articles);
                 users = mTwitterManager.getSearchUser(new QuerySearchUser(QuerySearchUser.FIRST, count.getQuery()));
+                addUserListToCache(users);
                 mObservableSearchUser.postValue(users);
             } catch (TwitterException e) {
                 e.printStackTrace();
@@ -549,6 +576,7 @@ public class TotalSnsRepository {
             ArrayList<UserInfo> list = null;
             try {
                 list = mTwitterManager.getSearchUser(query);
+                addUserListToCache(list);
             } catch (TwitterException e) {
                 e.printStackTrace();
             }
@@ -578,6 +606,7 @@ public class TotalSnsRepository {
             ArrayList<UserInfo> list = null;
             try {
                 list = mTwitterManager.getSearchUser(query);
+                addUserListToCache(list);
             } catch (TwitterException e) {
                 e.printStackTrace();
             }
@@ -587,10 +616,12 @@ public class TotalSnsRepository {
     }
 
     public synchronized void fetchProfile(long userId, MutableLiveData<UserInfo> userProfile) {
+        if (getUserFromCache(userId) != null) userProfile.postValue(getUserFromCache(userId));
         isSnsNetworkOnUse.postValue(true);
         mAppExecutors.networkIO().execute(() -> {
             try {
                 UserInfo userInfo = mTwitterManager.getUserInfo(userId);
+                addUserToCache(userInfo);
                 userProfile.postValue(userInfo);
             } catch (TwitterException e) {
                 e.printStackTrace();
@@ -605,6 +636,7 @@ public class TotalSnsRepository {
             ArrayList<UserInfo> followerList = null;
             try {
                 followerList = mTwitterManager.getFollowList(queryFollow);
+                addUserListToCache(followerList);
             } catch (TwitterException e) {
                 e.printStackTrace();
             }
@@ -634,17 +666,35 @@ public class TotalSnsRepository {
     public void fetchUserTimeline(QueryUserTimeline query, MutableLiveData<List<Article>> userTimeline) {
         isSnsNetworkOnUse.postValue(true);
 
-        mAppExecutors.diskIO().execute(() -> {
-            mAppExecutors.networkIO().execute(() -> {
-                ArrayList<Article> articles = null;
-                try {
-                    articles = mTwitterManager.getUserTimeline(query);
-                } catch (TwitterException e) {
-                    e.printStackTrace();
-                }
-                isSnsNetworkOnUse.postValue(false);
-                userTimeline.postValue(articles);
-            });
+        mAppExecutors.networkIO().execute(() -> {
+            ArrayList<Article> articles = null;
+            try {
+                articles = mTwitterManager.getUserTimeline(query);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+            isSnsNetworkOnUse.postValue(false);
+            userTimeline.postValue(articles);
         });
+    }
+
+    public void fetchFollow(long id, boolean isFollow, MutableLiveData<UserInfo> liveData) {
+        isSnsNetworkOnUse.postValue(true);
+
+        mAppExecutors.networkIO().execute(() -> {
+            UserInfo user = null;
+            try {
+                user = isFollow ? mTwitterManager.followUser(id) : mTwitterManager.unfollowUser(id);
+                addUserToCache(user);
+            } catch (TwitterException e) {
+                e.printStackTrace();
+            }
+            liveData.postValue(user);
+            isSnsNetworkOnUse.postValue(false);
+        });
+    }
+
+    public LiveData<LongSparseArray<UserInfo>> getUserCache() {
+        return userCache;
     }
 }

@@ -27,7 +27,6 @@ public class UserInfo implements Parcelable {
     private boolean isFollowReqSend;
 
     private FollowInfo followInfo = null;
-    private RelationInfo relationInfo = null;
 
     public UserInfo() {
     }
@@ -74,9 +73,6 @@ public class UserInfo implements Parcelable {
         isFollowReqSend = in.readByte() != 0;
         boolean isFollowNotNull = in.readByte() != 0;
         if (isFollowNotNull) followInfo = in.readParcelable(FollowInfo.class.getClassLoader());
-        boolean isRelationInfoNotNull = in.readByte() != 0;
-        if (isRelationInfoNotNull)
-            relationInfo = in.readParcelable(RelationInfo.class.getClassLoader());
     }
 
     public static final Creator<UserInfo> CREATOR = new Creator<UserInfo>() {
@@ -227,14 +223,6 @@ public class UserInfo implements Parcelable {
         this.followInfo = followInfo;
     }
 
-    public RelationInfo getRelationInfo() {
-        return relationInfo;
-    }
-
-    public void setRelationInfo(RelationInfo relationInfo) {
-        this.relationInfo = relationInfo;
-    }
-
     @Override
     public int describeContents() {
         return 0;
@@ -262,10 +250,6 @@ public class UserInfo implements Parcelable {
         boolean isFollowInfoNotNull = followInfo != null;
         dest.writeByte((byte) (isFollowInfoNotNull ? 1 : 0));
         if (isFollowInfoNotNull) dest.writeParcelable(followInfo, flags);
-
-        boolean isRelationInfoNotNull = relationInfo != null;
-        dest.writeByte((byte) (isRelationInfoNotNull ? 1 : 0));
-        if (isRelationInfoNotNull) dest.writeParcelable(relationInfo, flags);
     }
 
     @Override

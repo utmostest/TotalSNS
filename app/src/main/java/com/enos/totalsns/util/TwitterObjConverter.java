@@ -1,6 +1,5 @@
 package com.enos.totalsns.util;
 
-import android.annotation.SuppressLint;
 import android.support.v4.util.ArraySet;
 import android.support.v4.util.LongSparseArray;
 import android.util.Log;
@@ -84,7 +83,8 @@ public class TwitterObjConverter {
 
         LongSparseArray<UserInfo> userHashMap = new LongSparseArray<>();
         for (User user : userList) {
-            UserInfo userInfo = toUserInfo(user, longUserId);
+            //add temporary follow info only available isMe
+            UserInfo userInfo = toUserInfo(user, new FollowInfo(false, false, longUserId == user.getId()), longUserId);
             userHashMap.put(user.getId(), userInfo);
         }
         return userHashMap;
@@ -202,29 +202,20 @@ public class TwitterObjConverter {
         ArrayList<Message> dmList = new ArrayList<Message>();
         for (DirectMessage dm : list) {
             long senderId = currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId();
-            Message message = toMessage(dm, currentUserId, userMap.get(senderId));
+            UserInfo sender = userMap.get(senderId);
+            assert sender != null;
+            Message message = toMessage(dm, currentUserId, sender.getUserName(), sender.getUserId(), sender.getProfileImg());
             dmList.add(message);
         }
         return dmList;
     }
 
-    public static Message toMessage(DirectMessage dm, long currentUserId, UserInfo user) {
-        Message message = new Message(TwitterObjConverter.getUserMessagePK(currentUserId, dm.getId()), currentUserId, dm.getId(),
-                dm.getRecipientId(), dm.getSenderId(), user.getUserName(), user.getUserId(), user.getProfileImg(),
-                dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
-        return message;
-    }
-
-    public static Message toMessage(DirectMessage dm, long currentUserId, Message sender) {
+    public static Message toMessage(DirectMessage dm, long currentUserId, String senderName, String senderScreenId, String senderProfile) {
 
         Message message = new Message(TwitterObjConverter.getUserMessagePK(currentUserId, dm.getId()), currentUserId, dm.getId(),
-                dm.getRecipientId(), dm.getSenderId(), sender.getSenderName(), sender.getSenderScreenId(), sender.getSenderProfile(),
+                dm.getRecipientId(), dm.getSenderId(), senderName, senderScreenId, senderProfile,
                 dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
         return message;
-    }
-
-    public static ArrayList<UserInfo> toUserInfoList(ResponseList<User> list, long currentUserId) {
-        return toUserInfoList(list, null, currentUserId);
     }
 
     public static ArrayList<UserInfo> toUserInfoList(ResponseList<User> list, ResponseList<Friendship> friendships, long currentUserId) {
@@ -258,10 +249,6 @@ public class TwitterObjConverter {
                 user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount(), user.isFollowRequestSent());
         userInfo.setFollowInfo(followInfo);
         return userInfo;
-    }
-
-    public static UserInfo toUserInfo(User user, long currentUserId) {
-        return toUserInfo(user, null, currentUserId);
     }
 
     public static long[] getUserIdList(ResponseList<User> users) {

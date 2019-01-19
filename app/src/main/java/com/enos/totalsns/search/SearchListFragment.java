@@ -6,25 +6,31 @@ import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.LongSparseArray;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.custom.ArraySetList;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentSearchBinding;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.userlist.OnUserClickListener;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnMoreUserButtonClickListener;
+import com.enos.totalsns.listener.OnSearchUserClickListener;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
-public class SearchListFragment extends Fragment {
+public class SearchListFragment extends Fragment implements OnFollowBtnClickListener {
 
-    private OnUserClickListener mListener;
+    private OnSearchUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
     private OnMoreUserButtonClickListener mMoreUserListener;
 
@@ -96,10 +102,47 @@ public class SearchListFragment extends Fragment {
             }
             adapter.swapTimelineList(list);
         });
+        mViewModel.getUserCache().observe(this, cache -> {
+            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            if (current == null || cache == null) return;
+            Log.i("userCache", cache.size() + " search");
+            LongSparseArray<UserInfo> changed = new LongSparseArray<>();
+            for (UserInfo user : current) {
+                if (!CompareUtils.isUserInfoEqual(user, cache.get(user.getLongUserId()))) {
+                    UserInfo changedUser = cache.get(user.getLongUserId());
+                    assert changedUser != null;
+                    changed.put(changedUser.getLongUserId(), changedUser);
+                }
+            }
+            if (changed.size() > 0) {
+                ArrayList<UserInfo> changedList = new ArrayList<>(current);
+                for (int i = 0; i < changed.size(); i++) {
+                    UserInfo userInfo = changed.get(changed.keyAt(i));
+                    int index = changedList.indexOf(userInfo);
+                    changedList.remove(index);
+                    changedList.add(index, userInfo);
+                }
+                adapter.swapUserList(changedList);
+            }
+        });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
             mDataBinding.swipeContainer.setRefreshing(refresh);
         });
+        mViewModel.getFollowUser().observe(this, user -> {
+            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            if (current != null) adapter.swapUserList(replaceChangedUser(current, user));
+        });
+    }
+
+    private List<UserInfo> replaceChangedUser(ArrayList<UserInfo> current, UserInfo user) {
+        ArrayList<UserInfo> users = new ArrayList<>(current);
+        int index = current.indexOf(user);
+        users.remove(index);
+        users.add(index, user);
+        return users;
     }
 
     private void initView() {
@@ -108,7 +151,7 @@ public class SearchListFragment extends Fragment {
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
         SearchAdapter searchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(),
-                mListener, mArticleListener, mMoreUserListener);
+                mListener, mArticleListener, mMoreUserListener, this);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         searchAdapter.setEnableHeader(true, true);
@@ -129,8 +172,9 @@ public class SearchListFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnArticleClickListener && context instanceof OnUserClickListener && context instanceof OnMoreUserButtonClickListener) {
-            mListener = (OnUserClickListener) context;
+        if (context instanceof OnArticleClickListener && context instanceof OnSearchUserClickListener &&
+                context instanceof OnMoreUserButtonClickListener) {
+            mListener = (OnSearchUserClickListener) context;
             mArticleListener = (OnArticleClickListener) context;
             mMoreUserListener = (OnMoreUserButtonClickListener) context;
         } else {
@@ -143,5 +187,12 @@ public class SearchListFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onFollowButtonClicked(UserInfo info) {
+        if (!info.getFollowInfo().isMe()) {
+            mViewModel.fetchFollow(info.getLongUserId(), !info.getFollowInfo().isFollowing());
+        }
     }
 }

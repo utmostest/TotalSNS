@@ -2,7 +2,6 @@ package com.enos.totalsns;
 
 import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.graphics.Bitmap;
@@ -40,25 +39,27 @@ import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowListener;
+import com.enos.totalsns.listener.OnMessageClickListener;
+import com.enos.totalsns.listener.OnMoreUserButtonClickListener;
+import com.enos.totalsns.listener.OnSearchUserClickListener;
+import com.enos.totalsns.listener.OnUserClickListener;
 import com.enos.totalsns.mention.MentionListFragment;
-import com.enos.totalsns.message.OnMessageClickListener;
 import com.enos.totalsns.message.detail.MessageDetailActivity;
 import com.enos.totalsns.message.list.MessageListFragment;
 import com.enos.totalsns.message.send.MessageSendActivity;
 import com.enos.totalsns.nearby.NearbyArticleActivity;
 import com.enos.totalsns.profile.ProfileActivity;
-import com.enos.totalsns.search.OnMoreUserButtonClickListener;
 import com.enos.totalsns.search.SearchListFragment;
 import com.enos.totalsns.settings.SettingsActivity;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
 import com.enos.totalsns.timeline.list.TimelineListFragment;
 import com.enos.totalsns.timeline.write.TimelineWriteActivity;
-import com.enos.totalsns.userlist.OnFollowListener;
-import com.enos.totalsns.userlist.OnUserClickListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ColorUtils;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
@@ -70,7 +71,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ContentsActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnArticleClickListener,
-        OnFollowListener, OnMessageClickListener, OnUserClickListener, OnMoreUserButtonClickListener {
+        OnFollowListener, OnMessageClickListener, OnUserClickListener,
+        OnMoreUserButtonClickListener, OnSearchUserClickListener {
 
     private ActivityContentsBinding mDataBinding;
     private ContentsViewModel viewModel;
@@ -126,25 +128,30 @@ public class ContentsActivity extends AppCompatActivity
             Fragment insert = current == null ? TimelineListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
+            mDataBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
         } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
             Fragment insert = current == null ? SearchListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
+            mDataBinding.appBar.toolbarTitle.setText(R.string.title_search);
         } else if (clazz.isAssignableFrom(MentionListFragment.class)) {
             Fragment insert = current == null ? MentionListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
+            mDataBinding.appBar.toolbarTitle.setText(R.string.title_my_post);
         } else if (clazz.isAssignableFrom(MessageListFragment.class)) {
             Fragment insert = current == null ? MessageListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
+            mDataBinding.appBar.toolbarTitle.setText(R.string.title_direct);
         } else {
             throw new IllegalArgumentException(clazz.getSimpleName() + " doesn't exist in changeFragment");
         }
     }
 
     private void initToolbar() {
-        setTitle(R.string.title_activity_timeline);
+        setTitle("");
+        mDataBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
         setSupportActionBar(mDataBinding.appBar.toolbar);
     }
 
@@ -203,6 +210,22 @@ public class ContentsActivity extends AppCompatActivity
     private void initNavigation() {
         mDataBinding.navView.setNavigationItemSelectedListener(this);
 
+        viewModel.getLoggedInUser().observe(this, user -> {
+            updateHeaderView(user);
+        });
+        viewModel.getUserCache().observe(this, cache -> {
+            UserInfo user = viewModel.getLoggedInUser().getValue();
+            if (user == null || cache == null) return;
+            Log.i("userCache", cache.size() + " contents");
+            UserInfo current = cache.get(user.getLongUserId());
+            if (!CompareUtils.isUserInfoEqual(user, current)) {
+                updateHeaderView(current);
+            }
+        });
+    }
+
+    private void updateHeaderView(UserInfo user) {
+        if (user == null) return;
         View header = mDataBinding.navView.getHeaderView(0);
         final TextView headerEmail = header.findViewById(R.id.header_email);
         final TextView headerName = header.findViewById(R.id.header_name);
@@ -213,47 +236,43 @@ public class ContentsActivity extends AppCompatActivity
         final TextView followerLabel = header.findViewById(R.id.header_follower_label);
         final ImageView headerBackground = header.findViewById(R.id.header_background);
 
-        viewModel.getLoggedInUser().observe(this, user -> {
-            if (user == null) return;
+        headerEmail.setText(user.getEmail());
+        headerName.setText(user.getUserName());
+        followerNum.setText(String.valueOf(user.getFollowerCount()));
+        followingNum.setText(String.valueOf(user.getFollowingCount()));
 
-            headerEmail.setText(user.getEmail());
-            headerName.setText(user.getUserName());
-            followerNum.setText(String.valueOf(user.getFollowerCount()));
-            followingNum.setText(String.valueOf(user.getFollowingCount()));
+        followingLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
+        followingNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
+        followerLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
+        followerNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
+        headerProfile.setOnClickListener(v -> ProfileActivity.start(this, user));
+        GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
+        String profileBackImg = user.getProfileBackImg();
+        if (StringUtils.isStringValid(profileBackImg)) {
+            GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
+                    new RequestListener<Bitmap>() {
+                        @Override
+                        public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
+                            return false;
+                        }
 
-            followingLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
-            followingNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), false));
-            followerLabel.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
-            followerNum.setOnClickListener(v -> UserListActivity.startFollowList(this, user.getLongUserId(), true));
-            headerProfile.setOnClickListener(v -> ProfileActivity.start(this, user));
-            GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
-            String profileBackImg = user.getProfileBackImg();
-            if (StringUtils.isStringValid(profileBackImg)) {
-                GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
-                        new RequestListener<Bitmap>() {
-                            @Override
-                            public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {
-                                return false;
+                        @Override
+                        public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
+                            if (resource != null) {
+                                setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
                             }
-
-                            @Override
-                            public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
-                                if (resource != null) {
-                                    setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
-                                }
-                                return false;
-                            }
-                        });
-            } else if (StringUtils.isStringValid(user.getProfileBackColor())) {
-                headerBackground.setImageDrawable(null);
-                int backGround = Color.parseColor("#" + user.getProfileBackColor());
-                headerBackground.setBackgroundColor(backGround);
-                int textColor = ColorUtils.getComplimentColor(backGround);
-                setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
-            } else {
-                headerBackground.setImageResource(R.drawable.side_nav_bar);
-            }
-        });
+                            return false;
+                        }
+                    });
+        } else if (StringUtils.isStringValid(user.getProfileBackColor())) {
+            headerBackground.setImageDrawable(null);
+            int backGround = Color.parseColor("#" + user.getProfileBackColor());
+            headerBackground.setBackgroundColor(backGround);
+            int textColor = ColorUtils.getComplimentColor(backGround);
+            setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
+        } else {
+            headerBackground.setImageResource(R.drawable.side_nav_bar);
+        }
     }
 
     private void setTextColor(int color, TextView... textViews) {
@@ -502,12 +521,6 @@ public class ContentsActivity extends AppCompatActivity
     public void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
         Log.i("layout", "onSearchUserItemClicked");
         ProfileActivity.startWithTransition(this, binding, item);
-    }
-
-    @Override
-    public void onFollowButtonClicked(UserInfo info) {
-        SingletonToast.getInstance().log("onFollowButtonClicked",
-                info.getUserId() + "" + info.getUserName() + "\n" + info.getMessage());
     }
 
     @Override

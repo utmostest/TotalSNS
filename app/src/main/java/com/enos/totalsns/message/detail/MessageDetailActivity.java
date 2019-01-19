@@ -1,6 +1,5 @@
 package com.enos.totalsns.message.detail;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
@@ -9,7 +8,7 @@ import android.view.MenuItem;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
-import com.enos.totalsns.message.OnMessageClickListener;
+import com.enos.totalsns.listener.OnMessageClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 

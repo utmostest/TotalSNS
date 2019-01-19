@@ -20,7 +20,7 @@
     <string name="upload_test_message">upload test message</string>
     <string name="title_timeline">글목록</string>
     <string name="title_search">검색</string>
-    <string name="title_notificate">알림</string>
+    <string name="title_my_post">내 글</string>
     <string name="title_direct">쪽지</string>
     <string name="title_edit">SNS 항목편집</string>
     <string name="title_selected">선택항목</string>
@@ -126,4 +126,5 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="do_follow">팔로우하기</string>
+    <string name="wait_follow">승인대기중</string>
 </resources>

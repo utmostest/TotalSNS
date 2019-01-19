@@ -9,33 +9,40 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import com.enos.totalsns.LayoutLoad;
-import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentProfileBinding;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.userlist.OnFollowListener;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnFollowListener;
+import com.enos.totalsns.listener.OnLoadLayoutListener;
+import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.List;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements OnFollowBtnClickListener {
 
     private ProfileViewModel mViewModel;
 
     public static final String ARG_USER_INFO = "user-info";
     public static final String ARG_USER_ID = "user-id";
     public static final long INVALID_ID = -1;
+
     private FragmentProfileBinding dataBinding;
+
     private OnFollowListener mListener;
     private OnArticleClickListener articleListener;
+
     private UserInfo userInfo;
+
     private long userId = INVALID_ID;
 
     private LayoutLoad layoutLoad;
@@ -67,7 +74,7 @@ public class ProfileFragment extends Fragment {
         if (userInfo != null) {
             fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
-            layoutLoad.setNotTransition();
+            layoutLoad.setDontTransition();
             mViewModel.fetchProfile(userId);
         }
     }
@@ -104,12 +111,14 @@ public class ProfileFragment extends Fragment {
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-        ProfileAdapter searchAdapter = new ProfileAdapter(userInfo, mViewModel.getUserTimeline().getValue(), articleListener, mListener, layoutLoad);
+        ProfileAdapter searchAdapter = new ProfileAdapter(userInfo, mViewModel.getUserTimeline().getValue(),
+                articleListener, mListener, this, layoutLoad);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         searchAdapter.setEnableHeader(true, true);
         dataBinding.profileRv.addItemDecoration(dividerItemDecoration);
         dataBinding.profileRv.setAdapter(searchAdapter);
+        dataBinding.swipeContainer.requestDisallowInterceptTouchEvent(false);
         dataBinding.swipeContainer.setOnRefreshListener(direction -> {
             switch (direction) {
                 case TOP:
@@ -161,6 +170,25 @@ public class ProfileFragment extends Fragment {
                 userInfo = profile;
                 fetchUserTimelineFirst(profile.getLongUserId());
                 initView();
+            } else if (profile != null) {
+                ProfileAdapter adapter = (ProfileAdapter) dataBinding.profileRv.getAdapter();
+                if (adapter == null) return;
+                userInfo = profile;
+                adapter.setUserInfo(profile);
+                adapter.notifyDataSetChanged();
+            }
+        });
+        mViewModel.getUserCache().observe(this, cache -> {
+            if (userInfo != null && cache != null) {
+                Log.i("userCache", cache.size() + " profile");
+                UserInfo current = cache.get(userInfo.getLongUserId());
+                if (!CompareUtils.isUserInfoEqual(userInfo, current)) {
+                    ProfileAdapter adapter = (ProfileAdapter) dataBinding.profileRv.getAdapter();
+                    if (adapter == null) return;
+                    userInfo = current;
+                    adapter.setUserInfo(current);
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -172,5 +200,12 @@ public class ProfileFragment extends Fragment {
 
     private void fetchUserTimelineFirst(long userId) {
         if (isUserTimelineAvailable()) mViewModel.fetchUserTimelineFirst(userId);
+    }
+
+    @Override
+    public void onFollowButtonClicked(UserInfo info) {
+        if (!info.getFollowInfo().isMe()) {
+            mViewModel.fetchFollow(info.getLongUserId(), !info.getFollowInfo().isFollowing());
+        }
     }
 }

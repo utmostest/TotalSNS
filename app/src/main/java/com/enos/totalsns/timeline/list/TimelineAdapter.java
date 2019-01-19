@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import com.bumptech.glide.Glide;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;

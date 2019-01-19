@@ -12,7 +12,8 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
-import com.enos.totalsns.userlist.OnUserClickListener;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnSearchUserClickListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -23,11 +24,13 @@ import java.util.List;
 public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private List<UserInfo> mFilteredList;
-    private final OnUserClickListener mListener;
+    private final OnSearchUserClickListener mListener;
+    private OnFollowBtnClickListener followBtnClickListener;
 
-    public SearchedUserAdapter(List<UserInfo> items, OnUserClickListener mListener) {
+    public SearchedUserAdapter(List<UserInfo> items, OnSearchUserClickListener mListener, OnFollowBtnClickListener followBtnListener) {
         mFilteredList = items;
         this.mListener = mListener;
+        followBtnClickListener = followBtnListener;
     }
 
     @NonNull
@@ -97,11 +100,13 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 if (mListener != null) mListener.onSearchUserItemClicked(binding, mItem);
             });
             binding.itemUserFollowBtn.setOnClickListener((view) -> {
-                if (mListener != null) mListener.onFollowButtonClicked(mItem);
+                if (followBtnClickListener != null)
+                    followBtnClickListener.onFollowButtonClicked(mItem);
             });
             binding.itemUserFollowBtn.setVisibility(mItem.getFollowInfo() != null && mItem.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
+            binding.itemUserFollowBtn.setEnabled(!mItem.isFollowReqSend());
             binding.itemUserFollowBtn.setText(mItem.getFollowInfo() != null && mItem.getFollowInfo().isFollowing() ?
-                    R.string.title_following : R.string.do_follow);
+                    R.string.title_following : (mItem.isFollowReqSend() ? R.string.wait_follow : R.string.do_follow));
 
             binding.itemUserMessage.setText(mItem.getMessage());
             binding.itemUserName.setText(mItem.getUserName());

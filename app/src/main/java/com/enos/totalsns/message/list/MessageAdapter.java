@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.ItemMessageBinding;
-import com.enos.totalsns.message.OnMessageClickListener;
+import com.enos.totalsns.listener.OnMessageClickListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.TimeUtils;

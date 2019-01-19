@@ -2,7 +2,6 @@ package com.enos.totalsns.accounts;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -18,6 +17,7 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ActivityAccountsBinding;
 import com.enos.totalsns.intro.LoginResult;
+import com.enos.totalsns.listener.OnSnsAccountListener;
 import com.enos.totalsns.login.LoginActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ViewModelFactory;

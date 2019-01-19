@@ -15,6 +15,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentAccountBinding;
+import com.enos.totalsns.listener.OnSnsAccountListener;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.ArrayList;

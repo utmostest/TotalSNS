@@ -14,8 +14,10 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchHeaderBinding;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.userlist.OnUserClickListener;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnMoreUserButtonClickListener;
+import com.enos.totalsns.listener.OnSearchUserClickListener;
 import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
@@ -29,7 +31,7 @@ public class SearchAdapter extends HFSupportAdapter {
     private List<UserInfo> mFilteredList;
     private List<Article> mValues;
 
-    private OnUserClickListener mListener;
+    private OnSearchUserClickListener mListener;
     private OnArticleClickListener mArticleListener;
     private OnMoreUserButtonClickListener moreUserButtonClickListener;
 
@@ -45,15 +47,17 @@ public class SearchAdapter extends HFSupportAdapter {
     private boolean isItemChanged = false;
 
     private ItemSearchHeaderBinding headerViewHolder = null;
+    private OnFollowBtnClickListener followBtnListener;
 
     public SearchAdapter(List<UserInfo> items, List<Article> list,
-                         OnUserClickListener mListener, OnArticleClickListener articleClickListener,
-                         OnMoreUserButtonClickListener moreUserButtonClickListener) {
+                         OnSearchUserClickListener mListener, OnArticleClickListener articleClickListener,
+                         OnMoreUserButtonClickListener moreUserButtonClickListener, OnFollowBtnClickListener followBtnListener) {
         mValues = list;
         mFilteredList = items;
         this.mListener = mListener;
         this.mArticleListener = articleClickListener;
         this.moreUserButtonClickListener = moreUserButtonClickListener;
+        this.followBtnListener = followBtnListener;
         recycledViewPool = new RecyclerView.RecycledViewPool();
     }
 
@@ -170,7 +174,6 @@ public class SearchAdapter extends HFSupportAdapter {
 
     private class ArticleViewHolder extends ItemViewHolder {
         public final ItemArticleBinding binding;
-        private Article mItem;
 
         ArticleViewHolder(ItemArticleBinding view) {
             super(view.getRoot());
@@ -232,7 +235,7 @@ public class SearchAdapter extends HFSupportAdapter {
                 userAdapter = (SearchedUserAdapter) mUserRecyclerView.getAdapter();
             }
             if (userAdapter == null) {
-                userAdapter = new SearchedUserAdapter(mFilteredList, mListener);
+                userAdapter = new SearchedUserAdapter(mFilteredList, mListener, followBtnListener);
                 binding.searchRv.setAdapter(userAdapter);
             }
             binding.searchRv.setHasFixedSize(true);

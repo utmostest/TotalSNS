@@ -10,6 +10,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemMessageSendBinding;
 import com.enos.totalsns.databinding.ItemMessageSendHeaderBinding;
+import com.enos.totalsns.listener.OnMessageSendListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 
@@ -19,7 +20,7 @@ public class MessageSendAdapter extends HFSupportAdapter {
 
     // TODO SNS별 뷰홀더 추가 및 화면 표시
     private List<UserInfo> mValues;
-    private OnUserToSendClickListener mListener;
+    private OnMessageSendListener mListener;
 
     private final int TYPE_TWITTER = Constants.TWITTER;
     private final int TYPE_FACEBOOK = Constants.FACEBOOK;
@@ -29,7 +30,7 @@ public class MessageSendAdapter extends HFSupportAdapter {
 
     private boolean isItemChanged = false;
 
-    public MessageSendAdapter(List<UserInfo> list, OnUserToSendClickListener listener) {
+    public MessageSendAdapter(List<UserInfo> list, OnMessageSendListener listener) {
         mValues = list;
         mListener = listener;
     }

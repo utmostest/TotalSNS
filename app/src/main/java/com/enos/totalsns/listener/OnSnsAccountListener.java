@@ -1,4 +1,4 @@
-package com.enos.totalsns.accounts;
+package com.enos.totalsns.listener;
 
 import com.enos.totalsns.data.Account;
 

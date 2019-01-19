@@ -10,6 +10,7 @@ import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
 import com.enos.totalsns.databinding.ItemAccountFooterBinding;
+import com.enos.totalsns.listener.OnSnsAccountListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 

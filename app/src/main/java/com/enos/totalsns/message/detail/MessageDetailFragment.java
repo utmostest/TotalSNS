@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.databinding.FragmentMessageDetailBinding;
-import com.enos.totalsns.message.OnMessageClickListener;
+import com.enos.totalsns.listener.OnMessageClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
 

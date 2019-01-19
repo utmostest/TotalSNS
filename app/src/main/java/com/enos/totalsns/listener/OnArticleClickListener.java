@@ -1,4 +1,4 @@
-package com.enos.totalsns.timeline.list;
+package com.enos.totalsns.listener;
 
 import android.widget.ImageView;
 

@@ -15,7 +15,6 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.enos.totalsns.ContentsActivity;
-import com.enos.totalsns.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
@@ -23,9 +22,10 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
+import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnFollowListener;
+import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
-import com.enos.totalsns.timeline.list.OnArticleClickListener;
-import com.enos.totalsns.userlist.OnFollowListener;
 import com.enos.totalsns.userlist.UserListActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -132,6 +132,14 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         }
     }
 
+    @MainThread
+    @Override
+    public void onLayoutLoaded() {
+        //이미지가 로드된 후 트랜지션 개시
+        Log.i("layout", "load finished");
+        ActivityCompat.startPostponedEnterTransition(this);
+    }
+
     public static void start(AppCompatActivity context, UserInfo userInfo) {
         Intent intent = new Intent(context, ProfileActivity.class);
         intent.putExtra(ProfileFragment.ARG_USER_INFO, userInfo);
@@ -169,13 +177,5 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         pairs.add(Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)));
         pairs.add(Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
         ActivityUtils.startActivityWithTransition(context, intent, pairs);
-    }
-
-    @MainThread
-    @Override
-    public void onLayoutLoaded() {
-        //이미지가 로드된 후 트랜지션 개시
-        Log.i("layout", "load finished");
-        ActivityCompat.startPostponedEnterTransition(this);
     }
 }

@@ -6,6 +6,7 @@ import android.webkit.WebViewClient;
 
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.intro.LoginResult;
+import com.enos.totalsns.listener.OnTwitterLoginListener;
 
 public class TwitterWebViewClient extends WebViewClient {
     private final String CALLBACK_URL = "twittersdk://";
@@ -13,9 +14,9 @@ public class TwitterWebViewClient extends WebViewClient {
     private final String VERFIER_KEY = "oauth_verifier";
     private final String CALLBACK_CANCELED = CALLBACK_URL + "?denied";
 
-    private OnTwitterLoginWebViewListener mListener = null;
+    private OnTwitterLoginListener mListener = null;
 
-    public void setTwitterLoginListener(OnTwitterLoginWebViewListener listener) {
+    public void setTwitterLoginListener(OnTwitterLoginListener listener) {
         mListener = listener;
     }
 
@@ -29,7 +30,7 @@ public class TwitterWebViewClient extends WebViewClient {
                 if (mListener != null) {
                     result.setLoginStep(LoginResult.STATUS_LOGIN_CANCELED);
                     result.setMessage("user canceled login");
-                    mListener.onWebViewLoginResult(result);
+                    mListener.onLoginResult(result);
                 }
                 return true;
             }
@@ -41,7 +42,7 @@ public class TwitterWebViewClient extends WebViewClient {
             if (isCallbackInvalid(oauth_token, oauth_verifier)) {
                 result.setLoginStatus(LoginResult.STATUS_LOGIN_FAILED);
                 result.setMessage("invalid oauth token and secret");
-                if (mListener != null) mListener.onWebViewLoginResult(result);
+                if (mListener != null) mListener.onLoginResult(result);
                 return true;
             }
 
@@ -49,7 +50,7 @@ public class TwitterWebViewClient extends WebViewClient {
             result.setToken(oauth_token);
             result.setTokenSecret(oauth_verifier);
 
-            if (mListener != null) mListener.onWebViewLoginResult(result);
+            if (mListener != null) mListener.onLoginResult(result);
             return true;
         }
         view.loadUrl(url);

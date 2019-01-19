@@ -4,6 +4,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.content.Context;
+import android.support.v4.util.LongSparseArray;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
@@ -53,6 +54,14 @@ public class ProfileViewModel extends ViewModel {
 
     public void fetchUserTimelineRecent() {
         mRepository.fetchUserTimeline(new QueryUserTimeline(QueryUserTimeline.RECENT), userTimeline);
+    }
+
+    public void fetchFollow(long id, boolean isFollow) {
+        mRepository.fetchFollow(id, isFollow, userProfile);
+    }
+
+    public LiveData<LongSparseArray<UserInfo>> getUserCache() {
+        return mRepository.getUserCache();
     }
 
     @Override

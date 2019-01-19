@@ -10,6 +10,8 @@ import android.view.ViewGroup;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemUserBinding;
+import com.enos.totalsns.listener.OnFollowBtnClickListener;
+import com.enos.totalsns.listener.OnUserClickListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 
@@ -18,10 +20,12 @@ import java.util.List;
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
     private List<UserInfo> mValues;
     private final OnUserClickListener mListener;
+    private OnFollowBtnClickListener followBtnClickListener;
 
-    public UserAdapter(List<UserInfo> items, OnUserClickListener listener) {
+    public UserAdapter(List<UserInfo> items, OnUserClickListener listener, OnFollowBtnClickListener followBtnListener) {
         mValues = items;
         mListener = listener;
+        followBtnClickListener = followBtnListener;
     }
 
     @Override
@@ -91,8 +95,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             binding.fMessage.setText(mItem.getMessage());
             binding.fMessage.setText(mItem.getMessage());
             binding.fFollowBtn.setVisibility(mItem.getFollowInfo() != null && mItem.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
+            binding.fFollowBtn.setEnabled(!mItem.isFollowReqSend());
             binding.fFollowBtn.setText(mItem.getFollowInfo() != null && mItem.getFollowInfo().isFollowing() ?
-                    R.string.title_following : R.string.do_follow);
+                    R.string.title_following : (mItem.isFollowReqSend() ? R.string.wait_follow : R.string.do_follow));
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), mItem.getProfileImg(), binding.fProfileImg);
 
             binding.getRoot().setOnClickListener(v -> {
@@ -101,8 +106,8 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
                 }
             });
             binding.fFollowBtn.setOnClickListener(v -> {
-                if (null != mListener) {
-                    mListener.onFollowButtonClicked(mItem);
+                if (null != followBtnClickListener) {
+                    followBtnClickListener.onFollowButtonClicked(mItem);
                 }
             });
         }
