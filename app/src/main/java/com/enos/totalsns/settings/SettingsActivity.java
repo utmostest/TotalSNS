@@ -17,12 +17,10 @@ import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.MenuItem;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.util.ActivityUtils;
 
 import java.util.List;
 
@@ -202,7 +200,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                SettingsActivity.start((AppCompatActivity) getActivity());
+                SettingsActivity.start(getActivity());
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -232,7 +230,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                SettingsActivity.start((AppCompatActivity) getActivity());
+                SettingsActivity.start(getActivity());
                 return true;
             }
             return super.onOptionsItemSelected(item);
@@ -262,16 +260,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public boolean onOptionsItemSelected(MenuItem item) {
             int id = item.getItemId();
             if (id == android.R.id.home) {
-                SettingsActivity.start((AppCompatActivity) getActivity());
+                SettingsActivity.start(getActivity());
                 return true;
             }
             return super.onOptionsItemSelected(item);
         }
     }
 
-    public static void start(AppCompatActivity context) {
+    public static void start(Context context) {
         Intent intent = new Intent(context, SettingsActivity.class);
-//        context.startActivity(intent);
-        ActivityUtils.startActivity(context, intent);
+        context.startActivity(intent);
     }
 }

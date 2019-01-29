@@ -7,13 +7,13 @@ import java.io.File;
 public class QueryUploadArticle {
     private String message;
     private LatLng geoLocation;
-    private File[] uploadingFiles;
+    private String[] uploadingFiles;
 
     public QueryUploadArticle(String message) {
         this.message = message;
     }
 
-    public QueryUploadArticle(String message, LatLng geoLocation, File[] uploadingFiles) {
+    public QueryUploadArticle(String message, LatLng geoLocation, String[] uploadingFiles) {
         this.message = message;
         this.geoLocation = geoLocation;
         this.uploadingFiles = uploadingFiles;
@@ -35,11 +35,11 @@ public class QueryUploadArticle {
         this.geoLocation = geoLocation;
     }
 
-    public File[] getUploadingFiles() {
+    public String[] getUploadingFiles() {
         return uploadingFiles;
     }
 
-    public void setUploadingFiles(File[] uploadingFiles) {
+    public void setUploadingFiles(String[] uploadingFiles) {
         this.uploadingFiles = uploadingFiles;
     }
 }

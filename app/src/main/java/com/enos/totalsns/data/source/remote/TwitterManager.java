@@ -139,8 +139,8 @@ public class TwitterManager {
         if (query.getUploadingFiles() != null) {
             long[] mediaIds = new long[query.getUploadingFiles().length];
             int position = 0;
-            for (File file : query.getUploadingFiles()) {
-                UploadedMedia media = mTwitter.uploadMedia(file);
+            for (String file : query.getUploadingFiles()) {
+                UploadedMedia media = mTwitter.uploadMedia(new File(file));
                 mediaIds[position] = media.getMediaId();
                 position++;
             }
@@ -203,15 +203,16 @@ public class TwitterManager {
                         TwitterObjConverter.getUserIdMap(userList, getLoggedInUser().getLongUserId())));
     }
 
-    public Message sendDirectMessage(QueryUploadMessage query, Message user) throws TwitterException {
+    public Message sendDirectMessage(QueryUploadMessage query) throws TwitterException {
         long mediaId = 0;
         if (query.getUploadingFile() != null && query.getUploadingFile().length() > 0) {
-            UploadedMedia media = mTwitter.uploadMedia(query.getUploadingFile());
+            UploadedMedia media = mTwitter.uploadMedia(new File(query.getUploadingFile()));
             mediaId = media.getMediaId();
         }
-        DirectMessage dm = mediaId <= 0 ? mTwitter.sendDirectMessage(query.getUserId(), query.getMessage()) :
-                mTwitter.sendDirectMessage(query.getUserId(), query.getMessage(), mediaId);
-        return TwitterObjConverter.toMessage(dm, getLoggedInUser().getLongUserId(), user.getSenderName(), user.getSenderScreenId(), user.getSenderProfile());
+        UserInfo receiver = query.getReceiver();
+        DirectMessage dm = mediaId <= 0 ? mTwitter.sendDirectMessage(receiver.getLongUserId(), query.getMessage()) :
+                mTwitter.sendDirectMessage(receiver.getLongUserId(), query.getMessage(), mediaId);
+        return TwitterObjConverter.toMessage(dm, getLoggedInUser().getLongUserId(), receiver.getUserName(), receiver.getUserId(), receiver.getProfileImg());
     }
 
     public void signOut() {

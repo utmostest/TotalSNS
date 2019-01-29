@@ -31,6 +31,14 @@ public class UserInfo implements Parcelable {
     public UserInfo() {
     }
 
+    public UserInfo(Message sample){
+        this.longUserId = sample.getSenderTableId();
+        this.profileImg=sample.getSenderProfile();
+        this.userId = sample.getSenderScreenId();
+        this.userName=sample.getSenderName();
+        this.message = sample.getMessage();
+    }
+
     public UserInfo(long longUserId, String userId, String userName, String message, String profileImg,
                     String profileBackImg, String profileBackColor, boolean isProtected, int snsType,
                     String location, long createdAt, String email, Article lastArticle, int followerCount,

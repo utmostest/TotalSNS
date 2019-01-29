@@ -12,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.listener.OnLoadLayoutListener;
@@ -69,7 +70,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-
+        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
     }
 
     @Override

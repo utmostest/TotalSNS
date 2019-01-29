@@ -1,14 +1,14 @@
 package com.enos.totalsns.data.source.remote;
 
-import java.io.File;
+import com.enos.totalsns.data.UserInfo;
 
 public class QueryUploadMessage {
-    private long userId;
+    private UserInfo receiver;
     private String message;
-    private File uploadingFile;
+    private String uploadingFile;
 
-    public QueryUploadMessage(long userId, String message) {
-        this.userId = userId;
+    public QueryUploadMessage(UserInfo receiver, String message) {
+        this.receiver = receiver;
         this.message = message;
     }
 
@@ -20,19 +20,19 @@ public class QueryUploadMessage {
         this.message = message;
     }
 
-    public long getUserId() {
-        return userId;
+    public UserInfo getReceiver() {
+        return receiver;
     }
 
-    public void setUserId(long userId) {
-        this.userId = userId;
+    public void setReceiver(UserInfo receiver) {
+        this.receiver = receiver;
     }
 
-    public File getUploadingFile() {
+    public String getUploadingFile() {
         return uploadingFile;
     }
 
-    public void setUploadingFile(File uploadingFile) {
+    public void setUploadingFile(String uploadingFile) {
         this.uploadingFile = uploadingFile;
     }
 }

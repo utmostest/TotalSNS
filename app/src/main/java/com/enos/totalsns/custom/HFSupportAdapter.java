@@ -49,7 +49,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
      * don't override it
      **/
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public final RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == TYPE_HEADER) {
             return onCreateHeaderViewHolder(parent, viewType);
         } else if (viewType == TYPE_FOOTER) {
@@ -78,7 +78,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
      * don't override it
      **/
     @Override
-    public void onBindViewHolder(final RecyclerView.ViewHolder vh, int pos) {
+    public final void onBindViewHolder(final RecyclerView.ViewHolder vh, int pos) {
         int position = getActualPosition(pos);
         if (vh instanceof HeaderViewHolder) {
             onBindHeaderViewHolder((HeaderViewHolder) vh, pos);
@@ -108,7 +108,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * don't override it
      **/
-    public int getActualPosition(int pos) {
+    public final int getActualPosition(int pos) {
         checkItems();
         int size = mValues == null ? 0 : mValues.size();
         boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
@@ -122,12 +122,12 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
      * don't override it
      **/
     @Override
-    public int getItemCount() {
+    public final int getItemCount() {
         checkItems();
         int size = mValues == null ? 0 : mValues.size();
         boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
         boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
-
+notifyDataSetChanged();
         return size + (isHeaderEnabled ? 1 : 0) + (isFooterEnabled ? 1 : 0);
     }
 
@@ -135,7 +135,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
      * don't override it
      **/
     @Override
-    public int getItemViewType(int position) {
+    public final int getItemViewType(int position) {
         int realPosition = getActualPosition(position);
         int headerPos = -1;
         int footerPos = -1;
@@ -167,7 +167,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * don't override it
      **/
-    public void setEnableHeader(boolean isEnable, boolean isEnableAlways) {
+    public final void setEnableHeader(boolean isEnable, boolean isEnableAlways) {
         mIsEnableHeader = isEnable;
         mIsEnableHeaderAlways = isEnableAlways;
     }
@@ -175,7 +175,7 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
     /**
      * don't override it
      **/
-    public void setEnableFooter(boolean isEnable, boolean isEnableAlways) {
+    public final void setEnableFooter(boolean isEnable, boolean isEnableAlways) {
         mIsEnableFooter = isEnable;
         mIsEnableFooterAlways = isEnableAlways;
     }

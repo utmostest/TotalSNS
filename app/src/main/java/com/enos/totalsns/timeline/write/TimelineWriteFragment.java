@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
@@ -81,8 +82,10 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
                 profileClicked();
                 break;
             case R.id.tl_write_location:
+                Toast.makeText(getContext(), "TODO : add location / place selector", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tl_write_picture:
+                Toast.makeText(getContext(), "TODO : add image selector", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.tl_write_post:
                 post();
@@ -91,7 +94,7 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     }
 
     private void profileClicked() {
-
+        Toast.makeText(getContext(), "TODO : add account selector", Toast.LENGTH_SHORT).show();
     }
 
     private void close() {

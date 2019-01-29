@@ -22,25 +22,22 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message_detail);
         if (savedInstanceState == null) {
-            long userId = getIntent().getLongExtra(MessageDetailFragment.COLUMN_SENDER_ID, MessageDetailFragment.INVALID_SENDER_ID);
-            initFragment(userId);
-            initActionBar(userId);
+            UserInfo receiver = getIntent().getParcelableExtra(MessageDetailFragment.COLUMN_SENDER_MSG);
+            initFragment(receiver);
+            initActionBar(receiver);
         }
     }
 
-    private void initActionBar(long userId) {
+    private void initActionBar(UserInfo receiver) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
-        MessageDetailViewModel messageDetailViewModel =
-                ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(MessageDetailViewModel.class);
-        UserInfo current = messageDetailViewModel.getUserFromCache(userId);
-        setTitle(getString(R.string.title_message_detail, current == null ? "USER" : current.getUserId()));
+        setTitle(getString(R.string.title_message_detail, receiver == null ? "USER" : receiver.getUserId()));
     }
 
-    private void initFragment(long senderTableId) {
-        getSupportFragmentManager().beginTransaction().replace(R.id.container, MessageDetailFragment.newInstance(senderTableId)).commitNow();
+    private void initFragment(UserInfo receiver) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.container, MessageDetailFragment.newInstance(receiver)).commitNow();
     }
 
     @Override
@@ -59,9 +56,9 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
         return super.onOptionsItemSelected(item);
     }
 
-    public static void start(AppCompatActivity context, long senderId) {
+    public static void start(AppCompatActivity context, UserInfo receiver) {
         Intent intent = new Intent(context, MessageDetailActivity.class);
-        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_ID, senderId);
+        intent.putExtra(MessageDetailFragment.COLUMN_SENDER_MSG, receiver);
 //        context.startActivity(intent);
         ActivityUtils.startActivity(context, intent);
     }

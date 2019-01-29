@@ -86,7 +86,7 @@ public class MessageSendFragment extends Fragment implements OnMessageSendListen
     public void onUserToSendClicked(UserInfo userInfo) {
         Activity context = getActivity();
         if (context != null) {
-            MessageDetailActivity.start((AppCompatActivity) context, userInfo.getLongUserId());
+            MessageDetailActivity.start((AppCompatActivity) context, userInfo);
             context.finish();
         }
     }

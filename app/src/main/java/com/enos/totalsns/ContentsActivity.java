@@ -465,7 +465,7 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-
+        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
     }
 
     @Override
@@ -509,7 +509,8 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onMessageClicked(Message item) {
-        MessageDetailActivity.start(this, item.getSenderTableId());
+        UserInfo tempUser = new UserInfo(item);
+        MessageDetailActivity.start(this, tempUser);
     }
 
     @Override

@@ -11,7 +11,6 @@ import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.QueryMessage;
 import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 
-import java.io.File;
 import java.util.List;
 
 public class MessageDetailViewModel extends ViewModel {
@@ -50,10 +49,10 @@ public class MessageDetailViewModel extends ViewModel {
         mRepository.fetchDirectMessageDetail(dmId, directMessageDetail);
     }
 
-    public void postDirectMessage(long receiverId, String message, File uploadFile, Message sample) {
-        QueryUploadMessage query = new QueryUploadMessage(receiverId, message);
+    public void postDirectMessage(UserInfo receiver, String message, String uploadFile) {
+        QueryUploadMessage query = new QueryUploadMessage(receiver, message);
         query.setUploadingFile(uploadFile);
-        mRepository.sendDirectMessage(query, sample);
+        mRepository.sendDirectMessage(query);
     }
 
     public LiveData<Message> getCurrentUploadingDM() {

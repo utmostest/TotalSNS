@@ -509,14 +509,14 @@ public class TotalSnsRepository {
         return currentUploadDM;
     }
 
-    public synchronized void sendDirectMessage(QueryUploadMessage query, Message msg) {
+    public synchronized void sendDirectMessage(QueryUploadMessage query) {
         isSnsNetworkOnUse.postValue(true);
         mAppExecutors.networkIO().execute(() -> {
             Message message = null;
             try {
-                message = mTwitterManager.sendDirectMessage(query, msg);
-                final Message message1 = message;
-                mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessage(message1));
+                message = mTwitterManager.sendDirectMessage(query);
+                final Message msgFinal = message;
+                mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessage(msgFinal));
             } catch (TwitterException e) {
                 e.printStackTrace();
             }

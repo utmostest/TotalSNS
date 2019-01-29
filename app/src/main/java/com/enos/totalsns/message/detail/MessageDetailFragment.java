@@ -12,9 +12,11 @@ import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
+import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentMessageDetailBinding;
 import com.enos.totalsns.listener.OnMessageClickListener;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -22,20 +24,17 @@ import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirec
 
 public class MessageDetailFragment extends Fragment implements View.OnClickListener {
 
-    public static final String COLUMN_SENDER_ID = "comlumn_sender_id";
+    public static final String COLUMN_SENDER_MSG = "comlumn_sender_id";
     private MessageDetailViewModel mViewModel;
     private OnMessageClickListener mListener;
     private FragmentMessageDetailBinding mDataBinding;
 
-    private long currentReceiverId = INVALID_SENDER_ID;
-    private Message sampleMessage = null;
+    private UserInfo receiver = null;
 
-    public static final long INVALID_SENDER_ID = -1;
-
-    public static MessageDetailFragment newInstance(long senderId) {
+    public static MessageDetailFragment newInstance(UserInfo receiver) {
         MessageDetailFragment fragment = new MessageDetailFragment();
         Bundle args = new Bundle();
-        args.putLong(COLUMN_SENDER_ID, senderId);
+        args.putParcelable(COLUMN_SENDER_MSG, receiver);
         fragment.setArguments(args);
         return fragment;
     }
@@ -46,9 +45,9 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
 
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageDetailViewModel.class);
         if (getArguments() != null) {
-            if (getArguments().getLong(COLUMN_SENDER_ID, INVALID_SENDER_ID) != INVALID_SENDER_ID) {
-                currentReceiverId = getArguments().getLong(COLUMN_SENDER_ID);
-                mViewModel.fetchDirectMessageDetail(currentReceiverId);
+            receiver = getArguments().getParcelable(COLUMN_SENDER_MSG);
+            if (receiver != null) {
+                mViewModel.fetchDirectMessageDetail(receiver.getLongUserId());
             }
         }
     }
@@ -88,7 +87,6 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
 
         mViewModel.getDirectMessageDetail().observe(this, articleList -> {
             if (articleList != null) {
-                if (articleList.size() > 0) sampleMessage = articleList.get(0);
                 mDataBinding.msgRv.scrollToPosition(adapter.getItemCount() - 1);
             }
             adapter.swapMessageList(articleList);
@@ -107,7 +105,7 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
         Editable editable = mDataBinding.messageDetailEdit.getEditableText();
         if (editable != null && editable.toString().length() > 0) {
             String message = editable.toString();
-            mViewModel.postDirectMessage(currentReceiverId, message, null, sampleMessage);
+            mViewModel.postDirectMessage(receiver, message, null);
         }
     }
 
@@ -131,6 +129,7 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.message_detail_image:
+                Toast.makeText(getContext(), "TODO : add image selector", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.message_detail_send:
                 postDirectMessage();
