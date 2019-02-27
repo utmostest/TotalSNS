@@ -127,7 +127,6 @@ public abstract class HFSupportAdapter extends RecyclerView.Adapter<RecyclerView
         int size = mValues == null ? 0 : mValues.size();
         boolean isHeaderEnabled = (mIsEnableHeader && mIsEnableHeaderAlways) || (mIsEnableHeader && size > 0);
         boolean isFooterEnabled = (mIsEnableFooter && mIsEnableFooterAlways) || (mIsEnableFooter && size > 0);
-notifyDataSetChanged();
         return size + (isHeaderEnabled ? 1 : 0) + (isFooterEnabled ? 1 : 0);
     }
 
