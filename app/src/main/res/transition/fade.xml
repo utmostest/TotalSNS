@@ -4,9 +4,9 @@
     tools:ignore="NewApi,UnusedAttribute">
 
     <fade android:interpolator="@android:interpolator/fast_out_slow_in">
-        <targets>
-            <target android:excludeId="@android:id/statusBarBackground" />
-            <target android:excludeId="@android:id/navigationBarBackground" />
-        </targets>
+        <!--<targets>-->
+            <!--<target android:excludeId="@android:id/statusBarBackground" />-->
+            <!--<target android:excludeId="@android:id/navigationBarBackground" />-->
+        <!--</targets>-->
     </fade>
 </transitionSet>

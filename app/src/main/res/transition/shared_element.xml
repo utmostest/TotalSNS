@@ -3,12 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:interpolator="@android:interpolator/fast_out_slow_in"
     tools:ignore="NewApi,UnusedAttribute">
-    <targets>
-        <target android:excludeId="@id/app_bar" />
-        <target android:excludeId="@android:id/statusBarBackground" />
-        <target android:excludeId="@android:id/navigationBarBackground" />
-        <target android:excludeId="@id/timeline_navigation" />
-    </targets>
+    <!--<targets>-->
+        <!--<target android:excludeId="@id/app_bar" />-->
+        <!--<target android:excludeId="@android:id/statusBarBackground" />-->
+        <!--<target android:excludeId="@android:id/navigationBarBackground" />-->
+        <!--<target android:excludeId="@id/timeline_navigation" />-->
+    <!--</targets>-->
     <changeBounds />
     <changeTransform />
     <changeClipBounds />
