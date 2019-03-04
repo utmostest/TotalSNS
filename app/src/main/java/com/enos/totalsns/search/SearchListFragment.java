@@ -91,9 +91,9 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
                 if (list != null && list.size() > 0) {
                     Article last = list.get(0);
                     Article first = list.get(list.size() - 1);
-                    if (first.getPostedAt() > oldLast.getPostedAt()) {
+                    if (first.getArticleId() > oldLast.getArticleId()) {
                         list.addAll(list.size(), old);
-                    } else if (last.getPostedAt() < oldFirst.getPostedAt()) {
+                    } else if (last.getArticleId() < oldFirst.getArticleId()) {
                         list.addAll(0, old);
                     }
                 } else if (list != null) {
