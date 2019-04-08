@@ -73,7 +73,7 @@ dependencies {
     implementation 'com.android.support:preference-v7:28.0.0'
 
     //google map 관련 라이브러리 FusedLocationProviderClient
-    implementation 'com.google.android.gms:play-services-maps:16.0.0'
+    implementation 'com.google.android.gms:play-services-maps:16.1.0'
     // fused location
     implementation "com.google.android.gms:play-services-location:16.0.0"
     // calculate zoom level
@@ -86,7 +86,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.4.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 
-    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.10.0'
 
     def lifecycle_version = "1.1.1"
 
@@ -107,14 +107,14 @@ dependencies {
     implementation 'me.tatarka:gradle-retrolambda:3.7.0'
 
     // glide
-    implementation 'com.github.bumptech.glide:glide:4.7.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.7.1'
+    implementation 'com.github.bumptech.glide:glide:4.8.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
 
     def room_version = "1.1.1"
     implementation "android.arch.persistence.room:runtime:$room_version"
     annotationProcessor "android.arch.persistence.room:compiler:$room_version"
 
-    def work_version = "1.0.0-beta01"
+    def work_version = "1.0.0-rc02"
 
     implementation "android.arch.work:work-runtime:$work_version" // use -ktx for Kotlin+Coroutines
 
@@ -158,7 +158,7 @@ dependencies {
 //    annotationProcessor 'com.google.dagger:dagger-compiler:2.15'
 
     // if you use the support libraries
-    annotationProcessor 'com.google.dagger:dagger-android-processor:2.15'
+    annotationProcessor 'com.google.dagger:dagger-android-processor:2.16'
     implementation 'io.realm:android-adapters:2.0.0'
 
     //swipe refresh bottom top
