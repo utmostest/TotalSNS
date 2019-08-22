@@ -2,8 +2,6 @@ package com.enos.totalsns.profile;
 
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.annotation.Nullable;
-import android.support.v7.util.DiffUtil;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,6 +31,9 @@ import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
 
 import java.util.List;
+
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
 
 public class ProfileAdapter extends HFSupportAdapter {
 

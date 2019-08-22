@@ -16,14 +16,17 @@
 
 package com.enos.totalsns.custom;
 
-import android.arch.lifecycle.LifecycleOwner;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.Observer;
-import android.support.annotation.MainThread;
-import android.support.annotation.Nullable;
+
 import android.util.Log;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import androidx.annotation.MainThread;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Observer;
 
 /**
  * A lifecycle-aware observable that sends only new updates after subscription, used for events like
@@ -42,8 +45,8 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
     private final AtomicBoolean mPending = new AtomicBoolean(false);
 
     @MainThread
-    public void observe(LifecycleOwner owner, final Observer<T> observer) {
-
+    @Override
+    public void observe(@NonNull LifecycleOwner owner, @NonNull final Observer<? super T> observer) {
         if (hasActiveObservers()) {
             Log.w(TAG, "Multiple observers registered but only one will be notified of changes.");
         }
@@ -58,6 +61,7 @@ public class SingleLiveEvent<T> extends MutableLiveData<T> {
             }
         });
     }
+
 
     @MainThread
     public void setValue(@Nullable T t) {

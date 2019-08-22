@@ -7,7 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/color_control_highlight</item>
-        <item name="android:selectableItemBackground">@drawable/pre_lollipop_selectable_item</item>
+        <item name="selectableItemBackground">@drawable/pre_lollipop_selectable_item</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

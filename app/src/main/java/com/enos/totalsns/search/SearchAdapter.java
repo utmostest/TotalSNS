@@ -1,8 +1,5 @@
 package com.enos.totalsns.search;
 
-import android.support.v7.util.DiffUtil;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +22,10 @@ import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchAdapter extends HFSupportAdapter {
 

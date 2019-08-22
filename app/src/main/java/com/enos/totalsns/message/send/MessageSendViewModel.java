@@ -1,9 +1,5 @@
 package com.enos.totalsns.message.send;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.UserInfo;
@@ -12,6 +8,11 @@ import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
 
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 public class MessageSendViewModel extends ViewModel {
     private Context mContext;

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/batang_white"
-        android:foreground="?android:attr/selectableItemBackground"
+        android:foreground="?attr/selectableItemBackground"
         android:padding="8dp"
         tools:context=".ContentsActivity">
 
@@ -54,5 +54,5 @@
             app:layout_constraintTop_toBottomOf="@+id/msUserName"
             tools:text="'@userid'" />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

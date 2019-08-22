@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.graphics.drawable.RippleDrawable;
 import android.os.Build;
 import android.os.Handler;
-import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.Selection;
 import android.text.Spannable;
@@ -25,6 +24,8 @@ import android.widget.TextView;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Constants;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Handles URL clicks on TextViews. Unlike the default implementation, this:

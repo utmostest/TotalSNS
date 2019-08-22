@@ -1,14 +1,8 @@
 package com.enos.totalsns.timeline.detail;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.CollapsingToolbarLayout;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,15 +11,22 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.enos.totalsns.LayoutLoad;
-import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.TimeUtils;
 import com.enos.totalsns.util.ViewModelFactory;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 public class TimelineDetailFragment extends Fragment {
 

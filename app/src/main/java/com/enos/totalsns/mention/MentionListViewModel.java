@@ -1,8 +1,5 @@
 package com.enos.totalsns.mention;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Article;
@@ -10,6 +7,10 @@ import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.QueryMention;
 
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.ViewModel;
 
 public class MentionListViewModel extends ViewModel {
     private Context mContext;

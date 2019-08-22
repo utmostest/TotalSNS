@@ -1,7 +1,6 @@
 package com.enos.totalsns.accounts;
 
 import android.content.Context;
-import android.support.v7.util.DiffUtil;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
@@ -15,6 +14,8 @@ import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 public class AccountsAdapter extends HFSupportAdapter {
 
@@ -97,7 +98,7 @@ public class AccountsAdapter extends HFSupportAdapter {
     public void swapAccountsList(List<Account> list) {
         if (mValues == null || list == null) {
             mValues = list;
-            notifyDataSetChanged();
+//            notifyDataSetChanged();
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 

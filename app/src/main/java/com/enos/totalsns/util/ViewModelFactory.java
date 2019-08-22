@@ -17,15 +17,11 @@
 package com.enos.totalsns.util;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModel;
-import android.arch.lifecycle.ViewModelProvider;
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
 
 import com.enos.totalsns.ContentsViewModel;
 import com.enos.totalsns.accounts.AccountsViewModel;
 import com.enos.totalsns.data.source.TotalSnsRepository;
-import com.enos.totalsns.userlist.UserListViewModel;
 import com.enos.totalsns.intro.IntroViewModel;
 import com.enos.totalsns.login.LoginViewModel;
 import com.enos.totalsns.mention.MentionListViewModel;
@@ -38,6 +34,11 @@ import com.enos.totalsns.search.SearchViewModel;
 import com.enos.totalsns.timeline.detail.TimelineDetailViewModel;
 import com.enos.totalsns.timeline.list.TimelineListViewModel;
 import com.enos.totalsns.timeline.write.TimelineWriteViewModel;
+import com.enos.totalsns.userlist.UserListViewModel;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModelProvider;
 
 /**
  * A creator is used to inject the product ID into the ViewModel

@@ -1,7 +1,7 @@
 package com.enos.totalsns.util;
 
 import android.content.Context;
-import android.support.v4.content.ContextCompat;
+import androidx.core.content.ContextCompat;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;

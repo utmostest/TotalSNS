@@ -1,12 +1,13 @@
 package com.enos.totalsns.login;
 
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.OauthToken;
 import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.custom.SingleLiveEvent;
+
+import androidx.lifecycle.ViewModel;
 
 public class LoginViewModel extends ViewModel {
     private TotalSnsRepository mRepository;

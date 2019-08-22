@@ -1,13 +1,15 @@
 package com.enos.totalsns.message.detail;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.databinding.DataBindingUtil;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +17,6 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.enos.totalsns.R;
-import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentMessageDetailBinding;
 import com.enos.totalsns.listener.OnMessageClickListener;

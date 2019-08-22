@@ -1,7 +1,5 @@
 package com.enos.totalsns.data.source.remote;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MutableLiveData;
 import android.util.Log;
 
 import com.enos.totalsns.BuildConfig;
@@ -18,6 +16,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
 import twitter4j.Friendship;

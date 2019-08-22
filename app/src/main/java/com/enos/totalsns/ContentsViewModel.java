@@ -1,12 +1,8 @@
 package com.enos.totalsns;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.MutableLiveData;
-import android.arch.lifecycle.ViewModel;
+
 import android.content.Context;
-import android.support.v4.util.LongSparseArray;
 import android.widget.Toast;
 
 import com.enos.totalsns.data.Constants;
@@ -14,6 +10,12 @@ import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.custom.SingleLiveEvent;
 import com.enos.totalsns.util.TimeUtils;
+
+import androidx.collection.LongSparseArray;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 public class ContentsViewModel extends ViewModel {
     @SuppressLint("StaticFieldLeak")

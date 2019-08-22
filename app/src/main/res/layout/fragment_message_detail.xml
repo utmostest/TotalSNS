@@ -3,34 +3,12 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         tools:context=".message.detail.MessageDetailActivity"
         tools:showIn="@layout/app_bar_contents">
-
-        <com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout
-            android:id="@+id/swipeContainer"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/container"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srl_direction="both">
-
-            <android.support.v7.widget.RecyclerView
-                android:id="@+id/msg_rv"
-                android:name="com.enos.totalsns.message.list.MessaeListFragment"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                app:layoutManager="LinearLayoutManager"
-                app:stackFromEnd="true"
-                tools:context=".message.detail.MessageDetailFragment"
-                tools:itemCount="3"
-                tools:listitem="@layout/item_message_detail_out" />
-        </com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout>
 
         <LinearLayout
             android:id="@+id/container"
@@ -53,18 +31,6 @@
                 app:srcCompat="@drawable/ic_menu_gallery"
                 app:tint="@color/colorPrimary" />
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1">
-
-                <android.support.design.widget.TextInputEditText
-                    android:id="@+id/message_detail_edit"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:hint="@string/message_write_hint" />
-            </android.support.design.widget.TextInputLayout>
-
             <ImageButton
                 android:id="@+id/message_detail_send"
                 android:layout_width="wrap_content"
@@ -74,8 +40,42 @@
                 android:scaleType="center"
                 app:srcCompat="@drawable/ic_menu_send"
                 app:tint="@color/colorPrimary" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/message_detail_edit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/message_write_hint" />
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
+        <com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout
+            android:id="@+id/swipeContainer"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@+id/container"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srl_direction="both">
 
-    </android.support.constraint.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/msg_rv"
+                android:name="com.enos.totalsns.message.list.MessaeListFragment"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layoutManager="LinearLayoutManager"
+                app:stackFromEnd="true"
+                tools:context=".message.detail.MessageDetailFragment"
+                tools:itemCount="3"
+                tools:listitem="@layout/item_message_detail_out" />
+        </com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout>
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

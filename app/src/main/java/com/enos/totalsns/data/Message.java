@@ -1,11 +1,11 @@
 package com.enos.totalsns.data;
 
-import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-
 import com.enos.totalsns.util.CompareUtils;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
 
 @Entity(tableName = "message")
 public class Message {

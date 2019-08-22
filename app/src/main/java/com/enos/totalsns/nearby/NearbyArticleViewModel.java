@@ -1,8 +1,5 @@
 package com.enos.totalsns.nearby;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Article;
@@ -11,6 +8,10 @@ import com.enos.totalsns.data.source.remote.QueryArticleNearBy;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.ViewModel;
 
 public class NearbyArticleViewModel extends ViewModel {
     private Context mContext;

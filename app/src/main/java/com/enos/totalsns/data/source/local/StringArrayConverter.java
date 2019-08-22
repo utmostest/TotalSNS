@@ -16,7 +16,7 @@
 
 package com.enos.totalsns.data.source.local;
 
-import android.arch.persistence.room.TypeConverter;
+import androidx.room.TypeConverter;
 
 public class StringArrayConverter {
     @TypeConverter

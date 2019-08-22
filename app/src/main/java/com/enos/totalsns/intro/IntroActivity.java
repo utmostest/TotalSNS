@@ -1,13 +1,14 @@
 package com.enos.totalsns.intro;
 
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.ViewModelProviders;
-import android.databinding.DataBindingUtil;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import com.enos.totalsns.ContentsActivity;

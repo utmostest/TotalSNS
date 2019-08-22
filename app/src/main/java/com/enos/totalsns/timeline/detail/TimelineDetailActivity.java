@@ -1,14 +1,14 @@
 package com.enos.totalsns.timeline.detail;
 
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+import androidx.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.MainThread;
+import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;

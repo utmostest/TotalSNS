@@ -1,14 +1,15 @@
 package com.enos.totalsns.accounts;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import android.databinding.DataBindingUtil;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProviders;
+
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
-import android.support.v4.app.FragmentManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import com.enos.totalsns.ContentsActivity;
@@ -21,6 +22,7 @@ import com.enos.totalsns.listener.OnSnsAccountListener;
 import com.enos.totalsns.login.LoginActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.ViewModelFactory;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

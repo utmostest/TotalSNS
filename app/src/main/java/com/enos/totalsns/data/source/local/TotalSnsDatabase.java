@@ -16,18 +16,20 @@
 
 package com.enos.totalsns.data.source.local;
 
-import android.arch.persistence.db.SupportSQLiteDatabase;
-import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Room;
-import android.arch.persistence.room.RoomDatabase;
-import android.arch.persistence.room.TypeConverters;
-import android.arch.persistence.room.migration.Migration;
+
 import android.content.Context;
-import android.support.annotation.VisibleForTesting;
 
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Message;
+
+import androidx.annotation.VisibleForTesting;
+import androidx.room.Database;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
+import androidx.room.TypeConverters;
+import androidx.room.migration.Migration;
+import androidx.sqlite.db.SupportSQLiteDatabase;
 
 @Database(entities = {Account.class, Article.class, Message.class}, version = 1)
 @TypeConverters({DateConverter.class, StringArrayConverter.class, HashMapStringConverter.class})

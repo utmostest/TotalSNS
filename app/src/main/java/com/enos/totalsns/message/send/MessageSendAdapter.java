@@ -1,6 +1,5 @@
 package com.enos.totalsns.message.send;
 
-import android.support.v7.util.DiffUtil;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -15,6 +14,8 @@ import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
 
 import java.util.List;
+
+import androidx.recyclerview.widget.DiffUtil;
 
 public class MessageSendAdapter extends HFSupportAdapter {
 

@@ -1,15 +1,10 @@
 package com.enos.totalsns.nearby;
 
 import android.Manifest;
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -45,6 +40,13 @@ import com.google.maps.android.SphericalUtil;
 import com.leinardi.android.speeddial.SpeedDialView;
 
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
 
 public class NearbyArticleFragment extends Fragment
         implements OnMapReadyCallback, OnSuccessListener<Location>, OnFailureListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMyLocationButtonClickListener {
@@ -286,7 +288,7 @@ public class NearbyArticleFragment extends Fragment
         if (searchRadiusCircle != null)
             searchRadiusCircle.setCenter(new LatLng(location.getLatitude(), location.getLongitude()));
 
-            updateZoomLevel(new LatLng(location.getLatitude(), location.getLongitude()));
+        updateZoomLevel(new LatLng(location.getLatitude(), location.getLongitude()));
 
         if (!isMapMoved) {
             updateMyLocation();
@@ -352,7 +354,7 @@ public class NearbyArticleFragment extends Fragment
     }
 
     private boolean requestPermissionIfNeeded() {
-        return ActivityUtils.requestPermissionIfNeeded(getActivity(), REQUEST_USED_PERMISSION, needPermissions);
+        return ActivityUtils.requestPermissionIfNeeded((AppCompatActivity) getActivity(), REQUEST_USED_PERMISSION, needPermissions);
     }
 
     private void updateZoomLevel(LatLng location) {

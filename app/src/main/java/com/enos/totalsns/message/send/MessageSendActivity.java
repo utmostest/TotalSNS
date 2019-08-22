@@ -2,10 +2,12 @@ package com.enos.totalsns.message.send;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.util.ActivityUtils;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MessageSendActivity extends AppCompatActivity {
 

@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedAttribute">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/batang_white"
-        android:foreground="?android:attr/selectableItemBackground"
+        android:foreground="?attr/selectableItemBackground"
         android:paddingHorizontal="16dp"
         android:paddingVertical="16dp"
         tools:context=".ContentsActivity">
@@ -109,5 +109,5 @@
             app:layout_constraintVertical_bias="0.0"
             tools:text="다이렉트 메세지는 유저간 비공개 대화를 하는 기능이다." />
 
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

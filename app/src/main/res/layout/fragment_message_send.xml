@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <android.support.constraint.ConstraintLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
@@ -16,7 +16,7 @@
             android:layout_height="match_parent"
             app:srl_direction="both">
 
-            <android.support.v7.widget.RecyclerView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/msg_send_rv"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -28,5 +28,5 @@
                 tools:context=".message.send.MessageSendActivity"
                 tools:listitem="@layout/item_message_send" />
         </com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayout>
-    </android.support.constraint.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

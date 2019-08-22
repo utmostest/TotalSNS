@@ -3,9 +3,10 @@ package com.enos.totalsns.util;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.support.v7.graphics.Palette;
 
 import java.util.List;
+
+import androidx.palette.graphics.Palette;
 
 /**
  * Utilities for performing common color-related tasks.

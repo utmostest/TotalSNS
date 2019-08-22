@@ -1,8 +1,5 @@
 package com.enos.totalsns.message.detail;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.lifecycle.MediatorLiveData;
-import android.arch.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.Message;
@@ -12,6 +9,10 @@ import com.enos.totalsns.data.source.remote.QueryMessage;
 import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 
 import java.util.List;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.ViewModel;
 
 public class MessageDetailViewModel extends ViewModel {
     private Context mContext;

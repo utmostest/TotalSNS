@@ -1,6 +1,6 @@
 package com.enos.totalsns.timeline.detail;
 
-import android.arch.lifecycle.ViewModel;
+import androidx.lifecycle.ViewModel;
 import android.content.Context;
 
 import com.enos.totalsns.data.source.TotalSnsRepository;

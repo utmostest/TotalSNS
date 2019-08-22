@@ -2,9 +2,6 @@ package com.enos.totalsns.custom;
 
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.v7.widget.CardView;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -16,6 +13,10 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Constants;
 
 import java.util.WeakHashMap;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.cardview.widget.CardView;
 
 public class ImageContainerCardView extends CardView {
 

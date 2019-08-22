@@ -1,14 +1,8 @@
 package com.enos.totalsns.profile;
 
-import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.MainThread;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +29,13 @@ import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import androidx.annotation.MainThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.util.Pair;
+import androidx.lifecycle.ViewModelProviders;
 
 public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
 

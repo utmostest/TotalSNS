@@ -1,17 +1,17 @@
 package com.enos.totalsns.util;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.SharedElementCallback;
-import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
 import java.util.Iterator;
 import java.util.List;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+import androidx.core.app.SharedElementCallback;
+import androidx.core.util.Pair;
 
 public class ActivityUtils {
 
@@ -57,7 +57,7 @@ public class ActivityUtils {
         });
     }
 
-    public static boolean requestPermissionIfNeeded(Activity context, int REQUEST_PERMISSION, String... PERMISSIONS) {
+    public static boolean requestPermissionIfNeeded(AppCompatActivity context, int REQUEST_PERMISSION, String... PERMISSIONS) {
         boolean permissionNeeded = false;
         for (String permission : PERMISSIONS) {
             if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {

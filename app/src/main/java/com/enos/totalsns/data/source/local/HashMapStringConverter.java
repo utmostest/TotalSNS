@@ -1,8 +1,8 @@
 package com.enos.totalsns.data.source.local;
 
-import android.arch.persistence.room.TypeConverter;
-
 import java.util.HashMap;
+
+import androidx.room.TypeConverter;
 
 public class HashMapStringConverter {
     @TypeConverter

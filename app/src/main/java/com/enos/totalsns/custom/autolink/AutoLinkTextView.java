@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.annotation.ColorInt;
 import android.text.DynamicLayout;
 import android.text.Spannable;
 import android.text.SpannableString;
@@ -22,6 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import androidx.annotation.ColorInt;
 
 /**
  * Created by Chatikyan on 25.09.2016-18:53.
