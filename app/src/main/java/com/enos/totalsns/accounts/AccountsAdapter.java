@@ -98,7 +98,7 @@ public class AccountsAdapter extends HFSupportAdapter {
     public void swapAccountsList(List<Account> list) {
         if (mValues == null || list == null) {
             mValues = list;
-//            notifyDataSetChanged();
+            notifyDataSetChanged();
         } else {
             DiffUtil.DiffResult result = DiffUtil.calculateDiff(new DiffUtil.Callback() {
 
