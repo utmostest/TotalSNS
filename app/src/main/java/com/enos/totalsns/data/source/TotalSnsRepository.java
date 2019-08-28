@@ -263,7 +263,7 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> {
             try {
                 long userId = mTwitterManager.getLoggedInUser().getLongUserId();
-                addTimelineSource(userId);
+                mAppExecutors.mainThread().execute(() -> addTimelineSource(userId));
 
                 Paging paging = new Paging().count(Constants.PAGE_CNT);
                 switch (query.getQueryType()) {
@@ -330,7 +330,7 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> {
             try {
                 long userId = mTwitterManager.getLoggedInUser().getLongUserId();
-                addDirectMessageSource(userId);
+                mAppExecutors.mainThread().execute(() -> addDirectMessageSource(userId));
                 mAppExecutors.networkIO().execute(() -> {
                     try {
                         mTwitterManager.fetchDirectMessage(message);
@@ -367,7 +367,8 @@ public class TotalSnsRepository {
     public void fetchDirectMessageDetail(long senderTableId, MediatorLiveData<List<Message>> liveData) {
         mAppExecutors.diskIO().execute(() -> {
             try {
-                addDirectMessageSourceDetail(mTwitterManager.getLoggedInUser().getLongUserId(), senderTableId, liveData);
+                long userId = mTwitterManager.getLoggedInUser().getLongUserId();
+                mAppExecutors.mainThread().execute(() -> addDirectMessageSourceDetail(userId, senderTableId, liveData));
             } catch (TwitterException e) {
                 e.printStackTrace();
             }
@@ -408,7 +409,7 @@ public class TotalSnsRepository {
         mAppExecutors.diskIO().execute(() -> {
             try {
                 long userId = mTwitterManager.getLoggedInUser().getLongUserId();
-                addMentionSource(userId);
+                mAppExecutors.mainThread().execute(() -> addMentionSource(userId));
 
                 Paging paging = new Paging().count(Constants.PAGE_CNT);
                 switch (query.getQueryType()) {
