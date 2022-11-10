@@ -4,16 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.databinding.ActivityNearbyArticleBinding;
 import com.enos.totalsns.util.ActivityUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class NearbyArticleActivity extends AppCompatActivity {
 
+    ActivityNearbyArticleBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_nearby_article);
+        mBinding = ActivityNearbyArticleBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         setTitle(R.string.nearby_artilce);
         initFragment();
     }

@@ -37,7 +37,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
     public static final String ARG_USER_ID = "user-id";
     public static final long INVALID_ID = -1;
 
-    private FragmentProfileBinding dataBinding;
+    private FragmentProfileBinding mBinding;
 
     private OnFollowListener mListener;
     private OnArticleClickListener articleListener;
@@ -84,8 +84,8 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
-        return dataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_profile, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -108,7 +108,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
     }
 
     private void initView() {
-        if (dataBinding == null) return;
+        if (mBinding == null) return;
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
@@ -117,23 +117,23 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         searchAdapter.setEnableHeader(true, true);
-        dataBinding.profileRv.addItemDecoration(dividerItemDecoration);
-        dataBinding.profileRv.setAdapter(searchAdapter);
-        dataBinding.swipeContainer.requestDisallowInterceptTouchEvent(false);
-        dataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.profileRv.addItemDecoration(dividerItemDecoration);
+        mBinding.profileRv.setAdapter(searchAdapter);
+        mBinding.swipeContainer.requestDisallowInterceptTouchEvent(false);
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             switch (direction) {
                 case TOP:
                     if (isUserTimelineAvailable()) {
                         mViewModel.fetchUserTimelineRecent();
                     } else {
-                        dataBinding.swipeContainer.setRefreshing(false);
+                        mBinding.swipeContainer.setRefreshing(false);
                     }
                     break;
                 case BOTTOM:
                     if (isUserTimelineAvailable()) {
                         mViewModel.fetchUserTimelinePast();
                     } else {
-                        dataBinding.swipeContainer.setRefreshing(false);
+                        mBinding.swipeContainer.setRefreshing(false);
                     }
                     break;
             }
@@ -142,8 +142,8 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
 
     private void initObserver() {
         mViewModel.getUserTimeline().observe(this, (list) -> {
-            if (dataBinding.profileRv.getAdapter() == null) initView();
-            ProfileAdapter adapter = (ProfileAdapter) dataBinding.profileRv.getAdapter();
+            if (mBinding.profileRv.getAdapter() == null) initView();
+            ProfileAdapter adapter = (ProfileAdapter) mBinding.profileRv.getAdapter();
             List<Article> old = adapter.getArticleList();
             if (old != null && old.size() > 0) {
                 Article oldLast = old.get(0);
@@ -164,7 +164,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            dataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
         mViewModel.getUserProfile().observe(this, profile -> {
             if (userInfo == null && profile != null) {
@@ -172,7 +172,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
                 fetchUserTimelineFirst(profile.getLongUserId());
                 initView();
             } else if (profile != null) {
-                ProfileAdapter adapter = (ProfileAdapter) dataBinding.profileRv.getAdapter();
+                ProfileAdapter adapter = (ProfileAdapter) mBinding.profileRv.getAdapter();
                 if (adapter == null) return;
                 userInfo = profile;
                 adapter.setUserInfo(profile);
@@ -184,7 +184,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
                 Log.i("userCache", cache.size() + " profile");
                 UserInfo current = cache.get(userInfo.getLongUserId());
                 if (!CompareUtils.isUserInfoEqual(userInfo, current)) {
-                    ProfileAdapter adapter = (ProfileAdapter) dataBinding.profileRv.getAdapter();
+                    ProfileAdapter adapter = (ProfileAdapter) mBinding.profileRv.getAdapter();
                     if (adapter == null) return;
                     userInfo = current;
                     adapter.setUserInfo(current);

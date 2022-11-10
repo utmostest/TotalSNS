@@ -1,14 +1,17 @@
 package com.enos.totalsns.userlist;
 
 import androidx.lifecycle.ViewModelProviders;
+
 import android.content.Intent;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.remote.QueryFollow;
 import com.enos.totalsns.data.source.remote.QuerySearchUser;
+import com.enos.totalsns.databinding.ActivityFollowListBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.listener.OnUserClickListener;
 import com.enos.totalsns.profile.ProfileActivity;
@@ -18,9 +21,12 @@ import com.enos.totalsns.util.ViewModelFactory;
 
 public class UserListActivity extends AppCompatActivity implements OnUserClickListener {
 
+    ActivityFollowListBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mBinding = ActivityFollowListBinding.inflate(getLayoutInflater());
         setContentView(R.layout.activity_follow_list);
         if (savedInstanceState == null) {
             QueryFollow queryFollow = getIntent().getParcelableExtra(UserListFragment.ARG_QUERY_FOLLOW);

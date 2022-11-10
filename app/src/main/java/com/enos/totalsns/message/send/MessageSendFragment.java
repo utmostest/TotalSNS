@@ -28,7 +28,7 @@ import com.enos.totalsns.util.ViewModelFactory;
 public class MessageSendFragment extends Fragment implements OnMessageSendListener {
 
     private MessageSendViewModel mViewModel;
-    private FragmentMessageSendBinding dataBinding;
+    private FragmentMessageSendBinding mBinding;
 
     public static MessageSendFragment newInstance() {
         return new MessageSendFragment();
@@ -45,8 +45,8 @@ public class MessageSendFragment extends Fragment implements OnMessageSendListen
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message_send, container, false);
-        return dataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message_send, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -63,19 +63,19 @@ public class MessageSendFragment extends Fragment implements OnMessageSendListen
         adapter.setEnableHeader(true, true);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
-        dataBinding.msgSendRv.addItemDecoration(dividerItemDecoration);
-        dataBinding.msgSendRv.setAdapter(adapter);
-        dataBinding.swipeContainer.setOnRefreshListener(direction -> dataBinding.swipeContainer.setRefreshing(false));
+        mBinding.msgSendRv.addItemDecoration(dividerItemDecoration);
+        mBinding.msgSendRv.setAdapter(adapter);
+        mBinding.swipeContainer.setOnRefreshListener(direction -> mBinding.swipeContainer.setRefreshing(false));
     }
 
     private void initObserver() {
         mViewModel.getSendToList().observe(this, (list) -> {
-            MessageSendAdapter adapter = (MessageSendAdapter) dataBinding.msgSendRv.getAdapter();
+            MessageSendAdapter adapter = (MessageSendAdapter) mBinding.msgSendRv.getAdapter();
             adapter.swapUserList(list);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            dataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
     }
 

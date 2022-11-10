@@ -35,7 +35,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     private OnMoreUserButtonClickListener mMoreUserListener;
 
     private SearchViewModel mViewModel;
-    private FragmentSearchBinding mDataBinding;
+    private FragmentSearchBinding mBinding;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -59,9 +59,9 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
 
-        return mDataBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     @Override
@@ -74,16 +74,16 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     private void initObserver() {
         mViewModel.getSearchQuery().observe(this, (query) -> {
             if (query != null && query.length() > 0) {
-                ((SearchAdapter) mDataBinding.searchArticleRv.getAdapter()).swapUserList(null);
+                ((SearchAdapter) mBinding.searchArticleRv.getAdapter()).swapUserList(null);
                 mViewModel.fetchSearch(query);
             }
         });
         mViewModel.getSearchUserList().observe(this, list -> {
-            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             adapter.swapUserList(list);
         });
         mViewModel.getSearchList().observe(this, (list) -> {
-            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             List<Article> old = adapter.getArticleList();
             if (old != null && old.size() > 0) {
                 Article oldLast = old.get(0);
@@ -103,7 +103,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
             adapter.swapTimelineList(list);
         });
         mViewModel.getUserCache().observe(this, cache -> {
-            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             if (current == null || cache == null) return;
             Log.i("userCache", cache.size() + " search");
@@ -128,10 +128,10 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            mDataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
         mViewModel.getFollowUser().observe(this, user -> {
-            SearchAdapter adapter = (SearchAdapter) mDataBinding.searchArticleRv.getAdapter();
+            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             if (current != null) adapter.swapUserList(replaceChangedUser(current, user));
         });
@@ -146,7 +146,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     }
 
     private void initView() {
-        if (mDataBinding == null) return;
+        if (mBinding == null) return;
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
@@ -155,9 +155,9 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
         searchAdapter.setEnableHeader(true, true);
-        mDataBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
-        mDataBinding.searchArticleRv.setAdapter(searchAdapter);
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
+        mBinding.searchArticleRv.setAdapter(searchAdapter);
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             switch (direction) {
                 case TOP:
                     mViewModel.fetchRecent();

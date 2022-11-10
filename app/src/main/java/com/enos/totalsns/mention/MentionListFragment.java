@@ -25,7 +25,7 @@ import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirec
 public class MentionListFragment extends Fragment {
 
     private MentionListViewModel mViewModel;
-    private FragmentMentionBinding mDataBinding;
+    private FragmentMentionBinding mBinding;
     private OnArticleClickListener mListener;
 
     public static MentionListFragment newInstance() {
@@ -42,8 +42,8 @@ public class MentionListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mention, container, false);
-        return mDataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_mention, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -64,9 +64,9 @@ public class MentionListFragment extends Fragment {
     }
 
     private void initContentUI() {
-        if (mDataBinding == null) return;
+        if (mBinding == null) return;
 
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
                 mViewModel.fetchRecentMention();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
@@ -75,25 +75,25 @@ public class MentionListFragment extends Fragment {
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        mDataBinding.mentionRv.setLayoutManager(manager);
+        mBinding.mentionRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        mDataBinding.mentionRv.addItemDecoration(dividerItemDecoration);
+        mBinding.mentionRv.addItemDecoration(dividerItemDecoration);
         TimelineAdapter adapter = new TimelineAdapter(null, mListener);
-        mDataBinding.mentionRv.setAdapter(adapter);
+        mBinding.mentionRv.setAdapter(adapter);
 
         mViewModel.getMention().observe(this, articleList -> {
-//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
+//                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
             adapter.swapTimelineList(articleList);
 
 //                if (currentPosFirst == 0)
-//                    mDataBinding.tlRv.smoothScrollToPosition(0);
+//                    mBinding.tlRv.smoothScrollToPosition(0);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            mDataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
     }
 }

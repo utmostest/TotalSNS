@@ -24,7 +24,7 @@ public class MessageListFragment extends Fragment {
 
     private OnMessageClickListener mListener;
     private MessageListViewModel mViewModel;
-    private FragmentMessageBinding mDataBinding;
+    private FragmentMessageBinding mBinding;
 
     public MessageListFragment() {
     }
@@ -45,9 +45,9 @@ public class MessageListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message, container, false);
         //Log.i("list", "onCreateView");
-        return mDataBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     @Override
@@ -57,9 +57,9 @@ public class MessageListFragment extends Fragment {
     }
 
     private void initUI() {
-        if (mDataBinding == null) return;
+        if (mBinding == null) return;
 
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
                 mViewModel.fetchRecentDirectMessage();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
@@ -68,25 +68,25 @@ public class MessageListFragment extends Fragment {
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        mDataBinding.msgRv.setLayoutManager(manager);
+        mBinding.msgRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        mDataBinding.msgRv.addItemDecoration(dividerItemDecoration);
+        mBinding.msgRv.addItemDecoration(dividerItemDecoration);
         MessageAdapter adapter = new MessageAdapter(null, mListener);
-        mDataBinding.msgRv.setAdapter(adapter);
+        mBinding.msgRv.setAdapter(adapter);
 
         mViewModel.getMessageList().observe(this, articleList -> {
-//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
+//                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
             adapter.swapMessageList(articleList);
 
 //                if (currentPosFirst == 0)
-//                    mDataBinding.tlRv.smoothScrollToPosition(0);
+//                    mBinding.tlRv.smoothScrollToPosition(0);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            mDataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
     }
 

@@ -36,7 +36,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
     public static String ARG_QUERY_SEARCH_USER = "query-search-user";
 
     private UserListViewModel mViewModel;
-    private FragmentFollowListBinding dataBinding;
+    private FragmentFollowListBinding mBinding;
     private OnUserClickListener mListener;
 
     private QueryFollow follow;
@@ -77,8 +77,8 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_follow_list, container, false);
-        return dataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_follow_list, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -107,7 +107,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
     }
 
     private void initViewForFollowList() {
-        dataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
                 mViewModel.fetchPreviousFollowList();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
@@ -115,7 +115,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
             }
         });
         mViewModel.getUserFollowList().observe(this, list -> {
-            UserAdapter adapter = (UserAdapter) dataBinding.msgRv.getAdapter();
+            UserAdapter adapter = (UserAdapter) mBinding.msgRv.getAdapter();
             if (list == null || adapter == null) return;
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             ArraySetList<UserInfo> temp = new ArraySetList<>();
@@ -126,15 +126,15 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
     }
 
     private void initViewForSearchedUserList() {
-        dataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
-                dataBinding.swipeContainer.setRefreshing(false);
+                mBinding.swipeContainer.setRefreshing(false);
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
                 mViewModel.fetchNextSearchedUserList();
             }
         });
         mViewModel.getSearchedUserList().observe(this, list -> {
-            UserAdapter adapter = (UserAdapter) dataBinding.msgRv.getAdapter();
+            UserAdapter adapter = (UserAdapter) mBinding.msgRv.getAdapter();
             if (list == null || adapter == null) return;
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             ArraySetList<UserInfo> temp = new ArraySetList<>();
@@ -146,15 +146,15 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
 
     private void initCommonView() {
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        dataBinding.msgRv.setLayoutManager(manager);
+        mBinding.msgRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        dataBinding.msgRv.addItemDecoration(dividerItemDecoration);
+        mBinding.msgRv.addItemDecoration(dividerItemDecoration);
         UserAdapter adapter = new UserAdapter(null, mListener, this);
-        dataBinding.msgRv.setAdapter(adapter);
+        mBinding.msgRv.setAdapter(adapter);
 
         mViewModel.isNetworkOnUse().observe(this, onUse -> {
-            dataBinding.swipeContainer.setRefreshing(onUse);
+            mBinding.swipeContainer.setRefreshing(onUse);
         });
         mViewModel.getFollowUser().observe(this, user -> {
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();

@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class TimelineWriteFragment extends Fragment implements View.OnClickListener {
 
     private TimelineWriteViewModel mViewModel;
-    FragmentTimelineWriteBinding mDataBinding;
+    FragmentTimelineWriteBinding mBinding;
 
     public static TimelineWriteFragment newInstance() {
         return new TimelineWriteFragment();
@@ -40,8 +40,8 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_write, container, false);
-        return mDataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_write, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -54,17 +54,17 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     private void initObserver() {
         mViewModel.getCurrentUser().observe(this, (user) -> {
             if (user == null) return;
-            GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mDataBinding.tlWriteAccount, R.drawable.ic_account_circle_black_36dp);
+            GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mBinding.tlWriteAccount, R.drawable.ic_account_circle_black_36dp);
         });
     }
 
     private void initUI() {
-        if (mDataBinding != null) {
-            mDataBinding.tlWriteAccount.setOnClickListener(this);
-            mDataBinding.tlWriteLocation.setOnClickListener(this);
-            mDataBinding.tlWritePicture.setOnClickListener(this);
-            mDataBinding.tlWritePost.setOnClickListener(this);
-            mDataBinding.tlWriteClose.setOnClickListener(this);
+        if (mBinding != null) {
+            mBinding.tlWriteAccount.setOnClickListener(this);
+            mBinding.tlWriteLocation.setOnClickListener(this);
+            mBinding.tlWritePicture.setOnClickListener(this);
+            mBinding.tlWritePost.setOnClickListener(this);
+            mBinding.tlWriteClose.setOnClickListener(this);
         }
     }
 
@@ -102,10 +102,10 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
 
     private void post() {
 
-        Editable editable = mDataBinding.tlWriteEdit.getText();
+        Editable editable = mBinding.tlWriteEdit.getText();
         if (editable != null && editable.length() > 0) {
             Article article = new Article();
-            article.setMessage(mDataBinding.tlWriteEdit.getText().toString());
+            article.setMessage(mBinding.tlWriteEdit.getText().toString());
             article.setSnsType(Constants.TWITTER);
 
             mViewModel.postArticle(article);

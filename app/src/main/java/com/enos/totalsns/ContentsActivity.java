@@ -77,7 +77,7 @@ public class ContentsActivity extends AppCompatActivity
         OnFollowListener, OnMessageClickListener, OnUserClickListener,
         OnMoreUserButtonClickListener, OnSearchUserClickListener {
 
-    private ActivityContentsBinding mDataBinding;
+    private ActivityContentsBinding mBinding;
     private ContentsViewModel viewModel;
     private int menuType = Constants.DEFAULT_MENU;
     private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
@@ -87,7 +87,7 @@ public class ContentsActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_contents);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_contents);
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
 
         initUI();
@@ -103,8 +103,8 @@ public class ContentsActivity extends AppCompatActivity
     private void handleIntent(Intent intent) {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             String query = intent.getStringExtra(SearchManager.QUERY);
-            if (mDataBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
-                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+            if (mBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
+                mBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
             }
             viewModel.getSearchQuery().postValue(query);
         }
@@ -131,22 +131,22 @@ public class ContentsActivity extends AppCompatActivity
             Fragment insert = current == null ? TimelineListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
-            mDataBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
+            mBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
         } else if (clazz.isAssignableFrom(SearchListFragment.class)) {
             Fragment insert = current == null ? SearchListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
-            mDataBinding.appBar.toolbarTitle.setText(R.string.title_search);
+            mBinding.appBar.toolbarTitle.setText(R.string.title_search);
         } else if (clazz.isAssignableFrom(MentionListFragment.class)) {
             Fragment insert = current == null ? MentionListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
-            mDataBinding.appBar.toolbarTitle.setText(R.string.title_my_post);
+            mBinding.appBar.toolbarTitle.setText(R.string.title_my_post);
         } else if (clazz.isAssignableFrom(MessageListFragment.class)) {
             Fragment insert = current == null ? MessageListFragment.newInstance() : current;
             fragmentManager.beginTransaction().replace(R.id.timeline_frag_container, insert, clazz.getSimpleName())
                     .addToBackStack(clazz.getSimpleName()).commit();
-            mDataBinding.appBar.toolbarTitle.setText(R.string.title_direct);
+            mBinding.appBar.toolbarTitle.setText(R.string.title_direct);
         } else {
             throw new IllegalArgumentException(clazz.getSimpleName() + " doesn't exist in changeFragment");
         }
@@ -154,12 +154,12 @@ public class ContentsActivity extends AppCompatActivity
 
     private void initToolbar() {
         setTitle("");
-        mDataBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
-        setSupportActionBar(mDataBinding.appBar.toolbar);
+        mBinding.appBar.toolbarTitle.setText(R.string.title_timeline);
+        setSupportActionBar(mBinding.appBar.toolbar);
     }
 
     private void initSearchView() {
-        mDataBinding.appBar.searchView.setOnQueryTextListener(new SimpleSearchView.OnQueryTextListener() {
+        mBinding.appBar.searchView.setOnQueryTextListener(new SimpleSearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
                 if (query != null && query.length() > 0) {
@@ -181,11 +181,11 @@ public class ContentsActivity extends AppCompatActivity
             }
         });
 
-        mDataBinding.appBar.searchView.setOnSearchViewListener(new SimpleSearchView.SearchViewListener() {
+        mBinding.appBar.searchView.setOnSearchViewListener(new SimpleSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                if (mDataBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
-                    mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+                if (mBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
+                    mBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
                 }
             }
 
@@ -205,13 +205,13 @@ public class ContentsActivity extends AppCompatActivity
 
     private void initActionBar() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDataBinding.drawerLayout, mDataBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDataBinding.drawerLayout.addDrawerListener(toggle);
+                this, mBinding.drawerLayout, mBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }
 
     private void initNavigation() {
-        mDataBinding.navView.setNavigationItemSelectedListener(this);
+        mBinding.navView.setNavigationItemSelectedListener(this);
 
         viewModel.getLoggedInUser().observe(this, this::updateHeaderView);
         viewModel.getUserCache().observe(this, cache -> {
@@ -227,7 +227,7 @@ public class ContentsActivity extends AppCompatActivity
 
     private void updateHeaderView(UserInfo user) {
         if (user == null) return;
-        View header = mDataBinding.navView.getHeaderView(0);
+        View header = mBinding.navView.getHeaderView(0);
         final TextView headerEmail = header.findViewById(R.id.header_email);
         final TextView headerName = header.findViewById(R.id.header_name);
         final ImageView headerProfile = header.findViewById(R.id.header_profile);
@@ -285,11 +285,11 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     private void initBottomNavigation() {
-        mDataBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void initFab() {
-        mDataBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
+        mBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
     }
 
     private void initObserver() {
@@ -316,9 +316,9 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        if (mDataBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mDataBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
-            mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
-        } else if (mDataBinding.appBar.searchView.onBackPressed()) {
+        if (mBinding.drawerLayout.isDrawerOpen(GravityCompat.START) || mBinding.drawerLayout.isDrawerVisible(GravityCompat.END)) {
+            mBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        } else if (mBinding.appBar.searchView.onBackPressed()) {
         } else {
             viewModel.onBackPressed();
 //            super.onBackPressed();
@@ -331,8 +331,8 @@ public class ContentsActivity extends AppCompatActivity
         getMenuInflater().inflate(R.menu.timeline, menu);
 
         MenuItem item = menu.findItem(R.id.action_search);
-        if (mDataBinding != null)
-            mDataBinding.appBar.searchView.setMenuItem(item);
+        if (mBinding != null)
+            mBinding.appBar.searchView.setMenuItem(item);
 
         return true;
     }
@@ -377,7 +377,7 @@ public class ContentsActivity extends AppCompatActivity
             signOut();
         }
 
-        mDataBinding.drawerLayout.closeDrawer(GravityCompat.START);
+        mBinding.drawerLayout.closeDrawer(GravityCompat.START);
         return menuSelected;
     }
 
@@ -441,7 +441,7 @@ public class ContentsActivity extends AppCompatActivity
     private Runnable mRunnable = () -> runOnUiThread(this::setIconAndShowFab);
 
     private void hideFab() {
-        mDataBinding.appBar.fab.hide();
+        mBinding.appBar.fab.hide();
     }
 
     private void setIconAndShowFab() {
@@ -451,13 +451,13 @@ public class ContentsActivity extends AppCompatActivity
             String current = currentFragment.getClass().getSimpleName();
             if (current.equals(MessageListFragment.class.getSimpleName())) {
                 resource = R.drawable.ic_chat_white_24dp;
-                mDataBinding.appBar.fab.setOnClickListener(view -> MessageSendActivity.start(this));
+                mBinding.appBar.fab.setOnClickListener(view -> MessageSendActivity.start(this));
             } else {
-                mDataBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
+                mBinding.appBar.fab.setOnClickListener(view -> TimelineWriteActivity.start(this));
             }
         }
-        mDataBinding.appBar.fab.setImageResource(resource);
-        mDataBinding.appBar.fab.show();
+        mBinding.appBar.fab.setImageResource(resource);
+        mBinding.appBar.fab.show();
     }
 
     @Override
@@ -503,7 +503,7 @@ public class ContentsActivity extends AppCompatActivity
                 break;
             case MODE_HASHTAG:
             case MODE_MENTION:
-                mDataBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+                mBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
                 viewModel.getSearchQuery().postValue(text);
                 break;
         }

@@ -36,7 +36,7 @@ public class TimelineDetailFragment extends Fragment {
 
     TimelineDetailViewModel viewModel;
 
-    FragmentTimelineDetailBinding mDataBinding;
+    FragmentTimelineDetailBinding mBinding;
     private OnArticleClickListener mListener;
 
     private LayoutLoad layoutLoad;
@@ -66,12 +66,12 @@ public class TimelineDetailFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_detail, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_detail, container, false);
 
         // Show the dummy content as text in a TextView.
         updateUI();
 
-        return mDataBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     @Override
@@ -100,33 +100,33 @@ public class TimelineDetailFragment extends Fragment {
             GlideUtils.loadProfileImage(getContext(), mArticle.getProfileImg(), new SimpleTarget<Drawable>() {
                 @Override
                 public void onResourceReady(@NonNull Drawable resource, @Nullable Transition<? super Drawable> transition) {
-                    mDataBinding.tldProfileImg.setImageDrawable(resource);
+                    mBinding.tldProfileImg.setImageDrawable(resource);
                     setLayoutLoaded();
                 }
             });
-            mDataBinding.tldProfileImg.setOnClickListener((v) -> {
+            mBinding.tldProfileImg.setOnClickListener((v) -> {
                 if (mListener != null) mListener.onArticleProfileImgClicked(mArticle);
             });
 
-            mDataBinding.tldUserId.setText(mArticle.getUserId());
-            mDataBinding.tldTime.setText(TimeUtils.getDateString(mArticle.getPostedAt()));
-            mDataBinding.tldUserName.setText(mArticle.getUserName());
+            mBinding.tldUserId.setText(mArticle.getUserId());
+            mBinding.tldTime.setText(TimeUtils.getDateString(mArticle.getPostedAt()));
+            mBinding.tldUserName.setText(mArticle.getUserName());
 
             String[] imgUrls = mArticle.getImageUrls();
             int urlSize = imgUrls.length;
             String firstImage = null;
             if (imgUrls != null && urlSize > 0) firstImage = imgUrls[0];
             boolean hasImage = firstImage != null && firstImage.length() > 0;
-            mDataBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
-            mDataBinding.imageContainer.setImageCount(urlSize);
-            mDataBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
+            mBinding.imageContainer.setVisibility(hasImage ? View.VISIBLE : View.GONE);
+            mBinding.imageContainer.setImageCount(urlSize);
+            mBinding.imageContainer.setOnImageClickedListener((iv, pos) -> {
                 if (mListener != null) mListener.onArticleImageClicked(iv, mArticle, pos);
             });
             if (hasImage) {
-                mDataBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mDataBinding.imageContainer.getContext()), imgUrls);
+                mBinding.imageContainer.loadImageViewsWithGlide(Glide.with(mBinding.imageContainer.getContext()), imgUrls);
             }
 
-            AutoLinkTextUtils.set(mDataBinding.getRoot().getContext(), mDataBinding.tldMessage, mArticle.getMessage(), ((autoLinkMode, matchedText) -> {
+            AutoLinkTextUtils.set(mBinding.getRoot().getContext(), mBinding.tldMessage, mArticle.getMessage(), ((autoLinkMode, matchedText) -> {
                 if (mListener != null)
                     mListener.onAutoLinkClicked(autoLinkMode, matchedText, mArticle.getUrlMap());
             }));

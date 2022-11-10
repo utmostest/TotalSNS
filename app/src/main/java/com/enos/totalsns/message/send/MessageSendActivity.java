@@ -5,16 +5,20 @@ import android.os.Bundle;
 
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.databinding.ActivityMessageSendBinding;
 import com.enos.totalsns.util.ActivityUtils;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MessageSendActivity extends AppCompatActivity {
 
+    ActivityMessageSendBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_send);
+        mBinding = ActivityMessageSendBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         setTitle(R.string.title_dm_send_to);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

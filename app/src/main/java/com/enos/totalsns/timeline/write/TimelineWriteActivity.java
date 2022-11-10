@@ -13,13 +13,13 @@ import com.enos.totalsns.util.ViewModelFactory;
 
 public class TimelineWriteActivity extends AppCompatActivity {
 
-    ActivityTimelineWriteBinding mDataBinding;
+    ActivityTimelineWriteBinding mBinding;
     TimelineWriteViewModel mViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_write);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_write);
         mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(TimelineWriteViewModel.class);
 
         initFragment(savedInstanceState);

@@ -28,7 +28,7 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     public static final String COLUMN_SENDER_MSG = "comlumn_sender_id";
     private MessageDetailViewModel mViewModel;
     private OnMessageClickListener mListener;
-    private FragmentMessageDetailBinding mDataBinding;
+    private FragmentMessageDetailBinding mBinding;
 
     private UserInfo receiver = null;
 
@@ -57,8 +57,8 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message_detail, container, false);
-        return mDataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_message_detail, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -68,9 +68,9 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     }
 
     private void initUI() {
-        if (mDataBinding == null) return;
+        if (mBinding == null) return;
 
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
                 mViewModel.fetchPastDirectMessage();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
@@ -80,30 +80,30 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
         manager.setStackFromEnd(true);
-        mDataBinding.msgRv.setLayoutManager(manager);
+        mBinding.msgRv.setLayoutManager(manager);
         MessageChatAdapter adapter = new MessageChatAdapter(null, mListener);
-        mDataBinding.msgRv.setAdapter(adapter);
-        mDataBinding.messageDetailImage.setOnClickListener(this);
-        mDataBinding.messageDetailSend.setOnClickListener(this);
+        mBinding.msgRv.setAdapter(adapter);
+        mBinding.messageDetailImage.setOnClickListener(this);
+        mBinding.messageDetailSend.setOnClickListener(this);
 
         mViewModel.getDirectMessageDetail().observe(this, articleList -> {
             if (articleList != null) {
-                mDataBinding.msgRv.scrollToPosition(adapter.getItemCount() - 1);
+                mBinding.msgRv.scrollToPosition(adapter.getItemCount() - 1);
             }
             adapter.swapMessageList(articleList);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            mDataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
         mViewModel.getCurrentUploadingDM().observe(this, (dm) -> {
             if (dm == null) return;
-            mDataBinding.messageDetailEdit.setText("");
+            mBinding.messageDetailEdit.setText("");
         });
     }
 
     private void postDirectMessage() {
-        Editable editable = mDataBinding.messageDetailEdit.getEditableText();
+        Editable editable = mBinding.messageDetailEdit.getEditableText();
         if (editable != null && editable.toString().length() > 0) {
             String message = editable.toString();
             mViewModel.postDirectMessage(receiver, message, null);

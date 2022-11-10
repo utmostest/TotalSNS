@@ -22,7 +22,7 @@ import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirec
 public class TimelineListFragment extends Fragment {
 
     private TimelineListViewModel mViewModel;
-    private FragmentTimelineListBinding mDataBinding;
+    private FragmentTimelineListBinding mBinding;
     private OnArticleClickListener mListener;
 
     public static TimelineListFragment newInstance() {
@@ -39,8 +39,8 @@ public class TimelineListFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_list, container, false);
-        return mDataBinding.getRoot();
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_timeline_list, container, false);
+        return mBinding.getRoot();
     }
 
     @Override
@@ -61,9 +61,9 @@ public class TimelineListFragment extends Fragment {
     }
 
     private void initContentUI() {
-        if (mDataBinding == null) return;
+        if (mBinding == null) return;
 
-        mDataBinding.swipeContainer.setOnRefreshListener(direction -> {
+        mBinding.swipeContainer.setOnRefreshListener(direction -> {
             if (direction == SwipyRefreshLayoutDirection.TOP) {
                 mViewModel.fetchRecentTimeline();
             } else if (direction == SwipyRefreshLayoutDirection.BOTTOM) {
@@ -72,25 +72,25 @@ public class TimelineListFragment extends Fragment {
         });
 
         LinearLayoutManager manager = new LinearLayoutManager(getContext());
-        mDataBinding.tlRv.setLayoutManager(manager);
+        mBinding.tlRv.setLayoutManager(manager);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
-        mDataBinding.tlRv.addItemDecoration(dividerItemDecoration);
+        mBinding.tlRv.addItemDecoration(dividerItemDecoration);
         TimelineAdapter adapter = new TimelineAdapter(null, mListener);
-        mDataBinding.tlRv.setAdapter(adapter);
+        mBinding.tlRv.setAdapter(adapter);
 
         mViewModel.getHomeTimeline().observe(this, articleList -> {
-//                LinearLayoutManager lm = (LinearLayoutManager) mDataBinding.tlRv.getLayoutManager();
+//                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
             adapter.swapTimelineList(articleList);
 
 //                if (currentPosFirst == 0)
-//                    mDataBinding.tlRv.smoothScrollToPosition(0);
+//                    mBinding.tlRv.smoothScrollToPosition(0);
         });
         mViewModel.isNetworkOnUse().observe(this, refresh -> {
             if (refresh == null) return;
-            mDataBinding.swipeContainer.setRefreshing(refresh);
+            mBinding.swipeContainer.setRefreshing(refresh);
         });
     }
 }

@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
+import com.enos.totalsns.databinding.ActivityMessageDetailBinding;
 import com.enos.totalsns.listener.OnMessageClickListener;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
@@ -17,10 +18,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MessageDetailActivity extends AppCompatActivity implements OnMessageClickListener {
 
+    ActivityMessageDetailBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_message_detail);
+        mBinding = ActivityMessageDetailBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         if (savedInstanceState == null) {
             UserInfo receiver = getIntent().getParcelableExtra(MessageDetailFragment.COLUMN_SENDER_MSG);
             initFragment(receiver);

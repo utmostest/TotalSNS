@@ -16,6 +16,7 @@ import com.bumptech.glide.request.transition.Transition;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
+import com.enos.totalsns.databinding.FragmentNearbyArticleBinding;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -45,6 +46,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -62,7 +64,6 @@ public class NearbyArticleFragment extends Fragment
     private static final int FASTEST_INTERVAL_TIME = 2000;
 
     private GoogleMap map;
-    private MapView mapView;
 
     private LatLng lastKnownLocation;
 
@@ -70,9 +71,9 @@ public class NearbyArticleFragment extends Fragment
 
     private Circle searchRadiusCircle;
 
-    private SeekBar distanceSeekBar;
-
     private NearbyArticleViewModel viewModel;
+
+    private FragmentNearbyArticleBinding mBinding;
 
     public static NearbyArticleFragment newInstance() {
         return new NearbyArticleFragment();
@@ -90,12 +91,11 @@ public class NearbyArticleFragment extends Fragment
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_nearby_article, parent, false);
-        mapView = view.findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);
-        mapView.getMapAsync(this);
-        distanceSeekBar = view.findViewById(R.id.seekBar);
-        distanceSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_nearby_article, parent, false);
+
+        mBinding.map.onCreate(savedInstanceState);
+        mBinding.map.getMapAsync(this);
+        mBinding.seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
@@ -120,9 +120,8 @@ public class NearbyArticleFragment extends Fragment
                 addMarkers(list);
             }
         });
-        SpeedDialView speedDialView = view.findViewById(R.id.fab_nearby);
-        speedDialView.inflate(R.menu.speed_dial_nearby);
-        speedDialView.setOnActionSelectedListener(speedDialActionItem -> {
+        mBinding.fabNearby.inflate(R.menu.speed_dial_nearby);
+        mBinding.fabNearby.setOnActionSelectedListener(speedDialActionItem -> {
             switch (speedDialActionItem.getId()) {
                 case R.id.sd_nearby_more:
                     viewModel.fetchNearbyPast();
@@ -137,7 +136,7 @@ public class NearbyArticleFragment extends Fragment
                     return false;
             }
         });
-        return view;
+        return mBinding.getRoot();
     }
 
     private synchronized void addMarkers(List<Article> list) {
@@ -198,24 +197,24 @@ public class NearbyArticleFragment extends Fragment
     @Override
     public void onResume() {
         super.onResume();
-        if (mapView != null) {
-            mapView.onResume();
+        if (mBinding.map != null) {
+            mBinding.map.onResume();
         }
     }
 
     @Override
     public void onPause() {
-        if (mapView != null) {
-            mapView.onPause();
+        if (mBinding.map != null) {
+            mBinding.map.onPause();
         }
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        if (mapView != null) {
+        if (mBinding.map != null) {
             try {
-                mapView.onDestroy();
+                mBinding.map.onDestroy();
             } catch (NullPointerException e) {
             }
         }
@@ -225,16 +224,16 @@ public class NearbyArticleFragment extends Fragment
     @Override
     public void onLowMemory() {
         super.onLowMemory();
-        if (mapView != null) {
-            mapView.onLowMemory();
+        if (mBinding.map != null) {
+            mBinding.map.onLowMemory();
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        if (mapView != null) {
-            mapView.onSaveInstanceState(outState);
+        if (mBinding.map != null) {
+            mBinding.map.onSaveInstanceState(outState);
         }
     }
 
@@ -258,7 +257,7 @@ public class NearbyArticleFragment extends Fragment
             //radius unit is meter
             searchRadiusCircle = map.addCircle(new CircleOptions()
                     .center(lastKnownLocation == null ? DEFAULT_LOCATION : lastKnownLocation)
-                    .radius(getRadiusFromProgress(distanceSeekBar == null ? 500 : distanceSeekBar.getProgress()))
+                    .radius(getRadiusFromProgress(mBinding.seekBar == null ? 500 : mBinding.seekBar.getProgress()))
                     .strokeColor(getResources().getColor(R.color.colorPrimary)));
         }
     }
@@ -283,6 +282,7 @@ public class NearbyArticleFragment extends Fragment
 
     @Override
     public void onSuccess(Location location) {
+        if (location == null) return;
         lastKnownLocation = new LatLng(location.getLatitude(), location.getLongitude());
 
         if (searchRadiusCircle != null)

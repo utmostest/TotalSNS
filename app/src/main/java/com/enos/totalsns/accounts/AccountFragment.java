@@ -36,7 +36,7 @@ public class AccountFragment extends Fragment {
 
     private OnSnsAccountListener mListener;
 
-    private FragmentAccountBinding mDataBinding;
+    private FragmentAccountBinding mBinding;
 
     private AccountsViewModel viewModel;
 
@@ -69,18 +69,18 @@ public class AccountFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        mDataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
+        mBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_account, container, false);
 
-        Context context = mDataBinding.list.getContext();
+        Context context = mBinding.list.getContext();
         final LinearLayoutManager manager = new LinearLayoutManager(context);
-        mDataBinding.list.setLayoutManager(manager);
+        mBinding.list.setLayoutManager(manager);
 
         AccountsAdapter adapter = new AccountsAdapter(getContext(), mSnsType, mListener);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), manager.getOrientation());
-        mDataBinding.list.addItemDecoration(dividerItemDecoration);
-        mDataBinding.list.setAdapter(adapter);
+        mBinding.list.addItemDecoration(dividerItemDecoration);
+        mBinding.list.setAdapter(adapter);
         viewModel.getAccounts().observe(this, accounts -> adapter.swapAccountsList(getFilteredAccount(accounts)));
-        return mDataBinding.getRoot();
+        return mBinding.getRoot();
     }
 
     private List<Account> getFilteredAccount(List<Account> accounts) {

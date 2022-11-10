@@ -33,14 +33,14 @@ public class LoginActivity extends AppCompatActivity {
 
     private LoginViewModel viewModel;
 
-    private ActivityLoginBinding mDataBinding;
+    private ActivityLoginBinding mBinding;
 
     private AtomicBoolean mHasActivityStarted = new AtomicBoolean(false);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_login);
         setTitle(R.string.title_activity_login);
 
         Intent data = getIntent();
@@ -64,9 +64,9 @@ public class LoginActivity extends AppCompatActivity {
                 loginCanceled("user canceled login");
             }
         });
-        mDataBinding.loginWebview.setWebViewClient(twitterWebViewClient);
+        mBinding.loginWebview.setWebViewClient(twitterWebViewClient);
 
-        WebSettings webSettings = mDataBinding.loginWebview.getSettings();
+        WebSettings webSettings = mBinding.loginWebview.getSettings();
         webSettings.setJavaScriptEnabled(true);
     }
 
@@ -78,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
             switch (result.getLoginStep()) {
                 case LoginResult.STEP1_INIT:
                     if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
-                        mDataBinding.loginWebview.loadUrl(result.getAuthorizationUrl());
+                        mBinding.loginWebview.loadUrl(result.getAuthorizationUrl());
                     } else {
                         loginFailed(result.getMessage());
                     }

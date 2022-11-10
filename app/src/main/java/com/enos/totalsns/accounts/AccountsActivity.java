@@ -31,7 +31,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     private AccountsViewModel viewModel;
     private int snsType = Constants.TWITTER;
 
-    ActivityAccountsBinding mDataBinding;
+    ActivityAccountsBinding mBinding;
     LiveData<LoginResult> loginResultLiveData;
 
     private AtomicBoolean mHasActivityStarted = new AtomicBoolean(false);
@@ -41,12 +41,12 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_accounts);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_accounts);
 
         viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(AccountsViewModel.class);
 
-        mDataBinding.navigation.setOnNavigationItemSelectedListener(this);
-        mDataBinding.acAccFab.setOnClickListener((v) -> finishAndStartActivity(LoginActivity.class));
+        mBinding.navigation.setOnNavigationItemSelectedListener(this);
+        mBinding.acAccFab.setOnClickListener((v) -> finishAndStartActivity(LoginActivity.class));
         setTitle(R.string.title_activity_accounts);
         initFragment();
     }

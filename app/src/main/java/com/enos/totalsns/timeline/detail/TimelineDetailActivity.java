@@ -32,13 +32,13 @@ import java.util.HashMap;
 
 public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener, OnLoadLayoutListener {
 
-    ActivityTimelineDetailBinding mDataBinding;
+    ActivityTimelineDetailBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mDataBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
-        setSupportActionBar(mDataBinding.detailToolbar);
+        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
+        setSupportActionBar(mBinding.detailToolbar);
         setTitle(R.string.title_timeline_detail);
 
         ActionBar actionBar = getSupportActionBar();

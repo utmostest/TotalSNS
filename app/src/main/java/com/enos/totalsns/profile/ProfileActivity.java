@@ -14,6 +14,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
+import com.enos.totalsns.databinding.ActivityProfileBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
@@ -42,10 +43,13 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     private long userId = ProfileFragment.INVALID_ID;
     private UserInfo userInfo;
 
+    private ActivityProfileBinding mBinding;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_profile);
+        mBinding = ActivityProfileBinding.inflate(getLayoutInflater());
+        setContentView(mBinding.getRoot());
         if (savedInstanceState == null) {
             initFragment();
         }
