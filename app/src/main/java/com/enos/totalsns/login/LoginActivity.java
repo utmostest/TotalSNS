@@ -18,6 +18,10 @@ import com.enos.totalsns.intro.LoginResult;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.security.ProviderInstaller;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -71,6 +75,27 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void startLogin() {
+        try {
+            ProviderInstaller.installIfNeeded(this);
+        } catch (GooglePlayServicesRepairableException e) {
+
+            // Indicates that Google Play services is out of date, disabled, etc.
+
+            // Prompt the user to install/update/enable Google Play services.
+            GoogleApiAvailability.getInstance()
+                    .showErrorNotification(this, e.getConnectionStatusCode());
+
+            // Notify the SyncManager that a soft error occurred.
+            return;
+
+        } catch (GooglePlayServicesNotAvailableException e) {
+            // Indicates a non-recoverable error; the ProviderInstaller is not able
+            // to install an up-to-date Provider.
+
+            // Notify the SyncManager that a hard error occurred.
+            return;
+        }
+
         viewModel.signInFirstStep();
         viewModel.getLoginResult().observe(this, result -> {
             if (result == null) return;
