@@ -1,8 +1,6 @@
 # TotalSNS
 all-in-one SNS android Application
 
-2022년 11월 10일에 안드로이드 스튜디오 3.5 2019년 8월 20일 버전에서 구동확인되었습니다.
-
 구동을 하기 위해서는 twitter.properties를 앱 폴더에 생성하고 
 twitterConsumerKey=
 twitterConsumerSecret=
