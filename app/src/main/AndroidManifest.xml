@@ -11,6 +11,7 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:name=".TotalSNSApp"
@@ -29,6 +30,7 @@
         <activity
             android:name=".intro.IntroActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="true"
             android:screenOrientation="portrait"
             android:theme="@style/FullscreenTheme">
             <intent-filter>
@@ -46,6 +48,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".ContentsActivity"
+            android:exported="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"

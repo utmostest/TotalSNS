@@ -24,6 +24,7 @@ import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -48,6 +49,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 public class NearbyArticleFragment extends Fragment
@@ -86,7 +88,7 @@ public class NearbyArticleFragment extends Fragment
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(NearbyArticleViewModel.class);
+        viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(NearbyArticleViewModel.class);
     }
 
     @Override
@@ -115,7 +117,7 @@ public class NearbyArticleFragment extends Fragment
             }
         });
 
-        viewModel.getNearbySearchList().observe(this, list -> {
+        viewModel.getNearbySearchList().observe(getViewLifecycleOwner(), list -> {
             if (list != null) {
                 addMarkers(list);
             }
@@ -274,7 +276,7 @@ public class NearbyArticleFragment extends Fragment
         map.getUiSettings().setMyLocationButtonEnabled(true);
         map.setOnMyLocationButtonClickListener(this);
 
-        FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         Task<Location> task = fusedLocationProviderClient.getLastLocation();
         task.addOnSuccessListener(this);
         task.addOnFailureListener(this);
@@ -321,7 +323,7 @@ public class NearbyArticleFragment extends Fragment
         locationRequest.setInterval(INTERVAL_TIME);
         locationRequest.setFastestInterval(FASTEST_INTERVAL_TIME);
 
-        FusedLocationProviderClient fusedLocationProviderClient = new FusedLocationProviderClient(getContext());
+        FusedLocationProviderClient fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getContext());
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, new LocationCallback() {
             @Override
             public void onLocationResult(LocationResult locationResult) {
