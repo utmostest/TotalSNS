@@ -9,6 +9,7 @@
         android:paddingVertical="8dp">
 
         <ImageView
+            app:layout_constraintHorizontal_chainStyle="packed"
             android:id="@+id/message_item_profile"
             android:layout_width="36dp"
             android:layout_height="36dp"
@@ -35,7 +36,6 @@
             android:textColor="@android:color/black"
             app:layout_constraintBottom_toTopOf="@+id/message_item_time"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintEnd_toStartOf="parent"
             app:layout_constraintStart_toEndOf="@+id/message_item_profile"
             app:layout_constraintTop_toTopOf="@+id/message_item_profile"
             app:layout_constraintVertical_bias="0.0"
