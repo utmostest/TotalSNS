@@ -20,7 +20,8 @@
             android:inputType="textPersonName"
             android:padding="16dp"
             app:layout_constraintEnd_toStartOf="@+id/message_send_btn"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/message_send_btn"

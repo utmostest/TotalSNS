@@ -8,6 +8,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -37,7 +38,7 @@ public class MessageSendFragment extends Fragment implements OnMessageSendListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageSendViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(MessageSendViewModel.class);
         mViewModel.fetchFirstFollowList(new QueryFollow(QueryFollow.FIRST));
     }
 
@@ -69,11 +70,11 @@ public class MessageSendFragment extends Fragment implements OnMessageSendListen
     }
 
     private void initObserver() {
-        mViewModel.getSendToList().observe(this, (list) -> {
+        mViewModel.getSendToList().observe(getViewLifecycleOwner(), (list) -> {
             MessageSendAdapter adapter = (MessageSendAdapter) mBinding.msgSendRv.getAdapter();
             adapter.swapUserList(list);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });

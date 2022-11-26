@@ -93,7 +93,7 @@
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/fProfileImg"
             app:layout_constraintTop_toBottomOf="@+id/fUserId"
-            tools:text="다이렉트 메세지는 유저간 비공개 대화를 하는 기능이다." />
+            tools:text="사용자가 작성한 트윗이 이곳에 보여진다." />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

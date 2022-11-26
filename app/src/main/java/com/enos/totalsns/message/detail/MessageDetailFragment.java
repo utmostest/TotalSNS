@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -44,7 +45,7 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageDetailViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(MessageDetailViewModel.class);
         if (getArguments() != null) {
             receiver = getArguments().getParcelable(COLUMN_SENDER_MSG);
             if (receiver != null) {
@@ -86,17 +87,17 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
         mBinding.messageDetailImage.setOnClickListener(this);
         mBinding.messageDetailSend.setOnClickListener(this);
 
-        mViewModel.getDirectMessageDetail().observe(this, articleList -> {
+        mViewModel.getDirectMessageDetail().observe(getViewLifecycleOwner(), articleList -> {
             if (articleList != null) {
                 mBinding.msgRv.scrollToPosition(adapter.getItemCount() - 1);
             }
             adapter.swapMessageList(articleList);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });
-        mViewModel.getCurrentUploadingDM().observe(this, (dm) -> {
+        mViewModel.getCurrentUploadingDM().observe(getViewLifecycleOwner(), (dm) -> {
             if (dm == null) return;
             mBinding.messageDetailEdit.setText("");
         });

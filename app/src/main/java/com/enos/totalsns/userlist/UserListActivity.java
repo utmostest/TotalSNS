@@ -1,5 +1,6 @@
 package com.enos.totalsns.userlist;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.content.Intent;
@@ -32,7 +33,7 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
             QueryFollow queryFollow = getIntent().getParcelableExtra(UserListFragment.ARG_QUERY_FOLLOW);
             QuerySearchUser querySearchUser = getIntent().getParcelableExtra(UserListFragment.ARG_QUERY_SEARCH_USER);
             if (queryFollow != null) {
-                ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+                ProfileViewModel viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
                 UserInfo current = viewModel.getuserFromCache(queryFollow.getUserId());
                 setTitle(queryFollow.isFollower() ?
                         getString(R.string.title_follower_list, current == null ? "User" : current.getUserId()) :
@@ -51,7 +52,8 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
 
     @Override
     public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
-        ProfileActivity.startWithTransition(this, binding, item);
+//        ProfileActivity.startWithTransition(this, binding, item);
+        ProfileActivity.start(this, item);
     }
 
     public static void startFollowList(AppCompatActivity context, long userId, boolean isFollower) {

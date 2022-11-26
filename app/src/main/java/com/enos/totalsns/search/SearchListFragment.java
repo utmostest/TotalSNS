@@ -1,5 +1,6 @@
 package com.enos.totalsns.search;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
@@ -53,7 +54,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(SearchViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(SearchViewModel.class);
     }
 
     @Override
@@ -72,17 +73,17 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     }
 
     private void initObserver() {
-        mViewModel.getSearchQuery().observe(this, (query) -> {
+        mViewModel.getSearchQuery().observe(getViewLifecycleOwner(), (query) -> {
             if (query != null && query.length() > 0) {
                 ((SearchAdapter) mBinding.searchArticleRv.getAdapter()).swapUserList(null);
                 mViewModel.fetchSearch(query);
             }
         });
-        mViewModel.getSearchUserList().observe(this, list -> {
+        mViewModel.getSearchUserList().observe(getViewLifecycleOwner(), list -> {
             SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             adapter.swapUserList(list);
         });
-        mViewModel.getSearchList().observe(this, (list) -> {
+        mViewModel.getSearchList().observe(getViewLifecycleOwner(), (list) -> {
             SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             List<Article> old = adapter.getArticleList();
             if (old != null && old.size() > 0) {
@@ -102,7 +103,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
             }
             adapter.swapTimelineList(list);
         });
-        mViewModel.getUserCache().observe(this, cache -> {
+        mViewModel.getUserCache().observe(getViewLifecycleOwner(), cache -> {
             SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             if (current == null || cache == null) return;
@@ -126,11 +127,11 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
                 adapter.swapUserList(changedList);
             }
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });
-        mViewModel.getFollowUser().observe(this, user -> {
+        mViewModel.getFollowUser().observe(getViewLifecycleOwner(), user -> {
             SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             if (current != null) adapter.swapUserList(replaceChangedUser(current, user));

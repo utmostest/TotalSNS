@@ -1,5 +1,6 @@
 package com.enos.totalsns.userlist;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
@@ -61,7 +62,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(UserListViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(UserListViewModel.class);
 
         if (getArguments() == null) return;
         follow = getArguments().getParcelable(ARG_QUERY_FOLLOW);
@@ -114,7 +115,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
                 mViewModel.fetchNextFollowList();
             }
         });
-        mViewModel.getUserFollowList().observe(this, list -> {
+        mViewModel.getUserFollowList().observe(getViewLifecycleOwner(), list -> {
             UserAdapter adapter = (UserAdapter) mBinding.msgRv.getAdapter();
             if (list == null || adapter == null) return;
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
@@ -133,7 +134,7 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
                 mViewModel.fetchNextSearchedUserList();
             }
         });
-        mViewModel.getSearchedUserList().observe(this, list -> {
+        mViewModel.getSearchedUserList().observe(getViewLifecycleOwner(), list -> {
             UserAdapter adapter = (UserAdapter) mBinding.msgRv.getAdapter();
             if (list == null || adapter == null) return;
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
@@ -153,14 +154,14 @@ public class UserListFragment extends Fragment implements OnFollowBtnClickListen
         UserAdapter adapter = new UserAdapter(null, mListener, this);
         mBinding.msgRv.setAdapter(adapter);
 
-        mViewModel.isNetworkOnUse().observe(this, onUse -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), onUse -> {
             mBinding.swipeContainer.setRefreshing(onUse);
         });
-        mViewModel.getFollowUser().observe(this, user -> {
+        mViewModel.getFollowUser().observe(getViewLifecycleOwner(), user -> {
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             if (current != null) adapter.swapUserList(replaceChangedUser(current, user));
         });
-        mViewModel.getUserCache().observe(this, cache -> {
+        mViewModel.getUserCache().observe(getViewLifecycleOwner(), cache -> {
             ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
             LongSparseArray<UserInfo> changed = new LongSparseArray<>();
             if (current == null || cache == null) return;

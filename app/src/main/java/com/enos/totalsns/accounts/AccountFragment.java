@@ -4,6 +4,7 @@ import android.content.Context;
 import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -62,7 +63,7 @@ public class AccountFragment extends Fragment {
         if (getArguments() != null) {
             mSnsType = getArguments().getInt(ARG_SNS_TYPE);
         }
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(AccountsViewModel.class);
+        viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getActivity())).get(AccountsViewModel.class);
     }
 
     @Override
@@ -79,7 +80,7 @@ public class AccountFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(), manager.getOrientation());
         mBinding.list.addItemDecoration(dividerItemDecoration);
         mBinding.list.setAdapter(adapter);
-        viewModel.getAccounts().observe(this, accounts -> adapter.swapAccountsList(getFilteredAccount(accounts)));
+        viewModel.getAccounts().observe(getViewLifecycleOwner(), accounts -> adapter.swapAccountsList(getFilteredAccount(accounts)));
         return mBinding.getRoot();
     }
 

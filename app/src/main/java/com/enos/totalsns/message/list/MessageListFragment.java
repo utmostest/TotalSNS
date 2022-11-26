@@ -5,6 +5,7 @@ import android.content.Context;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -38,7 +39,7 @@ public class MessageListFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(MessageListViewModel.class);
         mViewModel.fetchDirectMessage();
     }
 
@@ -75,7 +76,7 @@ public class MessageListFragment extends Fragment {
         MessageAdapter adapter = new MessageAdapter(null, mListener);
         mBinding.msgRv.setAdapter(adapter);
 
-        mViewModel.getMessageList().observe(this, articleList -> {
+        mViewModel.getMessageList().observe(getViewLifecycleOwner(), articleList -> {
 //                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
@@ -84,7 +85,7 @@ public class MessageListFragment extends Fragment {
 //                if (currentPosFirst == 0)
 //                    mBinding.tlRv.smoothScrollToPosition(0);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });

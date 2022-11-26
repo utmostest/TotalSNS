@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -35,7 +36,7 @@ public class MentionListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(MentionListViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(MentionListViewModel.class);
         mViewModel.fetchMentionForStart();
     }
 
@@ -82,7 +83,7 @@ public class MentionListFragment extends Fragment {
         TimelineAdapter adapter = new TimelineAdapter(null, mListener);
         mBinding.mentionRv.setAdapter(adapter);
 
-        mViewModel.getMention().observe(this, articleList -> {
+        mViewModel.getMention().observe(getViewLifecycleOwner(), articleList -> {
 //                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
@@ -91,7 +92,7 @@ public class MentionListFragment extends Fragment {
 //                if (currentPosFirst == 0)
 //                    mBinding.tlRv.smoothScrollToPosition(0);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });

@@ -77,8 +77,7 @@ public class ActivityUtils {
 
         while (iter.hasNext()) {
             Pair<View, String> p = iter.next();
-            View view = p.first;
-            if (view == null || view.getVisibility() == View.GONE) iter.remove();
+            if (p.first == null || p.first.getVisibility() == View.GONE) iter.remove();
         }
         Pair<View, String>[] array = new Pair[0];
         return pairs.toArray(array);

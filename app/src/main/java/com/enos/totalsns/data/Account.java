@@ -1,7 +1,6 @@
 package com.enos.totalsns.data;
 
 
-
 import com.enos.totalsns.util.CompareUtils;
 
 import androidx.annotation.Nullable;
@@ -24,12 +23,12 @@ public class Account {
     public Account() {
     }
 
-    public Account(long uid, String screen_name, String oauth_key, String oauth_secret, String profileImagemage, String name, int snsType, boolean isCurrent) {
+    public Account(long uid, String screen_name, String oauth_key, String oauth_secret, String profileImage, String name, int snsType, boolean isCurrent) {
         this.id = uid;
         this.screenName = screen_name;
         this.oauthKey = oauth_key;
         this.oauthSecret = oauth_secret;
-        this.profileImage = profileImagemage;
+        this.profileImage = profileImage;
         this.name = name;
 
         this.snsType = snsType;

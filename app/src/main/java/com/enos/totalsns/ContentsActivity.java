@@ -8,14 +8,17 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+
 import androidx.core.view.GravityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.util.Log;
@@ -88,7 +91,7 @@ public class ContentsActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
 
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_contents);
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
+        viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
 
         initUI();
         initObserver();
@@ -462,7 +465,8 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleClicked(ItemArticleBinding binding, Article mItem) {
-        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
+//        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
+        TimelineDetailActivity.start(this, mItem);
     }
 
     @Override
@@ -518,13 +522,15 @@ public class ContentsActivity extends AppCompatActivity
     @Override
     public void onUserItemClicked(ItemUserBinding binding, UserInfo item) {
         Log.i("layout", "onSearchUserItemClicked");
-        ProfileActivity.startWithTransition(this, binding, item);
+//        ProfileActivity.startWithTransition(this, binding, item);
+        ProfileActivity.start(this, item);
     }
 
     @Override
     public void onSearchUserItemClicked(ItemSearchUserBinding binding, UserInfo item) {
         Log.i("layout", "onSearchUserItemClicked");
-        ProfileActivity.startWithTransition(this, binding, item);
+//        ProfileActivity.startWithTransition(this, binding, item);
+        ProfileActivity.start(this, item);
     }
 
     @Override

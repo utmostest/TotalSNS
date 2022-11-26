@@ -1,5 +1,6 @@
 package com.enos.totalsns.timeline.list;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import android.content.Context;
 import androidx.databinding.DataBindingUtil;
@@ -32,7 +33,7 @@ public class TimelineListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(TimelineListViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(TimelineListViewModel.class);
         mViewModel.fetchTimelineForStart();
     }
 
@@ -79,7 +80,7 @@ public class TimelineListFragment extends Fragment {
         TimelineAdapter adapter = new TimelineAdapter(null, mListener);
         mBinding.tlRv.setAdapter(adapter);
 
-        mViewModel.getHomeTimeline().observe(this, articleList -> {
+        mViewModel.getHomeTimeline().observe(getViewLifecycleOwner(), articleList -> {
 //                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
 
@@ -88,7 +89,7 @@ public class TimelineListFragment extends Fragment {
 //                if (currentPosFirst == 0)
 //                    mBinding.tlRv.smoothScrollToPosition(0);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });

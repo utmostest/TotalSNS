@@ -18,6 +18,7 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 app:layoutManager="LinearLayoutManager"
+                app:layout_constraintTop_toTopOf="parent"
                 tools:context=".search.SearchListFragment"
                 tools:listitem="@layout/item_search_user" />
 

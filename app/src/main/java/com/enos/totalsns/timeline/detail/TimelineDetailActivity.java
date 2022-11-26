@@ -1,14 +1,18 @@
 package com.enos.totalsns.timeline.detail;
 
 import android.content.Intent;
+
 import androidx.databinding.DataBindingUtil;
+
 import android.net.Uri;
 import android.os.Bundle;
+
 import androidx.annotation.MainThread;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -32,12 +36,12 @@ import java.util.HashMap;
 
 public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener, OnLoadLayoutListener {
 
-    ActivityTimelineDetailBinding mBinding;
+//    ActivityTimelineDetailBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
+        ActivityTimelineDetailBinding mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_detail);
         setSupportActionBar(mBinding.detailToolbar);
         setTitle(R.string.title_timeline_detail);
 
@@ -47,7 +51,7 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         }
 
         if (savedInstanceState == null) {
-            ActivityCompat.postponeEnterTransition(this);
+//            ActivityCompat.postponeEnterTransition(this);
             TimelineDetailFragment fragment = TimelineDetailFragment.newInstance(getIntent().getParcelableExtra(TimelineDetailFragment.ITEM_ARTICLE));
             getSupportFragmentManager().beginTransaction().add(R.id.item_detail_container, fragment).commit();
         }
@@ -57,8 +61,8 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            ActivityCompat.finishAfterTransition(this);
-            return true;
+//            ActivityCompat.finishAfterTransition(this);
+//            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -110,19 +114,19 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
         }
     }
 
-    public static void startWithTransition(AppCompatActivity context, ItemArticleBinding binding, Article mItem, boolean enableImage) {
-
-        ArrayList<Pair<View, String>> pairList = new ArrayList<>();
-        pairList.add(Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)));
-        pairList.add(Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)));
-        pairList.add(Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)));
-        pairList.add(Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)));
-        pairList.add(Pair.create(binding.tlMessage, context.getString(R.string.tran_message)));
-        pairList.add(Pair.create(binding.imageContainer, context.getString(R.string.tran_image_container)));
-        Intent intent = new Intent(context, TimelineDetailActivity.class);
-        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
-        ActivityUtils.startActivityWithTransition(context, intent, pairList);
-    }
+//    public static void startWithTransition(AppCompatActivity context, ItemArticleBinding binding, Article mItem, boolean enableImage) {
+//
+//        ArrayList<Pair<View, String>> pairList = new ArrayList<>();
+//        pairList.add(Pair.create(binding.tlProfileImg, context.getString(R.string.tran_profile_image)));
+//        pairList.add(Pair.create(binding.tlUserName, context.getString(R.string.tran_user_name)));
+//        pairList.add(Pair.create(binding.tlUserId, context.getString(R.string.tran_user_id)));
+//        pairList.add(Pair.create(binding.tlTime, context.getString(R.string.tran_created_at)));
+//        pairList.add(Pair.create(binding.tlMessage, context.getString(R.string.tran_message)));
+//        pairList.add(Pair.create(binding.imageContainer, context.getString(R.string.tran_image_container)));
+//        Intent intent = new Intent(context, TimelineDetailActivity.class);
+//        intent.putExtra(TimelineDetailFragment.ITEM_ARTICLE, mItem);
+//        ActivityUtils.startActivityWithTransition(context, intent, pairList);
+//    }
 
     public static void start(AppCompatActivity context, Article mItem) {
         Intent intent = new Intent(context, TimelineDetailActivity.class);
@@ -134,6 +138,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
     @MainThread
     @Override
     public void onLayoutLoaded() {
-        ActivityCompat.startPostponedEnterTransition(this);
+//        ActivityCompat.startPostponedEnterTransition(this);
     }
 }

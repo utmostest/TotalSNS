@@ -26,6 +26,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 public class TimelineDetailFragment extends Fragment {
@@ -60,7 +61,7 @@ public class TimelineDetailFragment extends Fragment {
             mArticle = getArguments().getParcelable(ITEM_ARTICLE);
         }
 
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getActivity())).get(TimelineDetailViewModel.class);
+        viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getActivity())).get(TimelineDetailViewModel.class);
     }
 
     @Override

@@ -1,11 +1,15 @@
 package com.enos.totalsns.timeline.write;
 
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.databinding.DataBindingUtil;
+
 import android.os.Bundle;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,7 +37,7 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mViewModel = ViewModelProviders.of(getActivity(), ViewModelFactory.getInstance(getActivity())).get(TimelineWriteViewModel.class);
+        mViewModel = ViewModelProviders.of(getActivity(), (ViewModelProvider.Factory) ViewModelFactory.getInstance(getActivity())).get(TimelineWriteViewModel.class);
     }
 
     @Nullable
@@ -52,7 +56,7 @@ public class TimelineWriteFragment extends Fragment implements View.OnClickListe
     }
 
     private void initObserver() {
-        mViewModel.getCurrentUser().observe(this, (user) -> {
+        mViewModel.getCurrentUser().observe(getViewLifecycleOwner(), (user) -> {
             if (user == null) return;
             GlideUtils.loadProfileImage(getContext(), user.getProfileImg(), mBinding.tlWriteAccount, R.drawable.ic_account_circle_black_36dp);
         });

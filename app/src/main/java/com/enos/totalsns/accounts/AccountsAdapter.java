@@ -19,7 +19,7 @@ import androidx.recyclerview.widget.DiffUtil;
 
 public class AccountsAdapter extends HFSupportAdapter {
 
-    // TODO SNS별 뷰홀더 추가 및 화면 표시
+    // TODO SNS 별 뷰홀더 추가 및 화면 표시
     private List<Account> mValues;
     private OnSnsAccountListener mListener;
 

@@ -36,6 +36,8 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.util.Pair;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
@@ -43,13 +45,14 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     private long userId = ProfileFragment.INVALID_ID;
     private UserInfo userInfo;
 
-    private ActivityProfileBinding mBinding;
+//    private ActivityProfileBinding mBinding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mBinding = ActivityProfileBinding.inflate(getLayoutInflater());
-        setContentView(mBinding.getRoot());
+//        mBinding = ActivityProfileBinding.inflate(getLayoutInflater());
+//        setContentView(mBinding.getRoot());
+        DataBindingUtil.setContentView(this, R.layout.activity_profile);
         if (savedInstanceState == null) {
             initFragment();
         }
@@ -69,12 +72,12 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         if (userInfo != null) {
             Log.i("layout", "load started");
             //이미지가 로드될때까지 트랜지션 연기
-            ActivityCompat.postponeEnterTransition(this);
+//            ActivityCompat.postponeEnterTransition(this);
             getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userInfo)).commitNow();
             setTitle(getString(R.string.title_profile, userInfo.getUserId()));
         } else if (userId > ProfileFragment.INVALID_ID) {
             getSupportFragmentManager().beginTransaction().add(R.id.container, ProfileFragment.newInstance(userId)).commitNow();
-            ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+            ProfileViewModel viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
             userInfo = viewModel.getuserFromCache(userId);
             setTitle(getString(R.string.title_profile, userInfo == null ? "USER" : userInfo.getUserId()));
         }
@@ -84,8 +87,8 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-            ActivityCompat.finishAfterTransition(this);
-            return true;
+//            ActivityCompat.finishAfterTransition(this);
+//            return true;
         }
         return super.onOptionsItemSelected(item);
     }
@@ -101,7 +104,8 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onArticleClicked(ItemArticleBinding binding, Article mItem) {
-        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
+//        TimelineDetailActivity.startWithTransition(this, binding, mItem, StringUtils.getActualSize(mItem.getImageUrls()) > 0);
+        TimelineDetailActivity.start(this, mItem);
     }
 
     @Override
@@ -151,11 +155,11 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         //이미지가 로드된 후 트랜지션 개시
         Log.i("layout", "load finished");
         if (userInfo == null) {
-            ProfileViewModel viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
+            ProfileViewModel viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(ProfileViewModel.class);
             UserInfo current = viewModel.getuserFromCache(userId);
             setTitle(getString(R.string.title_profile, current == null ? "USER" : current.getUserId()));
         } else {
-            ActivityCompat.startPostponedEnterTransition(this);
+//            ActivityCompat.startPostponedEnterTransition(this);
         }
     }
 
@@ -173,28 +177,28 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
         ActivityUtils.startActivity(context, intent);
     }
 
-    public static void startWithTransition(AppCompatActivity context, ItemUserBinding binding, UserInfo mItem) {
-        Intent intent = new Intent(context, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
-        pairs.add(Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)));
-        pairs.add(Pair.create(binding.fFollowBtn, context.getString(R.string.tran_follow_btn)));
-        pairs.add(Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)));
-        pairs.add(Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)));
-        pairs.add(Pair.create(binding.fMessage, context.getString(R.string.tran_message_u)));
-        ActivityUtils.startActivityWithTransition(context, intent, pairs);
-    }
-
-    public static void startWithTransition(AppCompatActivity context, ItemSearchUserBinding binding, UserInfo mItem) {
-        Intent intent = new Intent(context, ProfileActivity.class);
-        intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
-        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
-        pairs.add(Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)));
-        pairs.add(Pair.create(binding.itemUserProfileBack, context.getString(R.string.tran_profile_back)));
-        pairs.add(Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)));
-        pairs.add(Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)));
-        pairs.add(Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)));
-        pairs.add(Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
-        ActivityUtils.startActivityWithTransition(context, intent, pairs);
-    }
+//    public static void startWithTransition(AppCompatActivity context, ItemUserBinding binding, UserInfo mItem) {
+//        Intent intent = new Intent(context, ProfileActivity.class);
+//        intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
+//        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
+//        pairs.add(Pair.create(binding.fProfileImg, context.getString(R.string.tran_profile_image_u)));
+//        pairs.add(Pair.create(binding.fFollowBtn, context.getString(R.string.tran_follow_btn)));
+//        pairs.add(Pair.create(binding.fUserName, context.getString(R.string.tran_user_name_u)));
+//        pairs.add(Pair.create(binding.fUserId, context.getString(R.string.tran_user_id_u)));
+//        pairs.add(Pair.create(binding.fMessage, context.getString(R.string.tran_message_u)));
+//        ActivityUtils.startActivityWithTransition(context, intent, pairs);
+//    }
+//
+//    public static void startWithTransition(AppCompatActivity context, ItemSearchUserBinding binding, UserInfo mItem) {
+//        Intent intent = new Intent(context, ProfileActivity.class);
+//        intent.putExtra(ProfileFragment.ARG_USER_INFO, mItem);
+//        ArrayList<Pair<View, String>> pairs = new ArrayList<>();
+//        pairs.add(Pair.create(binding.itemUserProfile, context.getString(R.string.tran_profile_image_u)));
+//        pairs.add(Pair.create(binding.itemUserProfileBack, context.getString(R.string.tran_profile_back)));
+//        pairs.add(Pair.create(binding.itemUserFollowBtn, context.getString(R.string.tran_follow_btn)));
+//        pairs.add(Pair.create(binding.itemUserName, context.getString(R.string.tran_user_name_u)));
+//        pairs.add(Pair.create(binding.itemUserScreenId, context.getString(R.string.tran_user_id_u)));
+//        pairs.add(Pair.create(binding.itemUserMessage, context.getString(R.string.tran_message_u)));
+//        ActivityUtils.startActivityWithTransition(context, intent, pairs);
+//    }
 }

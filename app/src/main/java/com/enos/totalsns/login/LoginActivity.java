@@ -5,6 +5,7 @@ import android.content.Intent;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -58,7 +59,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private void setupUI() {
 
-        viewModel = ViewModelProviders.of(LoginActivity.this, ViewModelFactory.getInstance(this)).get(LoginViewModel.class);
+        viewModel = ViewModelProviders.of(LoginActivity.this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(LoginViewModel.class);
 
         TwitterWebViewClient twitterWebViewClient = new TwitterWebViewClient();
         twitterWebViewClient.setTwitterLoginListener(result -> {

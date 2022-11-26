@@ -25,6 +25,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -71,7 +72,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
             userInfo = getArguments().getParcelable(ARG_USER_INFO);
             userId = getArguments().getLong(ARG_USER_ID);
         }
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(getContext())).get(ProfileViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(ProfileViewModel.class);
         if (userInfo != null) {
             fetchUserTimelineFirst(userInfo.getLongUserId());
         } else if (userId > INVALID_ID) {
@@ -141,7 +142,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
     }
 
     private void initObserver() {
-        mViewModel.getUserTimeline().observe(this, (list) -> {
+        mViewModel.getUserTimeline().observe(getViewLifecycleOwner(), (list) -> {
             if (mBinding.profileRv.getAdapter() == null) initView();
             ProfileAdapter adapter = (ProfileAdapter) mBinding.profileRv.getAdapter();
             List<Article> old = adapter.getArticleList();
@@ -162,11 +163,11 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
             }
             adapter.swapTimelineList(list);
         });
-        mViewModel.isNetworkOnUse().observe(this, refresh -> {
+        mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
             if (refresh == null) return;
             mBinding.swipeContainer.setRefreshing(refresh);
         });
-        mViewModel.getUserProfile().observe(this, profile -> {
+        mViewModel.getUserProfile().observe(getViewLifecycleOwner(), profile -> {
             if (userInfo == null && profile != null) {
                 userInfo = profile;
                 fetchUserTimelineFirst(profile.getLongUserId());
@@ -179,7 +180,7 @@ public class ProfileFragment extends Fragment implements OnFollowBtnClickListene
                 adapter.notifyDataSetChanged();
             }
         });
-        mViewModel.getUserCache().observe(this, cache -> {
+        mViewModel.getUserCache().observe(getViewLifecycleOwner(), cache -> {
             if (userInfo != null && cache != null) {
                 Log.i("userCache", cache.size() + " profile");
                 UserInfo current = cache.get(userInfo.getLongUserId());

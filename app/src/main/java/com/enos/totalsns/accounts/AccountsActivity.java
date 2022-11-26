@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -43,7 +44,7 @@ public class AccountsActivity extends AppCompatActivity implements OnSnsAccountL
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_accounts);
 
-        viewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(AccountsViewModel.class);
+        viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(AccountsViewModel.class);
 
         mBinding.navigation.setOnNavigationItemSelectedListener(this);
         mBinding.acAccFab.setOnClickListener((v) -> finishAndStartActivity(LoginActivity.class));
