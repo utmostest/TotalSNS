@@ -133,4 +133,5 @@
     <string name="title_message_detail">%s의 쪽지</string>
     <string name="title_profile">%s의 프로필</string>
     <string name="title_dm_send_to">받는이 선택</string>
+    <string name="map">google mapview</string>
 </resources>

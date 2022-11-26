@@ -6,6 +6,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/color_control_highlight</item>
+        <item name="colorOnSecondary">@color/batang_white</item>
 
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>

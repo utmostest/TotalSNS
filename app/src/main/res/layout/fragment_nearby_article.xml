@@ -11,7 +11,8 @@
         <com.google.android.gms.maps.MapView
             android:id="@+id/map"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:contentDescription="@string/map" />
 
         <SeekBar
             android:id="@+id/seekBar"
@@ -35,7 +36,9 @@
             android:layout_margin="@dimen/fab_margin"
             app:layout_constraintBottom_toTopOf="@+id/seekBar"
             app:layout_constraintEnd_toEndOf="@+id/map"
-            app:sdMainFabClosedSrc="@drawable/ic_search_white_36dp" />
+            app:sdMainFabClosedBackgroundColor="@color/colorPrimary"
+            app:sdMainFabClosedSrc="@drawable/ic_search_white_36dp"
+            app:sdMainFabOpenedBackgroundColor="@color/colorPrimary" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
