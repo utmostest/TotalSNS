@@ -56,10 +56,20 @@ public class AutoLinkTextView extends TextView {
 
     public AutoLinkTextView(Context context) {
         super(context);
+        init();
     }
 
     public AutoLinkTextView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    public AutoLinkTextView(Context context, AttributeSet attrs, int defStyle) {
+        super(context, attrs, defStyle);
+        init();
+    }
+
+    private void init() {
     }
 
     @Override
@@ -125,6 +135,7 @@ public class AutoLinkTextView extends TextView {
         List<AutoLinkItem> autoLinkItems = new LinkedList<>();
 
         if (autoLinkModes == null) {
+            if (isInEditMode()) return new ArrayList<>();
             throw new NullPointerException("Please add at least one mode");
         }
 

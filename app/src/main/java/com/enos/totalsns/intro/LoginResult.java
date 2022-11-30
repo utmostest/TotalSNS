@@ -15,7 +15,7 @@ public class LoginResult {
     private int loginStep;
     private int loginStatus;
     private int snsType;
-    private String message;
+    private String message = "unknown";
     private Account account;
     private String authorizationUrl;
 

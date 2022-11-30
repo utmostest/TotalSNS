@@ -16,6 +16,7 @@ import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.accounts.AccountsActivity;
 import com.enos.totalsns.databinding.ActivityIntroBinding;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -104,6 +105,7 @@ public class IntroActivity extends AppCompatActivity {
     private void attemptLogin() {
         viewModel.getLoginResult().observe(this, result -> {
             if (result != null) {
+                SingletonToast.getInstance().log(result.getMessage());
                 if (result.getLoginStatus() == LoginResult.STATUS_LOGIN_SUCCEED) {
                     finishAndStartActivity(ContentsActivity.class);
                 } else {

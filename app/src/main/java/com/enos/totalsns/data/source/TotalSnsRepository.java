@@ -217,6 +217,7 @@ public class TotalSnsRepository {
                 }
                 isSnsNetworkOnUse.postValue(false);
                 oldResult.setLoginStatus(LoginResult.STATUS_LOGIN_SUCCEED);
+                oldResult.setMessage("Login Succeed");
                 loginResult.postValue(oldResult);
                 return;
 
