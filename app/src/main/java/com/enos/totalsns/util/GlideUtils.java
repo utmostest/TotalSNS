@@ -114,4 +114,16 @@ public class GlideUtils {
                 .listener(callback)
                 .into(imageView);
     }
+
+    public static void loadBigImage(Context context, String imageUrl, ImageView imageView, RequestListener<Bitmap> callback) {
+        Glide.with(context)
+                .asBitmap()
+                .load(imageUrl)
+                .apply(
+                        new RequestOptions()
+                                .dontTransform()
+                )
+                .listener(callback)
+                .into(imageView);
+    }
 }

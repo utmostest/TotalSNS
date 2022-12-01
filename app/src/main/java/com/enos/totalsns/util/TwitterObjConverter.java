@@ -244,7 +244,7 @@ public class TwitterObjConverter {
             article.setMention(false);
         }
         UserInfo userInfo = new UserInfo(user.getId(), user.getScreenName(), user.getName(), user.getDescription(),
-                user.get400x400ProfileImageURL(), user.getProfileBackgroundImageURL(), user.getProfileBackgroundColor(),
+                user.get400x400ProfileImageURL(), user.getProfileBanner1500x500URL(), user.getProfileBackgroundColor(),
                 user.isProtected(), Constants.TWITTER, user.getLocation(), user.getCreatedAt().getTime(),
                 user.getEmail(), article, user.getFollowersCount(), user.getFriendsCount(), user.isFollowRequestSent());
         userInfo.setFollowInfo(followInfo);
