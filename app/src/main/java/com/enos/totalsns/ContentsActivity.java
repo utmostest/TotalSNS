@@ -239,6 +239,7 @@ public class ContentsActivity extends AppCompatActivity
         final TextView followingLabel = header.findViewById(R.id.header_following_label);
         final TextView followerLabel = header.findViewById(R.id.header_follower_label);
         final ImageView headerBackground = header.findViewById(R.id.header_background);
+        final View headerTextBg = header.findViewById(R.id.header_text_bg);
 
         headerEmail.setText(user.getEmail());
         headerName.setText(user.getUserName());
@@ -263,7 +264,7 @@ public class ContentsActivity extends AppCompatActivity
                         @Override
                         public boolean onResourceReady(Bitmap resource, Object model, Target<Bitmap> target, DataSource dataSource, boolean isFirstResource) {
                             if (resource != null) {
-                                setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
+//                                setTextColor(ColorUtils.getBodyTextColorFromPalette(resource), headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
                             }
                             return false;
                         }
@@ -272,6 +273,7 @@ public class ContentsActivity extends AppCompatActivity
             headerBackground.setImageDrawable(null);
             int backGround = Color.parseColor("#" + user.getProfileBackColor());
             headerBackground.setBackgroundColor(backGround);
+            headerTextBg.setBackgroundColor(backGround);
             int textColor = ColorUtils.getComplimentColor(backGround);
             setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
         } else {

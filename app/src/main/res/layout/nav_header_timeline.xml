@@ -32,6 +32,14 @@
         app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
+    <View
+        android:id="@+id/header_text_bg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="#7000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/header_profile" />
+
     <TextView
         android:id="@+id/header_name"
         android:layout_width="wrap_content"

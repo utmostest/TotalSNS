@@ -22,7 +22,7 @@ public class AutoLinkTextUtils {
         //step1 optional add custom regex
 
         autoLinkTextView.setHashtagModeColor(ContextCompat.getColor(context, R.color.red)); //setColor
-        autoLinkTextView.setPhoneModeColor(ContextCompat.getColor(context, R.color.text_yellow));
+        autoLinkTextView.setPhoneModeColor(ContextCompat.getColor(context, R.color.purple));
         autoLinkTextView.setCustomModeColor(ContextCompat.getColor(context, R.color.green));
         autoLinkTextView.setUrlModeColor(ContextCompat.getColor(context, R.color.blue));
         autoLinkTextView.setMentionModeColor(ContextCompat.getColor(context, R.color.orange));
