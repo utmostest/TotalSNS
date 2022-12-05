@@ -1,12 +1,11 @@
 package com.enos.totalsns.userlist;
 
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.UserInfo;

@@ -2,25 +2,11 @@ package com.enos.totalsns;
 
 import android.app.SearchManager;
 import android.content.Intent;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.databinding.DataBindingUtil;
-
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-
-import androidx.core.view.GravityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +14,17 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -43,6 +40,7 @@ import com.enos.totalsns.databinding.ActivityContentsBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemSearchUserBinding;
 import com.enos.totalsns.databinding.ItemUserBinding;
+import com.enos.totalsns.image.ImageActivity;
 import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.listener.OnFollowListener;
 import com.enos.totalsns.listener.OnMessageClickListener;
@@ -473,7 +471,8 @@ public class ContentsActivity extends AppCompatActivity
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
+        ImageActivity.start(this, article.getImageUrls(), position);
     }
 
     @Override

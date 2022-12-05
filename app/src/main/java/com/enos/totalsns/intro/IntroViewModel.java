@@ -2,11 +2,11 @@ package com.enos.totalsns.intro;
 
 import android.content.Context;
 
-import com.enos.totalsns.data.source.TotalSnsRepository;
-import com.enos.totalsns.custom.SingleLiveEvent;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModel;
+
+import com.enos.totalsns.custom.SingleLiveEvent;
+import com.enos.totalsns.data.source.TotalSnsRepository;
 
 public class IntroViewModel extends ViewModel {
 

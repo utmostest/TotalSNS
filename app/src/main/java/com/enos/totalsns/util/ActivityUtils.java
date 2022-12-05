@@ -4,14 +4,14 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.view.View;
 
-import java.util.Iterator;
-import java.util.List;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.ActivityOptionsCompat;
 import androidx.core.app.SharedElementCallback;
 import androidx.core.util.Pair;
+
+import java.util.Iterator;
+import java.util.List;
 
 public class ActivityUtils {
 

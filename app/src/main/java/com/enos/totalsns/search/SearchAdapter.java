@@ -4,6 +4,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.bumptech.glide.Glide;
 import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Article;
@@ -22,10 +26,6 @@ import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
 
 import java.util.List;
-
-import androidx.recyclerview.widget.DiffUtil;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 public class SearchAdapter extends HFSupportAdapter {
 

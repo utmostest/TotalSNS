@@ -2,16 +2,15 @@ package com.enos.totalsns.login;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.Bundle;
+import android.webkit.WebSettings;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-
-import android.os.Bundle;
-import android.webkit.WebSettings;
-import android.widget.Toast;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;

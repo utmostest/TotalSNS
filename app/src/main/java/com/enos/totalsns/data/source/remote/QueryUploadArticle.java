@@ -2,8 +2,6 @@ package com.enos.totalsns.data.source.remote;
 
 import com.google.android.gms.maps.model.LatLng;
 
-import java.io.File;
-
 public class QueryUploadArticle {
     private String message;
     private LatLng geoLocation;

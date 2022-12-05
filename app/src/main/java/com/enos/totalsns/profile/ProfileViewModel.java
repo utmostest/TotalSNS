@@ -2,17 +2,17 @@ package com.enos.totalsns.profile;
 
 import android.content.Context;
 
+import androidx.collection.LongSparseArray;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.data.source.remote.QueryUserTimeline;
 
 import java.util.List;
-
-import androidx.collection.LongSparseArray;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 public class ProfileViewModel extends ViewModel {
 

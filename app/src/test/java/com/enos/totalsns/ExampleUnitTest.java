@@ -1,5 +1,8 @@
 package com.enos.totalsns;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import com.enos.totalsns.custom.ArraySetList;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.local.HashMapStringConverter;
@@ -10,9 +13,6 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Example local unit test, which will execute on the development machine (host).

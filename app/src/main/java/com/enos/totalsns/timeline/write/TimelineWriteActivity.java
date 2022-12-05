@@ -1,10 +1,12 @@
 package com.enos.totalsns.timeline.write;
 
-import androidx.lifecycle.ViewModelProviders;
 import android.content.Intent;
-import androidx.databinding.DataBindingUtil;
 import android.os.Bundle;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityTimelineWriteBinding;
@@ -20,7 +22,7 @@ public class TimelineWriteActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_timeline_write);
-        mViewModel = ViewModelProviders.of(this, ViewModelFactory.getInstance(this)).get(TimelineWriteViewModel.class);
+        mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(TimelineWriteViewModel.class);
 
         initFragment(savedInstanceState);
         initObserver();

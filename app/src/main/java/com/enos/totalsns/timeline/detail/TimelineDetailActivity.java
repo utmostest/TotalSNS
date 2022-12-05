@@ -1,37 +1,31 @@
 package com.enos.totalsns.timeline.detail;
 
 import android.content.Intent;
-
-import androidx.databinding.DataBindingUtil;
-
 import android.net.Uri;
 import android.os.Bundle;
-
-import androidx.annotation.MainThread;
-import androidx.core.app.ActivityCompat;
-import androidx.core.util.Pair;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.annotation.MainThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+
 import com.enos.totalsns.ContentsActivity;
-import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ActivityTimelineDetailBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.profile.ProfileActivity;
+import com.enos.totalsns.image.ImageActivity;
 import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.listener.OnLoadLayoutListener;
+import com.enos.totalsns.profile.ProfileActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class TimelineDetailActivity extends AppCompatActivity implements OnArticleClickListener, OnLoadLayoutListener {
@@ -74,7 +68,8 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
+        ImageActivity.start(this, article.getImageUrls(), position);
     }
 
     @Override

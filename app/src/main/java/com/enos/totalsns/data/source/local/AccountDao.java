@@ -1,16 +1,16 @@
 package com.enos.totalsns.data.source.local;
 
 
-import com.enos.totalsns.data.Account;
-
-import java.util.List;
-
 import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Update;
+
+import com.enos.totalsns.data.Account;
+
+import java.util.List;
 
 @Dao
 public interface AccountDao {

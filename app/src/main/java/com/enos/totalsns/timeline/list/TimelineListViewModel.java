@@ -1,9 +1,10 @@
 package com.enos.totalsns.timeline.list;
 
+import android.content.Context;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.ViewModel;
-import android.content.Context;
 
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.source.TotalSnsRepository;

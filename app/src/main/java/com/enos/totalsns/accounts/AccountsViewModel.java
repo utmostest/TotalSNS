@@ -18,16 +18,16 @@ package com.enos.totalsns.accounts;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
+
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.source.TotalSnsRepository;
 import com.enos.totalsns.intro.LoginResult;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 public class AccountsViewModel extends ViewModel {
 

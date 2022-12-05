@@ -3,9 +3,9 @@ package com.enos.totalsns.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.enos.totalsns.util.CompareUtils;
-
 import androidx.annotation.Nullable;
+
+import com.enos.totalsns.util.CompareUtils;
 
 // 타인의 개인정보라 룸에 저장하지 않음
 public class UserInfo implements Parcelable {

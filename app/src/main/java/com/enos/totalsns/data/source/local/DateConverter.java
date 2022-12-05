@@ -16,9 +16,9 @@
 
 package com.enos.totalsns.data.source.local;
 
-import java.util.Date;
-
 import androidx.room.TypeConverter;
+
+import java.util.Date;
 
 public class DateConverter {
     @TypeConverter

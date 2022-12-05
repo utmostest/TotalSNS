@@ -2,6 +2,10 @@ package com.enos.totalsns.message.detail;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.ViewModel;
+
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;
@@ -9,10 +13,6 @@ import com.enos.totalsns.data.source.remote.QueryMessage;
 import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 
 import java.util.List;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.ViewModel;
 
 public class MessageDetailViewModel extends ViewModel {
     private Context mContext;

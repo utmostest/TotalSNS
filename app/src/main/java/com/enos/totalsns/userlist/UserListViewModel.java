@@ -1,11 +1,12 @@
 package com.enos.totalsns.userlist;
 
+import android.content.Context;
+
+import androidx.collection.LongSparseArray;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import android.content.Context;
-import androidx.collection.LongSparseArray;
 
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.data.source.TotalSnsRepository;

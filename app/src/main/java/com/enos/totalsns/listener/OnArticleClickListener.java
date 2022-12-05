@@ -2,9 +2,9 @@ package com.enos.totalsns.listener;
 
 import android.widget.ImageView;
 
+import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.custom.autolink.AutoLinkMode;
 
 import java.util.HashMap;
 

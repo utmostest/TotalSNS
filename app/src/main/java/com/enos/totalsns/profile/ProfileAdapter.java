@@ -7,6 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -31,9 +34,6 @@ import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.TimeUtils;
 
 import java.util.List;
-
-import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.DiffUtil;
 
 public class ProfileAdapter extends HFSupportAdapter {
 

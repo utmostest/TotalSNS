@@ -5,19 +5,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
+
+import androidx.annotation.MainThread;
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.databinding.DataBindingUtil;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;
 import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
-import com.enos.totalsns.databinding.ActivityProfileBinding;
 import com.enos.totalsns.databinding.ItemArticleBinding;
-import com.enos.totalsns.databinding.ItemSearchUserBinding;
-import com.enos.totalsns.databinding.ItemUserBinding;
 import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.listener.OnFollowListener;
 import com.enos.totalsns.listener.OnLoadLayoutListener;
@@ -28,17 +31,7 @@ import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
-import androidx.annotation.MainThread;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.util.Pair;
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.ViewModelProviders;
 
 public class ProfileActivity extends AppCompatActivity implements OnFollowListener, OnArticleClickListener, OnLoadLayoutListener {
 

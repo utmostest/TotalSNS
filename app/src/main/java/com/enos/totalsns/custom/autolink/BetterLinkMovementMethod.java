@@ -22,10 +22,10 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Constants;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 /**
  * Handles URL clicks on TextViews. Unlike the default implementation, this:

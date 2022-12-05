@@ -1,11 +1,11 @@
 package com.enos.totalsns.data;
 
-import com.enos.totalsns.util.CompareUtils;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
+
+import com.enos.totalsns.util.CompareUtils;
 
 @Entity(tableName = "message")
 public class Message {

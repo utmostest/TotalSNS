@@ -3,16 +3,15 @@ package com.enos.totalsns.data;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-
-import com.enos.totalsns.util.CompareUtils;
-
-import java.util.HashMap;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
+
+import com.enos.totalsns.util.CompareUtils;
+
+import java.util.HashMap;
 
 @Entity(tableName = "article")
 public class Article implements Parcelable {

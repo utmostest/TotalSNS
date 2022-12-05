@@ -1,6 +1,8 @@
 package com.enos.totalsns.accounts;
 
 import android.content.Intent;
+import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,9 +11,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
-
-import android.os.Bundle;
-import android.view.MenuItem;
 
 import com.enos.totalsns.ContentsActivity;
 import com.enos.totalsns.R;

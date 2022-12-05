@@ -1,6 +1,7 @@
 package com.enos.totalsns.util;
 
 import android.content.Context;
+
 import androidx.core.content.ContextCompat;
 
 import com.enos.totalsns.R;

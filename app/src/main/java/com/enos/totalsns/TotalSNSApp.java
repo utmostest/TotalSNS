@@ -1,7 +1,5 @@
 package com.enos.totalsns;
 
-import android.app.Application;
-
 import androidx.multidex.MultiDexApplication;
 
 import com.enos.totalsns.util.SingletonToast;

@@ -3,11 +3,11 @@ package com.enos.totalsns.nearby;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.enos.totalsns.R;
 import com.enos.totalsns.databinding.ActivityNearbyArticleBinding;
 import com.enos.totalsns.util.ActivityUtils;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 public class NearbyArticleActivity extends AppCompatActivity {
 

@@ -2,7 +2,6 @@ package com.enos.totalsns.timeline.detail;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -31,7 +30,6 @@ import com.enos.totalsns.databinding.FragmentTimelineDetailBinding;
 import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.listener.OnLoadLayoutListener;
 import com.enos.totalsns.util.AutoLinkTextUtils;
-import com.enos.totalsns.util.BitmapUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.TimeUtils;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -130,11 +128,16 @@ public class TimelineDetailFragment extends Fragment {
             if (hasImage) {
                 for (int i = 0; i < imgUrls.length; i++) {
                     final ImageView imageView = new ImageView(getContext());
+                    final int position = i;
                     LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
                     layoutParams.topMargin = getContext().getResources().getDimensionPixelSize(R.dimen.iv_margin);
                     imageView.setLayoutParams(layoutParams);
                     imageView.setAdjustViewBounds(true);
                     mBinding.imageContainer.addView(imageView);
+                    imageView.setOnClickListener(v -> {
+                        if (mListener != null)
+                            mListener.onArticleImageClicked((ImageView) v, mArticle, position);
+                    });
                     GlideUtils.loadBigImage(getContext(), imgUrls[i], imageView, new RequestListener<Bitmap>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Bitmap> target, boolean isFirstResource) {

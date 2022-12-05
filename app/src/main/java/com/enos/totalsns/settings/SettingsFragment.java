@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 
-import com.enos.totalsns.R;
-
 import androidx.preference.CheckBoxPreference;
 import androidx.preference.DropDownPreference;
 import androidx.preference.EditTextPreference;
@@ -14,6 +12,8 @@ import androidx.preference.MultiSelectListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.SwitchPreference;
+
+import com.enos.totalsns.R;
 
 public class SettingsFragment extends PreferenceFragmentCompat implements SharedPreferences.OnSharedPreferenceChangeListener {
 

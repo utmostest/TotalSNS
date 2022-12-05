@@ -4,9 +4,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Paint;
 
-import java.util.List;
-
 import androidx.palette.graphics.Palette;
+
+import java.util.List;
 
 /**
  * Utilities for performing common color-related tasks.

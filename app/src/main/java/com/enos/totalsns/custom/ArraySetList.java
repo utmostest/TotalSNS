@@ -2,15 +2,15 @@ package com.enos.totalsns.custom;
 
 import android.os.Build;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.function.Predicate;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 
 public class ArraySetList<E> extends ArrayList<E> {
 

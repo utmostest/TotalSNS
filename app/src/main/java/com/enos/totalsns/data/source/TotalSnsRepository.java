@@ -1,6 +1,11 @@
 package com.enos.totalsns.data.source;
 
 
+import androidx.collection.LongSparseArray;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
+
 import com.enos.totalsns.AppExecutors;
 import com.enos.totalsns.custom.SingleLiveEvent;
 import com.enos.totalsns.data.Account;
@@ -27,10 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import androidx.collection.LongSparseArray;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MediatorLiveData;
-import androidx.lifecycle.MutableLiveData;
 import twitter4j.Paging;
 import twitter4j.Query;
 import twitter4j.TwitterException;

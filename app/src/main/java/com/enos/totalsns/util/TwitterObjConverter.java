@@ -2,6 +2,9 @@ package com.enos.totalsns.util;
 
 import android.util.Log;
 
+import androidx.collection.ArraySet;
+import androidx.collection.LongSparseArray;
+
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.FollowInfo;
@@ -12,8 +15,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import androidx.collection.ArraySet;
-import androidx.collection.LongSparseArray;
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
 import twitter4j.Friendship;

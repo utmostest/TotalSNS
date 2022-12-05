@@ -126,4 +126,14 @@ public class GlideUtils {
                 .listener(callback)
                 .into(imageView);
     }
+
+    public static void loadBigImage(Context context, String imageUrl, ImageView imageView) {
+        Glide.with(context)
+                .load(imageUrl)
+                .apply(
+                        new RequestOptions()
+                                .dontTransform()
+                )
+                .into(imageView);
+    }
 }
