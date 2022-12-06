@@ -2,6 +2,7 @@ package com.enos.totalsns.image;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -9,6 +10,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.WindowInsets;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,10 +83,17 @@ public class ImageActivity extends AppCompatActivity {
         delayedHide(100);
     }
 
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        position = binding.pager.getCurrentItem();
+        setupUI();
+    }
+
     private void setupUI() {
         ImageAdapter adapter = new ImageAdapter(urls);
         binding.pager.setAdapter(adapter);
-        if (position >= 0) binding.pager.setCurrentItem(position);
+        if (position >= 0) binding.pager.setCurrentItem(position, false);
     }
 
     private void hide() {
