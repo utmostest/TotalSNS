@@ -21,6 +21,7 @@ import com.enos.totalsns.custom.autolink.AutoLinkMode;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
+import com.enos.totalsns.image.ImageActivity;
 import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.listener.OnFollowListener;
 import com.enos.totalsns.listener.OnLoadLayoutListener;
@@ -103,11 +104,12 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
+        ImageActivity.start(this, article.getImageUrls(), position);
     }
 
     @Override
     public void onArticleProfileImgClicked(Article article) {
+        ImageActivity.start(this, new String[]{article.getProfileImg()}, 0);
     }
 
     @Override

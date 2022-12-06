@@ -10,7 +10,6 @@ import com.enos.totalsns.custom.HFSupportAdapter;
 import com.enos.totalsns.data.Account;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.ItemAccountBinding;
-import com.enos.totalsns.databinding.ItemAccountFooterBinding;
 import com.enos.totalsns.listener.OnSnsAccountListener;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
@@ -53,16 +52,12 @@ public class AccountsAdapter extends HFSupportAdapter {
 
     @Override
     public HeaderViewHolder onCreateHeaderViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
-        return new AccountHeaderViewHolder(itemAccountFooterBinding);
+        return null;
     }
 
     @Override
     public FooterViewHolder onCreateFooterViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        ItemAccountFooterBinding itemAccountFooterBinding = ItemAccountFooterBinding.inflate(inflater, parent, false);
-        return new AccountFooterViewHolder(itemAccountFooterBinding);
+        return null;
     }
 
     @Override
@@ -74,14 +69,11 @@ public class AccountsAdapter extends HFSupportAdapter {
 
     @Override
     public void onBindHeaderViewHolder(HeaderViewHolder vh, int pos) {
-        AccountHeaderViewHolder holder = (AccountHeaderViewHolder) vh;
-        holder.bind();
+
     }
 
     @Override
     public void onBindFooterViewHolder(FooterViewHolder vh, int pos) {
-        AccountFooterViewHolder holder = (AccountFooterViewHolder) vh;
-        holder.bind();
     }
 
     @Override
@@ -146,30 +138,6 @@ public class AccountsAdapter extends HFSupportAdapter {
                     mListener.onAccountClicked(mItem);
                 }
             });
-        }
-    }
-
-    private class AccountHeaderViewHolder extends HeaderViewHolder {
-        public final ItemAccountFooterBinding binding;
-
-        AccountHeaderViewHolder(ItemAccountFooterBinding view) {
-            super(view.getRoot());
-            binding = view;
-        }
-
-        public void bind() {
-        }
-    }
-
-    private class AccountFooterViewHolder extends FooterViewHolder {
-        public final ItemAccountFooterBinding binding;
-
-        AccountFooterViewHolder(ItemAccountFooterBinding view) {
-            super(view.getRoot());
-            binding = view;
-        }
-
-        public void bind() {
         }
     }
 }

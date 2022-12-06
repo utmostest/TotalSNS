@@ -17,17 +17,16 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:transitionName="@string/tran_profile_image_u"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <Button
             android:id="@+id/fFollowBtn"
-            android:layout_width="@dimen/follow_btn_w"
-            android:layout_height="@dimen/follow_btn_h"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
             android:background="@drawable/rounded_btn"
+            android:paddingHorizontal="16dp"
             android:text="@string/title_following"
             android:textColor="@color/batang_white"
             android:textSize="16sp"
@@ -52,7 +51,6 @@
             android:transitionName="@string/tran_user_name_u"
             app:layout_constrainedWidth="true"
             app:layout_constraintEnd_toStartOf="@+id/fFollowBtn"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintHorizontal_chainStyle="spread_inside"
             app:layout_constraintStart_toEndOf="@+id/fProfileImg"
             app:layout_constraintTop_toTopOf="@+id/fProfileImg"
@@ -69,8 +67,6 @@
             android:maxLines="1"
             android:textColor="@color/colorPrimary"
             android:transitionName="@string/tran_user_id_u"
-            app:layout_constraintEnd_toStartOf="@+id/fFollowBtn"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/fUserName"
             app:layout_constraintTop_toBottomOf="@+id/fUserName"
             tools:text="'@userid'" />
@@ -79,8 +75,6 @@
             android:id="@+id/fMessage"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginTop="8dp"
             android:clickable="false"
             android:duplicateParentState="true"
@@ -90,8 +84,7 @@
             android:transitionName="@string/tran_message_u"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/fProfileImg"
+            app:layout_constraintStart_toStartOf="@+id/fProfileImg"
             app:layout_constraintTop_toBottomOf="@+id/fUserId"
             tools:text="사용자가 작성한 트윗이 이곳에 보여진다." />
 

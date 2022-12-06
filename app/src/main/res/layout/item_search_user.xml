@@ -44,12 +44,13 @@
 
             <Button
                 android:id="@+id/item_user_follow_btn"
-                android:layout_width="@dimen/follow_btn_w"
-                android:layout_height="@dimen/follow_btn_h"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginRight="16dp"
                 android:background="@drawable/rounded_btn"
+                android:paddingHorizontal="16dp"
                 android:text="팔로우"
                 android:textColor="@color/batang_white"
                 android:textSize="16sp"

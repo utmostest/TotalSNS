@@ -15,27 +15,10 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintEnd_toStartOf="@+id/accUserId"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
-
-        <TextView
-            android:id="@+id/accUserName"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:gravity="center_vertical"
-            android:textColor="@color/black_overlay"
-            android:textSize="16dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/accUserId"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/accProfileImg"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="이름이름이다" />
 
         <TextView
             android:id="@+id/accUserId"
@@ -47,12 +30,27 @@
             android:gravity="center_vertical"
             android:maxLines="1"
             android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/accUserName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/accProfileImg"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="'@userid'" />
+
+        <TextView
+            android:id="@+id/accUserName"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:gravity="center_vertical"
+            android:textColor="@color/black_overlay"
+            android:textSize="16dp"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@+id/accProfileImg"
-            app:layout_constraintTop_toBottomOf="@+id/accUserName"
-            tools:text="'@userid'" />
+            app:layout_constraintTop_toBottomOf="@+id/accUserId"
+            tools:text="이름이름이다" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

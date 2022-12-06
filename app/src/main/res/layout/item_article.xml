@@ -17,20 +17,37 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:transitionName="@string/tran_profile_image"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintBottom_toTopOf="@+id/tldMessage"
+            app:layout_constraintEnd_toStartOf="@+id/tldUserId"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+
+        <!--* app:layout_constraintHorizontal_chainStyle="packed" CHAIN IT for biasing-->
+        <TextView
+            android:id="@+id/tlUserId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:lines="1"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:transitionName="@string/tran_user_id"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@+id/tldUserName"
+            app:layout_constraintEnd_toStartOf="@+id/tlTime"
+            app:layout_constraintStart_toEndOf="@+id/tlProfileImg"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="'@userid'" />
 
         <TextView
             android:id="@+id/tlUserName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:lines="1"
             android:maxWidth="150dp"
@@ -40,35 +57,10 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:transitionName="@string/tran_user_name"
-            app:layout_constraintBottom_toTopOf="@+id/tlUserId"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tlProfileImg"
-            app:layout_constraintTop_toTopOf="@+id/tlProfileImg"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/tlUserId"
             tools:hint="이름이름이름이름이름이름이름이다" />
-
-        <!--* app:layout_constraintHorizontal_chainStyle="packed" CHAIN IT for biasing-->
-        <TextView
-            android:id="@+id/tlUserId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:lines="1"
-            android:maxLines="1"
-            android:textColor="@color/colorPrimary"
-            android:textSize="16sp"
-            android:transitionName="@string/tran_user_id"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toTopOf="@+id/tlTime"
-            app:layout_constraintEnd_toStartOf="@+id/tlTime"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tlProfileImg"
-            app:layout_constraintTop_toBottomOf="@+id/tlUserName"
-            app:layout_constraintVertical_bias="0.0"
-            tools:text="'@userid'" />
 
         <TextView
             android:id="@+id/tlTime"
@@ -95,12 +87,10 @@
             android:textColor="@color/text_black"
             android:textSize="16sp"
             android:transitionName="@string/tran_message"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/imageContainer"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/tlProfileImg"
             app:layout_constraintTop_toBottomOf="@+id/tlProfileImg"
-            app:layout_constraintVertical_bias="0.0"
             tools:text="소셜 네트워크 서비스에는 트위터, 페이스북, 인스타그램 등이 있으며 전세계의 수많은 사람과 소통할 수 있으며 컴퓨터나 모바일 기기 어디에서 사용할 수 있다." />
 
         <com.enos.totalsns.custom.ImageContainerCardView
@@ -120,7 +110,6 @@
             app:cardCornerRadius="10dp"
             app:imageCount="0"
             app:imageOrientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintDimensionRatio="16:9"
             app:layout_constraintEnd_toEndOf="@+id/tlMessage"
             app:layout_constraintStart_toStartOf="@+id/tlProfileImg"

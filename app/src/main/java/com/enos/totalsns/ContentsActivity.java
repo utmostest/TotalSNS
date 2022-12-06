@@ -229,7 +229,7 @@ public class ContentsActivity extends AppCompatActivity
     private void updateHeaderView(UserInfo user) {
         if (user == null) return;
         View header = mBinding.navView.getHeaderView(0);
-        final TextView headerEmail = header.findViewById(R.id.header_email);
+        final TextView headerUserid = header.findViewById(R.id.header_userid);
         final TextView headerName = header.findViewById(R.id.header_name);
         final ImageView headerProfile = header.findViewById(R.id.header_profile);
         final TextView followingNum = header.findViewById(R.id.header_following_num);
@@ -239,7 +239,7 @@ public class ContentsActivity extends AppCompatActivity
         final ImageView headerBackground = header.findViewById(R.id.header_background);
         final View headerTextBg = header.findViewById(R.id.header_text_bg);
 
-        headerEmail.setText(user.getEmail());
+        headerUserid.setText(user.getUserId());
         headerName.setText(user.getUserName());
         followerNum.setText(String.valueOf(user.getFollowerCount()));
         followingNum.setText(String.valueOf(user.getFollowingCount()));
@@ -252,6 +252,8 @@ public class ContentsActivity extends AppCompatActivity
         GlideUtils.loadProfileImage(this, user.getProfileImg(), headerProfile);
         String profileBackImg = user.getProfileBackImg();
         if (StringUtils.isStringValid(profileBackImg)) {
+//            headerBackground.setOnClickListener(v -> ImageActivity.start(this, new String[]{profileBackImg}, 0));
+
             GlideUtils.loadBackImageWithCallback(this, profileBackImg, headerBackground,
                     new RequestListener<Bitmap>() {
                         @Override
@@ -273,7 +275,7 @@ public class ContentsActivity extends AppCompatActivity
             headerBackground.setBackgroundColor(backGround);
             headerTextBg.setBackgroundColor(backGround);
             int textColor = ColorUtils.getComplimentColor(backGround);
-            setTextColor(textColor, headerEmail, headerName, followerNum, followerLabel, followingNum, followingLabel);
+            setTextColor(textColor, headerUserid, headerName, followerNum, followerLabel, followingNum, followingLabel);
         } else {
             headerBackground.setImageResource(R.drawable.side_nav_bar);
         }

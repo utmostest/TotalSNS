@@ -14,13 +14,11 @@
             android:layout_height="36dp"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/message_item_msg"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintHorizontal_chainStyle="packed"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_account_circle_black_36dp" />
 
         <TextView
@@ -37,7 +35,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@+id/message_item_profile"
             app:layout_constraintTop_toTopOf="@+id/message_item_profile"
-            app:layout_constraintVertical_bias="0.0"
             app:layout_constraintWidth_max="wrap"
             app:layout_constraintWidth_percent="0.7"
             tools:text="안녕하세요 테스트 중입니다. 길게 치면 어떻게 나올까? 궁금하군" />
@@ -50,8 +47,6 @@
             android:textColor="@color/colorPrimary"
             android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/message_item_msg"
             app:layout_constraintTop_toBottomOf="@+id/message_item_msg"
             tools:text="2019년 1월 2일 11시 25분 am" />

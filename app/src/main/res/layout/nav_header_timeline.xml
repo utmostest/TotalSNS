@@ -20,16 +20,12 @@
     <ImageView
         android:id="@+id/header_profile"
         android:layout_width="48dp"
-        android:layout_height="0dp"
+        android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
-        app:layout_constraintBottom_toTopOf="@+id/header_name"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:layout_marginVertical="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/header_userid"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
     <View
@@ -38,7 +34,16 @@
         android:layout_height="0dp"
         android:background="#7000"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/header_profile" />
+        app:layout_constraintTop_toTopOf="@+id/header_userid" />
+
+    <TextView
+        android:id="@+id/header_userid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/header_name"
+        app:layout_constraintStart_toStartOf="@+id/header_profile"
+        app:layout_constraintTop_toBottomOf="@+id/header_profile"
+        tools:text="userid" />
 
     <TextView
         android:id="@+id/header_name"
@@ -46,23 +51,10 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
-        app:layout_constraintBottom_toTopOf="@+id/header_email"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintBottom_toTopOf="@+id/header_follower_label"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
-        app:layout_constraintTop_toBottomOf="@+id/header_profile"
+        app:layout_constraintTop_toBottomOf="@+id/header_userid"
         tools:text="이름" />
-
-    <TextView
-        android:id="@+id/header_email"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/header_profile"
-        app:layout_constraintTop_toBottomOf="@+id/header_name"
-        tools:text="userid@site.com" />
 
     <TextView
         android:id="@+id/header_following_label"
@@ -73,22 +65,19 @@
         android:text="@string/title_following"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/header_follower_num"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintEnd_toStartOf="@+id/header_following_num"
         app:layout_constraintStart_toStartOf="@+id/header_profile"
-        app:layout_constraintTop_toBottomOf="@+id/header_email" />
+        app:layout_constraintTop_toBottomOf="@+id/header_name" />
 
     <TextView
         android:id="@+id/header_following_num"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_label"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_label"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
         tools:text="21" />
@@ -99,25 +88,20 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
         android:text="@string/title_follower"
         app:layout_constrainedWidth="true"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
         app:layout_constraintEnd_toStartOf="@+id/header_follower_num"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_following_num"
         app:layout_constraintTop_toTopOf="@+id/header_following_label" />
 
     <TextView
         android:id="@+id/header_follower_num"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginLeft="8dp"
+        android:layout_marginStart="16dp"
         android:textAppearance="@style/TextAppearance.AppCompat.Body1"
         app:layout_constraintBottom_toBottomOf="@+id/header_following_label"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toEndOf="@+id/header_follower_label"
         app:layout_constraintTop_toTopOf="@+id/header_following_label"
         app:layout_constraintWidth_default="spread"

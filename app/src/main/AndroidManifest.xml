@@ -29,7 +29,7 @@
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:exported="false"
             android:label="@string/title_activity_image"
-            android:theme="@style/AppTheme.Fullscreen" />
+            android:theme="@style/FullscreenTheme" />
 
         <meta-data
             android:name="com.google.android.gms.version"

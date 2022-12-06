@@ -6,8 +6,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.DiffUtil;
 
 import com.bumptech.glide.Glide;
@@ -23,6 +25,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.databinding.ItemProfileHeaderBinding;
+import com.enos.totalsns.image.ImageActivity;
 import com.enos.totalsns.listener.OnArticleClickListener;
 import com.enos.totalsns.listener.OnFollowBtnClickListener;
 import com.enos.totalsns.listener.OnFollowListener;
@@ -252,6 +255,9 @@ public class ProfileAdapter extends HFSupportAdapter {
             binding.itemUserMessage.setText(item.getMessage());
             binding.itemUserName.setText(item.getUserName());
             binding.itemUserScreenId.setText(item.getUserId());
+            binding.itemUserProfile.setOnClickListener(v -> {
+                ImageActivity.start((AppCompatActivity) binding.getRoot().getContext(), new String[]{item.getProfileImg()}, 0);
+            });
 
             GlideUtils.loadProfileImage(binding.getRoot().getContext(), item.getProfileImg(), binding.itemUserProfile, new RequestListener<Drawable>() {
                 @Override
@@ -268,6 +274,10 @@ public class ProfileAdapter extends HFSupportAdapter {
             });
 
             if (StringUtils.isStringValid(item.getProfileBackImg())) {
+                binding.itemUserProfileBack.setOnClickListener(v -> {
+                    ImageActivity.start((AppCompatActivity) binding.getRoot().getContext(), new String[]{item.getProfileBackImg()}, 0);
+                });
+
                 GlideUtils.loadBackImage(binding.getRoot().getContext(), item.getProfileBackImg(), binding.itemUserProfileBack,
                         new RequestListener<Drawable>() {
                             @Override

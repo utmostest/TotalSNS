@@ -94,7 +94,9 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.ViewHolder> {
             binding.fUserId.setText(mItem.getUserId());
             binding.fUserName.setText(mItem.getUserName());
             binding.fMessage.setText(mItem.getMessage());
-            binding.fMessage.setText(mItem.getMessage());
+            if (mItem.getMessage() == null || mItem.getMessage().length() <= 0) {
+                binding.fMessage.setVisibility(View.GONE);
+            }
             binding.fFollowBtn.setVisibility(mItem.getFollowInfo() != null && mItem.getFollowInfo().isMe() ? View.GONE : View.VISIBLE);
             binding.fFollowBtn.setEnabled(!mItem.isFollowReqSend());
             binding.fFollowBtn.setText(mItem.getFollowInfo() != null && mItem.getFollowInfo().isFollowing() ?

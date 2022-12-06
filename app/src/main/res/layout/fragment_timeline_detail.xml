@@ -14,20 +14,36 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:transitionName="@string/tran_profile_image"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/tldUserName"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <!--* app:layout_constraintHorizontal_chainStyle="packed" CHAIN IT for biasing-->
+
+        <TextView
+            android:id="@+id/tldUserId"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp"
+            android:transitionName="@string/tran_user_id"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintBottom_toTopOf="@+id/tldUserName"
+            app:layout_constraintEnd_toStartOf="@+id/tldTime"
+            app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
+            app:layout_constraintTop_toTopOf="@+id/tldProfileImg"
+            tools:text="'@userid'" />
 
         <TextView
             android:id="@+id/tldUserName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
             android:textColor="@color/black_overlay"
@@ -36,31 +52,9 @@
             android:transitionName="@string/tran_user_name"
             app:layout_constraintBottom_toTopOf="@+id/tldUserId"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.062"
             app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
-            app:layout_constraintTop_toTopOf="@+id/tldProfileImg"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintTop_toBottomOf="@+id/tldUserId"
             tools:text="이름이름이다" />
-
-        <TextView
-            android:id="@+id/tldUserId"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginTop="4dp"
-            android:ellipsize="end"
-            android:maxLines="1"
-            android:textColor="@color/colorPrimary"
-            android:textSize="18sp"
-            android:transitionName="@string/tran_user_id"
-            app:layout_constrainedWidth="true"
-            app:layout_constraintBottom_toTopOf="@+id/tldMessage"
-            app:layout_constraintEnd_toStartOf="@+id/tldTime"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
-            app:layout_constraintTop_toBottomOf="@+id/tldUserName"
-            app:layout_constraintVertical_bias="0.057"
-            tools:text="'@userid'" />
 
         <TextView
             android:id="@+id/tldTime"
@@ -72,11 +66,8 @@
             android:textSize="18sp"
             android:transitionName="@string/tran_created_at"
             app:layout_constraintBaseline_toBaselineOf="@+id/tldUserId"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toEndOf="@+id/tldProfileImg"
-            app:layout_constraintVertical_bias="0.0"
+            app:layout_constraintStart_toEndOf="@+id/tldUserId"
             tools:text="2017년 6월 21일" />
 
         <com.enos.totalsns.custom.autolink.AutoLinkTextView
@@ -91,9 +82,8 @@
             android:textSize="18sp"
             android:transitionName="@string/tran_message"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tldUserId"
+            app:layout_constraintTop_toBottomOf="@+id/tldUserName"
             tools:text="소셜 네트워크 서비스에는 트위터, 페이스북, 인스타그램 등이 있으며 전세계의 수많은 사람과 소통할 수 있으며 컴퓨터나 모바일 기기 어디에서 사용할 수 있다." />
 
         <LinearLayout

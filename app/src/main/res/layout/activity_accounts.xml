@@ -4,17 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:fitsSystemWindows="true"
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context=".accounts.AccountsActivity">
 
         <FrameLayout
-            android:fitsSystemWindows="true"
             android:id="@+id/accounts_frag_container"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:fitsSystemWindows="true"
             app:layout_constraintBottom_toTopOf="@+id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -39,9 +39,11 @@
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
             android:clickable="true"
+            android:contentDescription="@string/title_write_timeline"
+            android:focusable="true"
             app:layout_constraintBottom_toTopOf="@+id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
-            app:tint="@color/batang_white"
-            app:srcCompat="@drawable/ic_person_add_black_24dp" />
+            app:srcCompat="@drawable/ic_person_add_black_24dp"
+            app:tint="@color/batang_white" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

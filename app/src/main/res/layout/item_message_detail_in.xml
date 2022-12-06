@@ -23,7 +23,6 @@
             app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="1.0"
             app:layout_constraintWidth_max="wrap"
             app:layout_constraintWidth_percent="0.7"
             tools:text="안녕하세요 테스트 중입니다. 길게 치면 어떻게 나올까? 궁금하군" />
@@ -34,11 +33,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:textColor="@color/colorAccent"
-            android:textSize="10sp"
+            android:textSize="11sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/message_item_msg"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/message_item_msg"
             app:layout_constraintTop_toBottomOf="@+id/message_item_msg"
             tools:text="2019년 1월 2일 11시 25분 am" />
     </androidx.constraintlayout.widget.ConstraintLayout>

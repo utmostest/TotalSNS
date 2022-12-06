@@ -36,12 +36,12 @@
 
         <Button
             android:id="@+id/item_user_follow_btn"
-            android:layout_width="@dimen/follow_btn_w"
-            android:layout_height="@dimen/follow_btn_h"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginRight="16dp"
             android:background="@drawable/rounded_btn"
+            android:paddingHorizontal="16dp"
             android:text="@string/do_follow"
             android:textColor="@color/batang_white"
             android:textSize="16sp"
@@ -61,7 +61,6 @@
             android:transitionName="@string/tran_user_id_u"
             app:layout_constraintStart_toStartOf="@+id/item_user_profile"
             app:layout_constraintTop_toBottomOf="@+id/item_user_profile"
-            app:layout_constraintVertical_bias="0"
             tools:text="userid" />
 
         <TextView
@@ -86,11 +85,9 @@
             android:textAppearance="?attr/textAppearanceListItem"
             android:textSize="12sp"
             android:transitionName="@string/tran_message_u"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@+id/item_user_screen_id"
             app:layout_constraintTop_toBottomOf="@+id/item_user_name"
-            app:layout_constraintVertical_bias="0"
             tools:text="트위터 유저의 프로필입니다." />
 
         <TextView
