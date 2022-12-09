@@ -2,6 +2,7 @@ package com.enos.totalsns.userlist;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -69,5 +70,15 @@ public class UserListActivity extends AppCompatActivity implements OnUserClickLi
         intent.putExtra(UserListFragment.ARG_QUERY_SEARCH_USER, querySearchUser);
 //        context.startActivity(intent);
         ActivityUtils.startActivity(context, intent);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            onBackPressed(); //액션바 홈 버튼 눌렀을 때 자신만 종료되도록
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
