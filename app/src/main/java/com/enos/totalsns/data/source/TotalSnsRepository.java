@@ -1,6 +1,8 @@
 package com.enos.totalsns.data.source;
 
 
+import android.widget.Toast;
+
 import androidx.collection.LongSparseArray;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
@@ -27,6 +29,7 @@ import com.enos.totalsns.data.source.remote.QueryUploadMessage;
 import com.enos.totalsns.data.source.remote.QueryUserTimeline;
 import com.enos.totalsns.data.source.remote.TwitterManager;
 import com.enos.totalsns.intro.LoginResult;
+import com.enos.totalsns.util.SingletonToast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -248,6 +251,7 @@ public class TotalSnsRepository {
             mObservableTimelines.addSource(mTwitterManager.getHomeTimeline(),
                     timeline ->
                     {
+                        SingletonToast.getInstance().log("twitter", "timeline size" + timeline.size());
                         mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
                     });
         } catch (IllegalArgumentException e) {

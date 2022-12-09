@@ -53,8 +53,7 @@ public class MessageDetailActivity extends AppCompatActivity implements OnMessag
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-//            navigateUpTo(new Intent(this, ContentsActivity.class));
-            finish();
+            onBackPressed();
             return true;
         }
         return super.onOptionsItemSelected(item);

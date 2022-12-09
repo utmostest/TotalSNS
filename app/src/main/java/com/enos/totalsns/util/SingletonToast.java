@@ -68,7 +68,8 @@ public class SingletonToast {
             if (isShown()) {
                 cancel(log, tag, message);
             }
-            mToast = Toast.makeText(mContext, "tag : " + tag + "\nmessage : " + message, length);
+            mToast.setText("tag : " + tag + "\nmessage : " + message);
+            mToast.setDuration(length);
             mToast.show();
         } else {
             log(log, tag, message);
@@ -99,6 +100,19 @@ public class SingletonToast {
 
     public void log(int log, String tag, String message) {
         if (!Constants.IS_DEBUG) return;
-        Log.println(log, tag, message);
+
+        String msg = message;
+
+        int size = 2500;
+
+        while (msg.length() > 0) {
+            if (msg.length() > size) {
+                Log.println(log, tag, msg.substring(0, size));
+                msg = msg.substring(size);
+            } else {
+                Log.println(log, tag, msg);
+                break;
+            }
+        }
     }
 }

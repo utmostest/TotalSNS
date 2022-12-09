@@ -81,8 +81,8 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == android.R.id.home) {
-//            ActivityCompat.finishAfterTransition(this);
-//            return true;
+            onBackPressed(); //액션바 홈 버튼 눌렀을 때 자신만 종료되도록
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
