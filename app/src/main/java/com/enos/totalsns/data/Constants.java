@@ -29,4 +29,6 @@ public class Constants {
     public static boolean IS_TWITTER_DEBUG = false;
 
     public static final int SHORT_ANIM_MILLI = 120;
+
+    public static double INVALID_POSITION = -10000;
 }

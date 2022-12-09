@@ -1,5 +1,7 @@
 package com.enos.totalsns.data;
 
+import static com.enos.totalsns.data.Constants.INVALID_POSITION;
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -10,11 +12,14 @@ import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 import com.enos.totalsns.util.CompareUtils;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 
+import java.util.Arrays;
 import java.util.HashMap;
 
 @Entity(tableName = "article")
-public class Article implements Parcelable {
+public class Article implements Parcelable, ClusterItem, Cloneable {
 
     @PrimaryKey
     @NonNull
@@ -34,10 +39,12 @@ public class Article implements Parcelable {
     private boolean isMention;
     private long longUserId;
     //임시적으로 룸에 저장되지 않도록 ignore 어노테이션 추가
+
     @Ignore
-    private double latitude;
+    private double latitude = INVALID_POSITION;
     @Ignore
-    private double longitude;
+    private double longitude = INVALID_POSITION;
+
 
     //룸은 하나의 생성자만 인식해야 하므로 나머지 생성자엔 ignore 어노테이션 사용
     public Article() {
@@ -244,5 +251,55 @@ public class Article implements Parcelable {
             return CompareUtils.isArticleSame(this, (Article) obj);
         }
         return false;
+    }
+
+    @NonNull
+    @Override
+    public LatLng getPosition() {
+        return new LatLng(latitude, longitude);
+    }
+
+    @Override
+    public String toString() {
+        return "Article{" +
+                "tablePlusArticleId='" + tablePlusArticleId + '\'' +
+                ", tableUserId=" + tableUserId +
+                ", articleId=" + articleId +
+                ", userId='" + userId + '\'' +
+                ", userName='" + userName + '\'' +
+                ", message='" + message + '\'' +
+                ", profileImg='" + profileImg + '\'' +
+                ", imageUrls=" + Arrays.toString(imageUrls) +
+                ", postedAt=" + postedAt +
+                ", snsType=" + snsType +
+                ", urlMap=" + urlMap +
+                ", isMention=" + isMention +
+                ", longUserId=" + longUserId +
+                ", latitude=" + latitude +
+                ", longitude=" + longitude +
+                '}';
+    }
+
+    @Nullable
+    @Override
+    public String getTitle() {
+        return userName;
+    }
+
+    @NonNull
+    @Override
+    public Article clone() throws CloneNotSupportedException {
+        return (Article) super.clone();
+    }
+
+    @Nullable
+    @Override
+    public String getSnippet() {
+        return message;
+    }
+
+    public void setPosition(LatLng latLng) {
+        this.latitude = latLng.latitude;
+        this.longitude = latLng.longitude;
     }
 }

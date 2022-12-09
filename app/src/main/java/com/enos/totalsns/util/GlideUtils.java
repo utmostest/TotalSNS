@@ -19,6 +19,26 @@ public class GlideUtils {
         loadProfileImage(context, imageUrl, imageView, R.drawable.ic_account_circle_black_48dp);
     }
 
+    public static void loadNearByProfileImage(Context context, String imageUrl, ImageView imageView) {
+        Glide.with(context)
+                .load(imageUrl)
+                .apply(
+                        new RequestOptions()
+                                .dontTransform()
+                )
+                .into(imageView);
+    }
+
+    public static void loadNearByProfileImage(Context context, String imageUrl, SimpleTarget<Drawable> target) {
+        Glide.with(context)
+                .load(imageUrl)
+                .apply(
+                        new RequestOptions()
+                                .dontTransform()
+                )
+                .into(target);
+    }
+
     public static void loadProfileImage(Context context, String imageUrl, ImageView imageView, RequestListener<Drawable> callback) {
         Glide.with(context)
                 .load(imageUrl)

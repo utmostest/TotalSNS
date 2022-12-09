@@ -130,9 +130,11 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
+        <!--hardwareAccelerated 구글맵 에러가 발생해서 추가 애플리케이션에 추가할 수도 있음
+        -->
         <activity
             android:name=".nearby.NearbyArticleActivity"
+            android:hardwareAccelerated="true"
             android:label="@string/nearby_artilce"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait">

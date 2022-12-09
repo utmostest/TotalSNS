@@ -1,10 +1,13 @@
 package com.enos.totalsns.nearby;
 
+import static com.enos.totalsns.data.Constants.INVALID_POSITION;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,14 +23,14 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
+import com.enos.totalsns.ArticleRenderer;
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentNearbyArticleBinding;
+import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.util.ActivityUtils;
-import com.enos.totalsns.util.GlideUtils;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -37,21 +40,26 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.SphericalUtil;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterItem;
+import com.google.maps.android.clustering.ClusterManager;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class NearbyArticleFragment extends Fragment
-        implements OnMapReadyCallback, OnSuccessListener<Location>, OnFailureListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMyLocationButtonClickListener {
+        implements OnMapReadyCallback, OnSuccessListener<Location>, OnFailureListener, GoogleMap.OnCameraMoveStartedListener, GoogleMap.OnMyLocationButtonClickListener, ClusterManager.OnClusterClickListener<Article>, ClusterManager.OnClusterInfoWindowClickListener<Article>, ClusterManager.OnClusterItemClickListener<Article>, ClusterManager.OnClusterItemInfoWindowClickListener<Article> {
 
     private static final int REQUEST_USED_PERMISSION = 2810;
 
@@ -75,6 +83,14 @@ public class NearbyArticleFragment extends Fragment
 
     private FragmentNearbyArticleBinding mBinding;
 
+    private ClusterManager<Article> mClusterManager;
+
+    private List<Article> originalArticles;
+
+    private List<Article> tempArticleList;
+
+    private List<Polyline> polylines;
+
     public static NearbyArticleFragment newInstance() {
         return new NearbyArticleFragment();
     }
@@ -87,6 +103,10 @@ public class NearbyArticleFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(NearbyArticleViewModel.class);
+
+        originalArticles = new ArrayList<>();
+        tempArticleList = new ArrayList<>();
+        polylines = new ArrayList<>();
     }
 
     @Override
@@ -128,6 +148,9 @@ public class NearbyArticleFragment extends Fragment
                     return false; // true to keep the Speed Dial open
                 case R.id.sd_nearby_new:
                     searchRadiusCircle = null;
+                    mClusterManager.clearItems();
+                    mClusterManager.cluster(); // 아이템을 clear 한 후에 바로 클러스터 해줘야 오류가 안생긴다.
+                    clearLines();
                     map.clear();
                     addSearchRadiusCircle();
                     viewModel.fetchNearbyFirst(searchRadiusCircle.getCenter(), searchRadiusCircle.getRadius() / 1000);
@@ -136,22 +159,30 @@ public class NearbyArticleFragment extends Fragment
                     return false;
             }
         });
+
         return mBinding.getRoot();
     }
 
     private synchronized void addMarkers(List<Article> list) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        int pixels = (int) (50 * scale + 0.5f);
+        originalArticles.clear();
         for (Article article : list) {
-            if (article.getLatitude() <= 0 || article.getLongitude() <= 0) continue;
-            GlideUtils.loadProfileImageWithTarget(getContext(), article.getProfileImg(), pixels, new SimpleTarget<Bitmap>() {
-                @Override
-                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    map.addMarker(new MarkerOptions().position(new LatLng(article.getLatitude(), article.getLongitude()))
-                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage()));
-                }
-            });
+            if (article.getLatitude() == INVALID_POSITION || article.getLongitude() == INVALID_POSITION)
+                continue;
+            try {
+                originalArticles.add(article.clone());
+                mClusterManager.addItem(article.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+//            GlideUtils.loadProfileImageWithTarget(getContext(), article.getProfileImg(), pixels, new SimpleTarget<Bitmap>() {
+//                @Override
+//                public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
+//                    map.addMarker(new MarkerOptions().position(new LatLng(article.getLatitude(), article.getLongitude()))
+//                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage())).setTag(article);
+//                }
+//            });
         }
+        mClusterManager.cluster();
     }
 
     private double getRadiusFromProgress(int progress) {
@@ -187,7 +218,7 @@ public class NearbyArticleFragment extends Fragment
         }
 
         if (!permissionToLocationAccepted) {
-            Toast.makeText(getContext(), "퍼미션을 허용하지 않으면 내 위치를 사용할수 없습니다.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getContext(), R.string.gps_permission_warning, Toast.LENGTH_SHORT).show();
 //            finish();
         } else {
             getMyLocation();
@@ -208,6 +239,14 @@ public class NearbyArticleFragment extends Fragment
             mBinding.map.onPause();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (mBinding.map != null) {
+            mBinding.map.onStop();
+        }
+        super.onStop();
     }
 
     @Override
@@ -239,17 +278,76 @@ public class NearbyArticleFragment extends Fragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        initGoogleMap(googleMap);
+
+        updateZoomLevel(DEFAULT_LOCATION);
+
+        getMyLocation();
+    }
+
+    private void initGoogleMap(GoogleMap googleMap) {
         map = googleMap;
         map.setOnCameraMoveStartedListener(this);
+//        map.setOnInfoWindowClickListener(marker -> {
+//            Object obj = marker.getTag();
+//            if (obj != null && obj instanceof Article) {
+//                Article article = (Article) obj;
+//                TimelineDetailActivity.start((AppCompatActivity) getActivity(), article);
+//            }
+//        });
 
-        map.addMarker(new MarkerOptions().position(DEFAULT_LOCATION).title("서울에 마커 테스트").snippet("추가 정보는 여기에"));
-//        map.setInfoWindowAdapter(); 마커 클릭시 열리는 창
-        updateZoomLevel(DEFAULT_LOCATION);
-        map.setOnMarkerClickListener(marker -> {
-
-            return false;
+        mClusterManager = new ClusterManager<>(requireContext(), map);
+        mClusterManager.setRenderer(new ArticleRenderer(getContext(), map, mClusterManager));
+        map.setOnCameraIdleListener(mClusterManager);
+        map.setOnMarkerClickListener(mClusterManager);
+        map.setOnInfoWindowClickListener(mClusterManager);
+        map.setOnMapClickListener(latLng -> {
+            restorePosition();
         });
-        getMyLocation();
+        mClusterManager.setOnClusterClickListener(this);
+        mClusterManager.setOnClusterInfoWindowClickListener(this);
+        mClusterManager.setOnClusterItemClickListener(this);
+        mClusterManager.setOnClusterItemInfoWindowClickListener(this);
+
+        mClusterManager.cluster();
+    }
+
+    private void restorePosition() {
+        for (Article article : originalArticles) {
+            try {
+                mClusterManager.updateItem(article.clone());
+            } catch (CloneNotSupportedException e) {
+                e.printStackTrace();
+            }
+        }
+        clearLines();
+        tempArticleList.clear();
+        mClusterManager.cluster();
+    }
+
+    private void drawLines() {
+        if (originalArticles == null || tempArticleList == null) return;
+        for (Article temp : tempArticleList) {
+            for (Article original : originalArticles) {
+                SingletonToast.getInstance().log("line", temp + "\n" + original);
+                if (Objects.equals(original.getArticleId(), temp.getArticleId())) {
+                    SingletonToast.getInstance().log("line equal", temp + "\n" + original);
+                    drawLine(original.getPosition(), temp.getPosition());
+                }
+            }
+        }
+    }
+
+    private void drawLine(LatLng startLatLng, LatLng endLatLng) {
+        PolylineOptions options = new PolylineOptions().add(startLatLng).add(endLatLng).width(2).color(Color.BLACK).geodesic(true);
+        polylines.add(map.addPolyline(options));
+    }
+
+    private void clearLines() {
+        for (Polyline polyline : polylines) {
+            polyline.remove();
+        }
+        polylines.clear();
     }
 
     private void addSearchRadiusCircle() {
@@ -257,7 +355,7 @@ public class NearbyArticleFragment extends Fragment
             //radius unit is meter
             searchRadiusCircle = map.addCircle(new CircleOptions()
                     .center(lastKnownLocation == null ? DEFAULT_LOCATION : lastKnownLocation)
-                    .radius(getRadiusFromProgress(mBinding.seekBar == null ? 500 : mBinding.seekBar.getProgress()))
+                    .radius(getRadiusFromProgress(mBinding.seekBar == null ? 0 : mBinding.seekBar.getProgress()))
                     .strokeColor(getResources().getColor(R.color.colorPrimary)));
         }
     }
@@ -372,5 +470,111 @@ public class NearbyArticleFragment extends Fragment
                     .build();
         }
         return null;
+    }
+
+    private List<Article> getOriginalList(Cluster<Article> cluster) {
+        ArrayList<Article> newList = new ArrayList<>();
+        for (Article temp : cluster.getItems()) {
+            for (Article original : originalArticles) {
+                if (temp.getArticleId() == original.getArticleId()) {
+                    try {
+                        newList.add(original.clone());
+                    } catch (CloneNotSupportedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+        return newList;
+    }
+
+    @Override
+    public boolean onClusterClick(Cluster<Article> cluster) {
+
+        restorePosition();
+        List<Article> originList = getOriginalList(cluster);
+        LatLngBounds bounds = getLatLngBounds(originList);
+
+        LatLng center = bounds.getCenter();
+        int size = (int) Math.floor(Math.sqrt(cluster.getSize()));
+        double gapBeetweenMarker = Math.max(0.0001, 0.0000005 * getRadiusFromProgress(mBinding.seekBar.getProgress()));
+        int horizontalOrder = -size / 2;
+        int verticalOrder = -size / 2;
+        int count = 0;
+
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+
+        for (Article temp : originList) {
+            if (bounds.contains(temp.getPosition())) {
+                int h = horizontalOrder + (size > 0 ? (count % size) : count);
+                int v = verticalOrder + (size > 0 ? (count / size) : 0);
+                LatLng latLng = new LatLng(center.latitude + gapBeetweenMarker * h, center.longitude + gapBeetweenMarker * v);
+                Article item = null;
+                try {
+                    item = temp.clone();
+                    item.setPosition(latLng);
+                    builder.include(new LatLng(item.getLatitude(), item.getLongitude()));
+                    mClusterManager.updateItem(item.clone());
+
+                    tempArticleList.add(item.clone());
+                } catch (CloneNotSupportedException e) {
+                    e.printStackTrace();
+                }
+
+                Log.i("latlng", count + ":" + latLng);
+                count++;
+            }
+        }
+
+        LatLngBounds newBounds = builder.build();
+
+        drawLines();
+
+        // Animate camera to the bounds
+        try {
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(newBounds, 15));
+//            map.animateCamera(CameraUpdateFactory.newLatLngZoom(newBounds.getCenter(), map.getMaxZoomLevel()));
+//            map.moveCamera(CameraUpdateFactory.newLatLngZoom(newBounds.getCenter(), map.getMaxZoomLevel())); //설정시 위치가 같지 않은 항목이 있을 경우 가끔 오류생김
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        mClusterManager.cluster();
+
+        return false;
+    }
+
+    private LatLngBounds getLatLngBounds(List<Article> list) {
+        // Zoom in the cluster. Need to create LatLngBounds and including all the cluster items
+        // inside of bounds, then animate to center of the bounds.
+
+        // Create the builder to collect all essential cluster items for the bounds.
+        LatLngBounds.Builder builder = LatLngBounds.builder();
+        for (Article item : list) {
+            builder.include(new LatLng(item.getLatitude(), item.getLongitude()));
+        }
+        // Get the LatLngBounds
+        return builder.build();
+    }
+
+    @Override
+    public void onClusterInfoWindowClick(Cluster<Article> cluster) {
+        // Does nothing, but you could go to a list of the users.
+        mClusterManager.cluster();
+    }
+
+    @Override
+    public boolean onClusterItemClick(Article item) {
+        // Does nothing, but you could go into the user's profile page, for example.
+        mClusterManager.cluster();
+        return false;
+    }
+
+    @Override
+    public void onClusterItemInfoWindowClick(Article item) {
+        // Does nothing, but you could go into the user's profile page, for example.
+
+        TimelineDetailActivity.start((AppCompatActivity) getActivity(), item);
+
     }
 }
