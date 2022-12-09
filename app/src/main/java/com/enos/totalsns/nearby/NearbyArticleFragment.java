@@ -260,6 +260,11 @@ public class NearbyArticleFragment extends Fragment
         map = googleMap;
         map.setOnCameraMoveStartedListener(this);
 
+        map.setOnMarkerClickListener(marker -> {
+            marker.showInfoWindow();
+            return true;
+        });
+
         map.setOnInfoWindowClickListener(marker -> {
             Object obj = marker.getTag();
             if (obj != null && obj instanceof Article) {
