@@ -12,6 +12,7 @@ import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.FollowInfo;
 import com.enos.totalsns.data.Message;
 import com.enos.totalsns.data.UserInfo;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.TwitterObjConverter;
 
 import java.io.File;
@@ -157,7 +158,9 @@ public class TwitterManager {
 
     public void fetchTimeline(Paging paging) throws TwitterException {
 
+        SingletonToast.getInstance().log("twitter timeline", paging.toString());
         ResponseList<Status> list = mTwitter.getHomeTimeline(paging);
+        SingletonToast.getInstance().log("twitter timeline", list.size() + "개 :" + list.toString());
         long currentUserId = getLoggedInUser().getLongUserId();
         ArrayList<Article> articleList = TwitterObjConverter.toArticleList(list, currentUserId, false);
         homeTimeline.postValue(articleList);
@@ -169,7 +172,9 @@ public class TwitterManager {
 
     public void fetchMention(Paging paging) throws TwitterException {
 
+        SingletonToast.getInstance().log("twitter mention", paging.toString());
         ResponseList<Status> list = mTwitter.getMentionsTimeline(paging);
+        SingletonToast.getInstance().log("twitter mention", list.size() + "개 :" + list.toString());
         long currentUserId = getLoggedInUser().getLongUserId();
         ArrayList<Article> articleList = TwitterObjConverter.toArticleList(list, currentUserId, true);
         mentionList.postValue(articleList);
@@ -190,8 +195,10 @@ public class TwitterManager {
         }
         String cursor = message.getCursor();
 
+        SingletonToast.getInstance().log("twitter dm", "cursor:" + cursor);
         DirectMessageList list = (cursor == null || cursor.length() <= 0) ? mTwitter.getDirectMessages(Constants.PAGE_CNT) :
                 mTwitter.getDirectMessages(Constants.PAGE_CNT, cursor);
+        SingletonToast.getInstance().log("twitter dm", list.size() + "개 ," + list.getNextCursor() + ":커서, \n" + list.toString());
 
         queryMessage.setCursor(list.getNextCursor());
 
@@ -261,7 +268,10 @@ public class TwitterManager {
                 break;
         }
 
+        SingletonToast.getInstance().log("twitter search user", "query:" + querySearchUser.getQuery() + ",page:" + querySearchUser.getPage());
         ResponseList<User> result = mTwitter.searchUsers(querySearchUser.getQuery(), querySearchUser.getPage());
+
+        SingletonToast.getInstance().log("twitter search user", result.size() + "개 :" + result.toString());
 
         if (result == null || result.size() <= 0) return null;
 
@@ -291,8 +301,11 @@ public class TwitterManager {
                 break;
         }
 
+        SingletonToast.getInstance().log("twitter search timeline", tQuery.toString());
         QueryResult result = null;
         result = mTwitter.search(tQuery);
+        SingletonToast.getInstance().log("twitter search timeline", result.getCount() + "개 :" + result.toString());
+
         if (result != null) {
             long[] ids = TwitterObjConverter.getSmallAndLargeId(result);
 
@@ -316,7 +329,7 @@ public class TwitterManager {
 
         String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
         // default query string for until today
-        Query tQuery = new Query("until:" + dateString).count(Constants.PAGE_CNT);
+        Query tQuery = new Query().until(dateString).count(Constants.PAGE_CNT);
 
         switch (query.getQueryType()) {
             case QueryArticleNearBy.FIRST:
@@ -332,8 +345,11 @@ public class TwitterManager {
         GeoLocation geoLocation = new GeoLocation(queryArticleNearBy.getLatitude(), queryArticleNearBy.getLongitudu());
         tQuery.setGeoCode(geoLocation, queryArticleNearBy.getRadius(), Query.Unit.km);
 
+        SingletonToast.getInstance().log("twitter search nearby", tQuery.toString());
         QueryResult result = null;
         result = mTwitter.search(tQuery);
+        SingletonToast.getInstance().log("twitter search nearby", result.getTweets().size() + "개 :" + result.toString());
+
         if (result != null) {
             long[] ids = TwitterObjConverter.getSmallAndLargeId(result);
 
