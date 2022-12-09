@@ -1,5 +1,7 @@
 package com.enos.totalsns.nearby;
 
+import static com.enos.totalsns.data.Constants.INVALID_POSITION;
+
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -26,6 +28,7 @@ import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.databinding.FragmentNearbyArticleBinding;
+import com.enos.totalsns.timeline.detail.TimelineDetailActivity;
 import com.enos.totalsns.util.ActivityUtils;
 import com.enos.totalsns.util.GlideUtils;
 import com.enos.totalsns.util.ViewModelFactory;
@@ -140,15 +143,15 @@ public class NearbyArticleFragment extends Fragment
     }
 
     private synchronized void addMarkers(List<Article> list) {
-        final float scale = getContext().getResources().getDisplayMetrics().density;
-        int pixels = (int) (50 * scale + 0.5f);
+        int pixels = getContext().getResources().getDimensionPixelSize(R.dimen.custom_profile_image);
         for (Article article : list) {
-            if (article.getLatitude() <= 0 || article.getLongitude() <= 0) continue;
+            if (article.getLatitude() == INVALID_POSITION || article.getLongitude() == INVALID_POSITION)
+                continue;
             GlideUtils.loadProfileImageWithTarget(getContext(), article.getProfileImg(), pixels, new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
                     map.addMarker(new MarkerOptions().position(new LatLng(article.getLatitude(), article.getLongitude()))
-                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage()));
+                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage())).setTag(article);
                 }
             });
         }
@@ -187,8 +190,7 @@ public class NearbyArticleFragment extends Fragment
         }
 
         if (!permissionToLocationAccepted) {
-            Toast.makeText(getContext(), "퍼미션을 허용하지 않으면 내 위치를 사용할수 없습니다.", Toast.LENGTH_SHORT).show();
-//            finish();
+            Toast.makeText(getContext(), R.string.gps_permission_warning, Toast.LENGTH_SHORT).show();
         } else {
             getMyLocation();
         }
@@ -208,6 +210,14 @@ public class NearbyArticleFragment extends Fragment
             mBinding.map.onPause();
         }
         super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (mBinding.map != null) {
+            mBinding.map.onStop();
+        }
+        super.onStop();
     }
 
     @Override
@@ -239,17 +249,25 @@ public class NearbyArticleFragment extends Fragment
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        initGoogleMap(googleMap);
+
+        updateZoomLevel(DEFAULT_LOCATION);
+
+        getMyLocation();
+    }
+
+    private void initGoogleMap(GoogleMap googleMap) {
         map = googleMap;
         map.setOnCameraMoveStartedListener(this);
 
-        map.addMarker(new MarkerOptions().position(DEFAULT_LOCATION).title("서울에 마커 테스트").snippet("추가 정보는 여기에"));
-//        map.setInfoWindowAdapter(); 마커 클릭시 열리는 창
-        updateZoomLevel(DEFAULT_LOCATION);
-        map.setOnMarkerClickListener(marker -> {
-
-            return false;
+        map.setOnInfoWindowClickListener(marker -> {
+            Object obj = marker.getTag();
+            if (obj != null && obj instanceof Article) {
+                Article article = (Article) obj;
+                TimelineDetailActivity.start((AppCompatActivity) getActivity(), article);
+            }
         });
-        getMyLocation();
+
     }
 
     private void addSearchRadiusCircle() {
@@ -257,7 +275,7 @@ public class NearbyArticleFragment extends Fragment
             //radius unit is meter
             searchRadiusCircle = map.addCircle(new CircleOptions()
                     .center(lastKnownLocation == null ? DEFAULT_LOCATION : lastKnownLocation)
-                    .radius(getRadiusFromProgress(mBinding.seekBar == null ? 500 : mBinding.seekBar.getProgress()))
+                    .radius(getRadiusFromProgress(mBinding.seekBar == null ? 0 : mBinding.seekBar.getProgress()))
                     .strokeColor(getResources().getColor(R.color.colorPrimary)));
         }
     }

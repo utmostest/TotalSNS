@@ -12,4 +12,6 @@
     <dimen name="follow_btn_h">32dp</dimen>
     <dimen name="event_title_text_size">20sp</dimen>
     <dimen name="iv_margin">8dp</dimen>
+    <dimen name="custom_profile_image">48dp</dimen>
+    <dimen name="custom_profile_padding">8dp</dimen>
 </resources>
