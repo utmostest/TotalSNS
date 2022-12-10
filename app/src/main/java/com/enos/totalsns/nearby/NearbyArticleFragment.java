@@ -5,6 +5,7 @@ import static com.enos.totalsns.data.Constants.INVALID_POSITION;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -45,12 +46,16 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.maps.android.SphericalUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NearbyArticleFragment extends Fragment
@@ -78,6 +83,9 @@ public class NearbyArticleFragment extends Fragment
 
     private FragmentNearbyArticleBinding mBinding;
 
+    private List<Marker> markerList;
+    private List<Polyline> polylines;
+
     public static NearbyArticleFragment newInstance() {
         return new NearbyArticleFragment();
     }
@@ -90,6 +98,8 @@ public class NearbyArticleFragment extends Fragment
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(NearbyArticleViewModel.class);
+        markerList = new ArrayList<>();
+        polylines = new ArrayList<>();
     }
 
     @Override
@@ -131,6 +141,8 @@ public class NearbyArticleFragment extends Fragment
                     return false; // true to keep the Speed Dial open
                 case R.id.sd_nearby_new:
                     searchRadiusCircle = null;
+                    clearLines();
+                    markerList.clear();
                     map.clear();
                     addSearchRadiusCircle();
                     viewModel.fetchNearbyFirst(searchRadiusCircle.getCenter(), searchRadiusCircle.getRadius() / 1000);
@@ -150,10 +162,66 @@ public class NearbyArticleFragment extends Fragment
             GlideUtils.loadProfileImageWithTarget(getContext(), article.getProfileImg(), pixels, new SimpleTarget<Bitmap>() {
                 @Override
                 public void onResourceReady(@NonNull Bitmap resource, @Nullable Transition<? super Bitmap> transition) {
-                    map.addMarker(new MarkerOptions().position(new LatLng(article.getLatitude(), article.getLongitude()))
-                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage())).setTag(article);
+                    Marker marker = map.addMarker(new MarkerOptions().position(new LatLng(article.getLatitude(), article.getLongitude()))
+                            .icon(BitmapDescriptorFactory.fromBitmap(resource)).title(article.getUserId()).snippet(article.getMessage()));
+                    if (marker != null) {
+                        marker.setTag(article);
+                        markerList.add(marker);
+                    }
                 }
             });
+        }
+    }
+
+    private LatLngBounds scatterMarkersOnSamePosition(LatLng pos, List<Marker> markers) {
+        LatLngBounds.Builder bounds = new LatLngBounds.Builder();
+        bounds.include(pos);
+        boolean isFirst = true;
+        for (Marker marker : markers) {
+            if (pos.latitude == marker.getPosition().latitude && pos.longitude == marker.getPosition().longitude) {
+                if (isFirst) {
+                    isFirst = false;
+                    continue;
+                }
+                LatLng original = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+                LatLng tempPosition = getTempPosition(original);
+                bounds.include(tempPosition);
+                marker.setPosition(tempPosition);
+                drawLine(original, tempPosition);
+            }
+        }
+        return bounds.build();
+    }
+
+    private void clearLines() {
+        for (Polyline polyline : polylines) {
+            polyline.remove();
+        }
+        polylines.clear();
+    }
+
+    private void drawLine(LatLng startLatLng, LatLng endLatLng) {
+        PolylineOptions options = new PolylineOptions().add(startLatLng).add(endLatLng).width(2).color(Color.BLACK).geodesic(true);
+        polylines.add(map.addPolyline(options));
+    }
+
+    private LatLng getTempPosition(LatLng original) {
+        double lat = 0.0007 * Math.random() - 0.00035;
+        double lon = 0.0007 * Math.random() - 0.00035;
+        return new LatLng(original.latitude + lat, original.longitude + lon);
+    }
+
+    private void restoreMarkerPosition(List<Marker> markers) {
+        clearLines();
+        for (Marker marker : markers) {
+            if (marker.getTag() != null && marker.getTag() instanceof Article) {
+                Article article = (Article) marker.getTag();
+                LatLng current = marker.getPosition();
+                LatLng original = new LatLng(article.getLatitude(), article.getLongitude());
+                if (current.latitude != original.latitude || current.longitude == original.longitude) {
+                    marker.setPosition(original);
+                }
+            }
         }
     }
 
@@ -261,8 +329,19 @@ public class NearbyArticleFragment extends Fragment
         map.setOnCameraMoveStartedListener(this);
 
         map.setOnMarkerClickListener(marker -> {
+            LatLng position = new LatLng(marker.getPosition().latitude, marker.getPosition().longitude);
+            LatLngBounds bounds = scatterMarkersOnSamePosition(position, markerList);
+            map.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 16));
             marker.showInfoWindow();
+//            if (marker.isVisible()) {
+//                LatLng current = marker.getPosition();
+//                marker.setPosition(new LatLng(current.latitude + 0.01, current.longitude + 0.01));
+//            }
             return true;
+        });
+
+        map.setOnMapClickListener(latLng -> {
+            restoreMarkerPosition(markerList);
         });
 
         map.setOnInfoWindowClickListener(marker -> {
@@ -313,9 +392,9 @@ public class NearbyArticleFragment extends Fragment
 
         updateZoomLevel(new LatLng(location.getLatitude(), location.getLongitude()));
 
-        if (!isMapMoved) {
-            updateMyLocation();
-        }
+//        if (!isMapMoved) {
+//            updateMyLocation();
+//        }
     }
 
     @Override
