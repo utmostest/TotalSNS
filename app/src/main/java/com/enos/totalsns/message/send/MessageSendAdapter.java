@@ -1,8 +1,12 @@
 package com.enos.totalsns.message.send;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 
 import androidx.recyclerview.widget.DiffUtil;
 
@@ -155,9 +159,26 @@ public class MessageSendAdapter extends HFSupportAdapter {
             binding.messageSendBtn.setOnClickListener(v -> {
                 Editable editable = binding.messageSendEdit.getText();
                 if (editable.toString().length() > 0) {
-                    if (mListener != null) mListener.onUserToSendSearchClicked(editable.toString());
+                    if (mListener != null) {
+                        mListener.onUserToSendSearchClicked(editable.toString());
+                        hideKeyboard();
+                    }
                 }
             });
+            binding.messageSendEdit.setOnEditorActionListener((v, actionId, event) -> {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH && v.getText().length() > 0) {
+                    if (mListener != null) {
+                        mListener.onUserToSendSearchClicked(v.getText().toString());
+                        hideKeyboard();
+                    }
+                }
+                return true;
+            });
+        }
+
+        private void hideKeyboard() {
+            InputMethodManager imm = (InputMethodManager) binding.getRoot().getContext().getSystemService(INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(binding.messageSendEdit.getWindowToken(), 0);
         }
     }
 

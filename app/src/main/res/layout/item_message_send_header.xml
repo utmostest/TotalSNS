@@ -16,6 +16,7 @@
             android:layout_marginRight="8dp"
             android:ems="10"
             android:hint="@string/title_dm_send"
+            android:imeOptions="actionSearch"
             android:inputType="textPersonName"
             android:padding="16dp"
             app:layout_constraintEnd_toStartOf="@+id/message_send_btn"
