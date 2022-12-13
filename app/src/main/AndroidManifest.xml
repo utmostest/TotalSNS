@@ -89,7 +89,7 @@
             android:name=".message.detail.MessageDetailActivity"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ToolbarTheme"
+            android:theme="@style/Toolbar"
             android:windowSoftInputMode="adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -99,7 +99,7 @@
             android:name=".profile.ProfileActivity"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ToolbarTheme">
+            android:theme="@style/Toolbar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
@@ -108,7 +108,7 @@
             android:name=".userlist.UserListActivity"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ToolbarTheme">
+            android:theme="@style/Toolbar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
@@ -117,7 +117,7 @@
             android:name=".message.send.MessageSendActivity"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ToolbarTheme"
+            android:theme="@style/Toolbar"
             android:windowSoftInputMode="adjustPan">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
@@ -142,7 +142,7 @@
             android:label="@string/nearby_artilce"
             android:parentActivityName=".ContentsActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/ToolbarTheme">
+            android:theme="@style/Toolbar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />

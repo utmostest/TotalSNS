@@ -1,8 +1,9 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
-        <item name="background">@color/black_overlay</item>
+        <item name="background">@color/dark_gray</item>
+        <item name="android:windowBackground">@color/dark_gray</item>
         <item name="colorSurface">@color/dark_gray</item>
         <item name="colorOnSurface">@color/light_gray</item>
         <item name="colorPrimary">@color/colorPrimary</item>
@@ -28,5 +29,21 @@
         <item name="android:windowSharedElementExitTransition">
             @transition/shared_element
         </item>
+        <item name="toolbarNavigationButtonStyle">@style/AppTheme.Actionbar</item>
+        <item name="android:actionOverflowButtonStyle">@style/AppTheme.OverFlow</item>
+        <item name="toolbarStyle">@style/AppTheme.ToolBar</item>
+    </style>
+
+    <style name="AppTheme.ToolBar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme.Actionbar" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:tint">#000</item>
+        <item name="titleTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme.OverFlow" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">#000</item>
     </style>
 </resources>
