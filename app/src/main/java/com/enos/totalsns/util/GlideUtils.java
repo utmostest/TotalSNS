@@ -75,7 +75,6 @@ public class GlideUtils {
                 .load(imageUrl)
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.side_nav_bar)
                                 .dontTransform()
                                 .centerCrop()
                 )
@@ -107,7 +106,6 @@ public class GlideUtils {
                 .load(imageUrl)
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.side_nav_bar)
                                 .dontTransform()
                                 .centerCrop()
                 )

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="icon_tint">@color/dark_gray</color>
-    <color name="search_back">@color/gray</color>
+    <color name="search_back">@color/dark_gray</color>
     <color name="search_text">@color/light_gray</color>
 </resources>

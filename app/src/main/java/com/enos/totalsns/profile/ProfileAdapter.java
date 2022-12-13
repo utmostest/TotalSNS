@@ -298,7 +298,6 @@ public class ProfileAdapter extends HFSupportAdapter {
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + item.getProfileBackColor()));
                 setLayoutLoaded(LayoutLoad.BACK);
             } else {
-                binding.itemUserProfileBack.setImageResource(R.drawable.side_nav_bar);
                 setLayoutLoaded(LayoutLoad.BACK);
             }
         }

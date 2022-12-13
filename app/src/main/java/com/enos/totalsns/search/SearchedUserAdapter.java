@@ -119,8 +119,6 @@ public class SearchedUserAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
                 SingletonToast.getInstance().log("backcolor", mItem.getProfileBackColor());
                 binding.itemUserProfileBack.setImageDrawable(null);
                 binding.itemUserProfileBack.setBackgroundColor(Color.parseColor("#" + mItem.getProfileBackColor()));
-            } else {
-                binding.itemUserProfileBack.setImageResource(R.drawable.side_nav_bar);
             }
         }
     }

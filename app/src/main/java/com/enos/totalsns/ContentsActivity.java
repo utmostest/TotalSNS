@@ -277,8 +277,6 @@ public class ContentsActivity extends AppCompatActivity
             headerTextBg.setBackgroundColor(backGround);
             int textColor = ColorUtils.getComplimentColor(backGround);
             setTextColor(textColor, headerUserid, headerName, followerNum, followerLabel, followingNum, followingLabel);
-        } else {
-            headerBackground.setImageResource(R.drawable.side_nav_bar);
         }
     }
 

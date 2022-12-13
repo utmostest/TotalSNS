@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/title_write_timeline"
+            android:textColor="@color/search_text"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
             app:layout_constraintEnd_toEndOf="parent"
@@ -35,13 +36,13 @@
             app:layout_constraintTop_toTopOf="@+id/tl_write_close" />
 
         <Button
-            android:textColor="@color/icon_tint"
             android:id="@+id/tl_write_post"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/rounded_btn"
             android:text="트윗"
+            android:textColor="@color/icon_tint"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
             app:layout_constraintEnd_toEndOf="parent"
@@ -63,7 +64,6 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
             android:layout_marginBottom="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/tl_write_post"
@@ -78,9 +78,7 @@
                 android:gravity="top"
                 android:hint="@string/write_hint"
                 android:paddingStart="16dp"
-                android:paddingLeft="16dp"
-                android:paddingEnd="16dp"
-                android:paddingRight="16dp" />
+                android:paddingEnd="16dp" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <ImageButton

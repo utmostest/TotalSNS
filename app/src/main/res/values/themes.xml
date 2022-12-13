@@ -15,6 +15,23 @@
         <item name="colorControlHighlight">@color/color_control_highlight</item>
         <item name="selectableItemBackground">@drawable/pre_lollipop_selectable_item</item>
         <item name="colorControlNormal">@color/white</item>
+        <item name="toolbarNavigationButtonStyle">@style/AppTheme.Actionbar</item>
+        <item name="android:actionOverflowButtonStyle">@style/AppTheme.OverFlow</item>
+        <item name="toolbarStyle">@style/AppTheme.ToolBar</item>
+        <item name="android:textColor">@color/light_gray</item>
+    </style>
+
+    <style name="AppTheme.ToolBar" parent="@style/Widget.AppCompat.Toolbar">
+        <item name="titleTextColor">@color/black</item>
+    </style>
+
+    <style name="AppTheme.Actionbar" parent="Widget.AppCompat.Toolbar.Button.Navigation">
+        <item name="android:tint">@color/dark_gray</item>
+        <item name="titleTextColor">@color/dark_gray</item>
+    </style>
+
+    <style name="AppTheme.OverFlow" parent="Widget.AppCompat.ActionButton.Overflow">
+        <item name="android:tint">@color/dark_gray</item>
     </style>
 
     <style name="FullscreenTheme" parent="AppTheme">
