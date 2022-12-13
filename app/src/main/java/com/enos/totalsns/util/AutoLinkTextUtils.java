@@ -28,7 +28,7 @@ public class AutoLinkTextUtils {
         autoLinkTextView.setUrlModeColor(ContextCompat.getColor(context, R.color.blue));
         autoLinkTextView.setMentionModeColor(ContextCompat.getColor(context, R.color.orange));
         autoLinkTextView.setEmailModeColor(ContextCompat.getColor(context, R.color.gray));
-        autoLinkTextView.setSelectedStateColor(ContextCompat.getColor(context, R.color.batang_white)); //clickedColor
+        autoLinkTextView.setSelectedStateColor(ContextCompat.getColor(context, R.color.white)); //clickedColor
         autoLinkTextView.setBoldAutoLinkModes(
                 AutoLinkMode.MODE_HASHTAG,
                 AutoLinkMode.MODE_PHONE,

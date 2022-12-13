@@ -7,7 +7,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/batang_white"
         android:foreground="?attr/selectableItemBackground"
         android:padding="8dp"
         tools:context=".ContentsActivity">
@@ -22,13 +21,13 @@
             app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
         <Button
+            android:textColor="@color/icon_tint"
             android:id="@+id/fFollowBtn"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:background="@drawable/rounded_btn"
             android:paddingHorizontal="16dp"
             android:text="@string/title_following"
-            android:textColor="@color/batang_white"
             android:textSize="16sp"
             android:transitionName="@string/tran_follow_btn"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +45,6 @@
             android:ellipsize="end"
             android:maxLines="1"
             android:minWidth="30dp"
-            android:textColor="@color/black_overlay"
             android:textStyle="bold"
             android:transitionName="@string/tran_user_name_u"
             app:layout_constrainedWidth="true"
@@ -80,7 +78,6 @@
             android:duplicateParentState="true"
             android:focusable="false"
             android:maxLines="2"
-            android:textColor="@color/text_black"
             android:transitionName="@string/tran_message_u"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

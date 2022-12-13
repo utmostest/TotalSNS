@@ -4,21 +4,21 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:fitsSystemWindows="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
         tools:context=".ContentsActivity">
 
         <RelativeLayout
-            android:fitsSystemWindows="true"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true">
 
             <com.google.android.material.appbar.AppBarLayout
-                android:fitsSystemWindows="true"
                 android:id="@+id/app_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
                 android:theme="@style/AppTheme.AppBarOverlay">
 
                 <FrameLayout
@@ -45,7 +45,10 @@
                         android:id="@+id/searchView"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
-                        android:background="@color/colorPrimary" />
+                        android:background="@color/colorPrimary"
+                        android:textColor="@color/search_text"
+                        app:hintColor="@color/search_text"
+                        app:searchBackground="@color/search_back" />
                 </FrameLayout>
             </com.google.android.material.appbar.AppBarLayout>
 
@@ -63,9 +66,13 @@
                 android:layout_height="wrap_content"
                 android:layout_above="@+id/timeline_navigation"
                 android:layout_alignParentEnd="true"
-                android:layout_alignParentRight="true"
-                android:layout_margin="@dimen/fab_margin"
-                app:backgroundTint="@color/colorPrimary"
+                android:layout_marginStart="@dimen/fab_margin"
+                android:layout_marginTop="@dimen/fab_margin"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
+                android:contentDescription="@string/title_write_timeline"
+                android:tint="@color/icon_tint"
+                app:backgroundTint="@color/colorAccent"
                 app:srcCompat="@drawable/ic_add_white_24dp" />
 
             <com.google.android.material.bottomnavigation.BottomNavigationView

@@ -44,6 +44,6 @@
             app:layout_constraintBottom_toTopOf="@+id/navigation"
             app:layout_constraintEnd_toEndOf="parent"
             app:srcCompat="@drawable/ic_person_add_black_24dp"
-            app:tint="@color/batang_white" />
+            app:tint="@color/icon_tint" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

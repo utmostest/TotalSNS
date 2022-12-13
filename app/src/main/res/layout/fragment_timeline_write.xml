@@ -28,7 +28,6 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/title_write_timeline"
-            android:textColor="@color/text_black"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
             app:layout_constraintEnd_toEndOf="parent"
@@ -36,13 +35,13 @@
             app:layout_constraintTop_toTopOf="@+id/tl_write_close" />
 
         <Button
+            android:textColor="@color/icon_tint"
             android:id="@+id/tl_write_post"
             android:layout_width="wrap_content"
             android:layout_height="48dp"
             android:layout_marginEnd="8dp"
             android:background="@drawable/rounded_btn"
             android:text="트윗"
-            android:textColor="@color/batang_white"
             android:textSize="16sp"
             app:layout_constraintBottom_toBottomOf="@+id/tl_write_close"
             app:layout_constraintEnd_toEndOf="parent"

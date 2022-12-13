@@ -207,6 +207,7 @@ public class ContentsActivity extends AppCompatActivity
     private void initActionBar() {
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, mBinding.drawerLayout, mBinding.appBar.toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        toggle.getDrawerArrowDrawable().setColor(getResources().getColor(R.color.icon_tint));
         mBinding.drawerLayout.addDrawerListener(toggle);
         toggle.syncState();
     }

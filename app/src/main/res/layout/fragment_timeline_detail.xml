@@ -6,7 +6,6 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/batang_white"
         android:padding="16dp">
 
         <ImageView
@@ -46,7 +45,6 @@
             android:layout_marginTop="4dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="@color/black_overlay"
             android:textSize="18sp"
             android:textStyle="bold"
             android:transitionName="@string/tran_user_name"
@@ -62,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:textColor="@color/text_pink"
+            android:textColor="@color/colorAccent"
             android:textSize="18sp"
             android:transitionName="@string/tran_created_at"
             app:layout_constraintBaseline_toBaselineOf="@+id/tldUserId"
@@ -78,7 +76,6 @@
             android:clickable="false"
             android:duplicateParentState="true"
             android:focusable="false"
-            android:textColor="@color/text_black"
             android:textSize="18sp"
             android:transitionName="@string/tran_message"
             app:layout_constraintEnd_toEndOf="parent"

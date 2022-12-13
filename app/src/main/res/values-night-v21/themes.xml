@@ -1,12 +1,17 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="background">@color/black_overlay</item>
+        <item name="colorSurface">@color/dark_gray</item>
+        <item name="colorOnSurface">@color/light_gray</item>
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorOnPrimary">@color/dark_gray</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorSecondary">@color/colorSecondary</item>
+        <item name="colorOnSecondary">@color/dark_gray</item>
         <item name="colorAccent">@color/colorAccent</item>
         <item name="colorControlHighlight">@color/color_control_highlight</item>
-        <item name="colorOnSecondary">@color/batang_white</item>
 
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
@@ -23,10 +28,5 @@
         <item name="android:windowSharedElementExitTransition">
             @transition/shared_element
         </item>
-    </style>
-
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
     </style>
 </resources>

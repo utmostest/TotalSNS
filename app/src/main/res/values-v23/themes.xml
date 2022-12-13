@@ -1,0 +1,9 @@
+<resources>
+
+    <style name="Toolbar" parent="AppTheme">
+        <item name="android:titleTextColor">@android:color/white</item>
+        <item name="android:colorControlNormal">@android:color/white</item>
+        <item name="expandedTitleTextColor">@color/white</item>
+        <item name="collapsedTitleTextColor">@color/white</item>
+    </style>
+</resources>

@@ -43,6 +43,7 @@
                 app:srcCompat="@drawable/ic_account_circle_black_48dp" />
 
             <Button
+                android:textColor="@color/icon_tint"
                 android:id="@+id/item_user_follow_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
@@ -52,7 +53,6 @@
                 android:background="@drawable/rounded_btn"
                 android:paddingHorizontal="16dp"
                 android:text="팔로우"
-                android:textColor="@color/batang_white"
                 android:textSize="16sp"
                 android:transitionName="@string/tran_follow_btn"
                 app:layout_constraintEnd_toEndOf="parent"

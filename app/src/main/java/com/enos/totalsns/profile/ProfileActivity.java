@@ -47,10 +47,10 @@ public class ProfileActivity extends AppCompatActivity implements OnFollowListen
 //        mBinding = ActivityProfileBinding.inflate(getLayoutInflater());
 //        setContentView(mBinding.getRoot());
         DataBindingUtil.setContentView(this, R.layout.activity_profile);
+        initActionBar();
         if (savedInstanceState == null) {
             initFragment();
         }
-        initActionBar();
     }
 
     private void initActionBar() {

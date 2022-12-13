@@ -36,9 +36,11 @@
             android:layout_margin="@dimen/fab_margin"
             app:layout_constraintBottom_toTopOf="@+id/seekBar"
             app:layout_constraintEnd_toEndOf="@+id/map"
-            app:sdMainFabClosedBackgroundColor="@color/colorPrimary"
+            app:sdMainFabClosedBackgroundColor="@color/colorAccent"
+            app:sdMainFabClosedIconColor="@color/icon_tint"
             app:sdMainFabClosedSrc="@drawable/ic_search_white_36dp"
-            app:sdMainFabOpenedBackgroundColor="@color/colorPrimary" />
+            app:sdMainFabOpenedBackgroundColor="@color/colorAccent"
+            app:sdMainFabOpenedIconColor="@color/icon_tint" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
