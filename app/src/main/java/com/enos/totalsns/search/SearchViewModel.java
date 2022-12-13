@@ -23,6 +23,8 @@ public class SearchViewModel extends ViewModel {
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isNetworkOnUse;
     private MutableLiveData<UserInfo> userProfile;
+    private boolean isBetweenFetching = false;
+    private Article currentBetween = null;
 
     public SearchViewModel(Context application, TotalSnsRepository repository) {
 
@@ -51,8 +53,31 @@ public class SearchViewModel extends ViewModel {
         mRepository.fetchSearch(new QuerySearchArticle(QuerySearchArticle.PAST));
     }
 
-    public void fetchRecent() {
-        mRepository.fetchSearch(new QuerySearchArticle(QuerySearchArticle.RECENT));
+    public void fetchRecent(long sinceId) {
+        QuerySearchArticle query = new QuerySearchArticle(QuerySearchArticle.RECENT);
+        query.setSinceId(sinceId);
+        mRepository.fetchSearch(query);
+    }
+
+    public void fetchRecentBetween(Article article) {
+        isBetweenFetching = true;
+        currentBetween = article;
+        QuerySearchArticle query = new QuerySearchArticle(QuerySearchArticle.BETWEEN);
+        query.setSinceId(article.getSinceId());
+        query.setMaxId(article.getArticleId() - 1);
+        mRepository.fetchSearch(query);
+    }
+
+    public boolean isBetweenFetching() {
+        return isBetweenFetching;
+    }
+
+    public void setBetweenFetching(boolean betweenFetching) {
+        isBetweenFetching = betweenFetching;
+    }
+
+    public Article getCurrentBetween() {
+        return currentBetween;
     }
 
     public LiveData<String> getSearchQuery() {

@@ -31,4 +31,6 @@ public class Constants {
     public static final int SHORT_ANIM_MILLI = 120;
 
     public static double INVALID_POSITION = -10000;
+
+    public static long INVALID_ID = -1;
 }

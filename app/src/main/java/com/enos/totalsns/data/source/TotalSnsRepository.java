@@ -57,9 +57,27 @@ public class TotalSnsRepository {
 
     private MediatorLiveData<List<Article>> mObservableTimelines;
 
+    private LiveData<List<Article>> mTimelineRoom = null;
+
+    private LiveData<ArrayList<Article>> mTimelineTwitter = null;
+
     private MediatorLiveData<List<Message>> mObservableDirectMessage;
 
+    private LiveData<List<Message>> mDMRoom = null;
+
+    private LiveData<ArrayList<Message>> mDMTwitter = null;
+
     private MediatorLiveData<List<Article>> mObservableMention;
+
+    private LiveData<List<Article>> mMentionRoom = null;
+
+    private LiveData<ArrayList<Article>> mMentionTwitter = null;
+
+    private MediatorLiveData<List<Message>> mObservableDirectMessageDetail = null;
+
+    private LiveData<List<Message>> mDMDetailRoom = null;
+
+    private LiveData<ArrayList<Message>> mDMDetailTwitter = null;
 
     private MutableLiveData<List<Article>> mObservableSearch;
 
@@ -233,10 +251,14 @@ public class TotalSnsRepository {
     }
 
     private void addTimelineSource(long currentUser) {
+        if (mTimelineRoom != null) {
+            mObservableTimelines.removeSource(mTimelineRoom);
+        }
+        mTimelineRoom = mDatabase.articleDao().loadArticles(currentUser);
 
         //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 IllegalArgumentException 예외처리
         try {
-            mObservableTimelines.addSource(mDatabase.articleDao().loadArticles(currentUser),
+            mObservableTimelines.addSource(mTimelineRoom,
                     timeline ->
                     {
                         mObservableTimelines.postValue(timeline);
@@ -245,8 +267,13 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
+        if (mTimelineTwitter == null) {
+            mTimelineTwitter = mTwitterManager.getHomeTimeline();
+        } else {
+            mObservableTimelines.removeSource(mTimelineTwitter);
+        }
         try {
-            mObservableTimelines.addSource(mTwitterManager.getHomeTimeline(),
+            mObservableTimelines.addSource(mTimelineTwitter,
                     timeline ->
                     {
                         SingletonToast.getInstance().log("twitter", "timeline size" + timeline.size());
@@ -255,6 +282,13 @@ public class TotalSnsRepository {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void removeTimelineSource() {
+        mObservableTimelines.removeSource(mTimelineRoom);
+        mObservableTimelines.removeSource(mTimelineTwitter);
+        mTimelineRoom = null;
+        mTimelineTwitter = null;
     }
 
     public MutableLiveData<List<Article>> getHomeTimeline() {
@@ -282,6 +316,10 @@ public class TotalSnsRepository {
                         if (first != null && first.getArticleId() > 0)
                             paging.setMaxId(first.getArticleId() - 1);
                         break;
+                    case QueryTimeline.BETWEEN:
+                        paging.setSinceId(query.getSinceId());
+                        paging.setMaxId(query.getMaxId());
+                        break;
                 }
 
                 mAppExecutors.networkIO().execute(() -> {
@@ -302,9 +340,13 @@ public class TotalSnsRepository {
     // start of direct message
     private void addDirectMessageSource(long userId) {
 
+        if (mDMRoom != null) {
+            mObservableDirectMessage.removeSource(mDMRoom);
+        }
+        mDMRoom = mDatabase.messageDao().loadMessageList(userId);
         //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
         try {
-            mObservableDirectMessage.addSource(mDatabase.messageDao().loadMessageList(userId),
+            mObservableDirectMessage.addSource(mDMRoom,
                     dmlist ->
                     {
                         mObservableDirectMessage.postValue(dmlist);
@@ -313,8 +355,13 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
+        if (mDMTwitter == null) {
+            mDMTwitter = mTwitterManager.getDirectMessage();
+        } else {
+            mObservableDirectMessage.removeSource(mDMTwitter);
+        }
         try {
-            mObservableDirectMessage.addSource(mTwitterManager.getDirectMessage(),
+            mObservableDirectMessage.addSource(mDMTwitter,
                     dmlist ->
                     {
                         mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist));
@@ -322,6 +369,13 @@ public class TotalSnsRepository {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void removeDirectMessageSource() {
+        mObservableDirectMessage.removeSource(mDMRoom);
+        mObservableDirectMessage.removeSource(mDMTwitter);
+        mDMRoom = null;
+        mDMTwitter = null;
     }
 
     public MutableLiveData<List<Message>> getDirectMessage() {
@@ -352,21 +406,42 @@ public class TotalSnsRepository {
 
     private void addDirectMessageSourceDetail(long userId, long otherId, MediatorLiveData<List<Message>> liveData) {
 
-        //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
-        try {
-            liveData.addSource(mDatabase.messageDao().loadMessagesBySenderId(userId, otherId),
-                    dmlist -> liveData.postValue(dmlist));
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        if (mObservableDirectMessageDetail != null) {
+            removeDirectMessageDetailSource();
+        }
+        mObservableDirectMessageDetail = liveData;
+
+        if (mDMDetailRoom == null) {
+            mDMDetailRoom = mDatabase.messageDao().loadMessagesBySenderId(userId, otherId);
+            //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
+            try {
+                liveData.addSource(mDMDetailRoom,
+                        dmlist -> liveData.postValue(dmlist));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
 
-        try {
-            liveData.addSource(mTwitterManager.getDirectMessage(),
-                    dmlist -> mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist)));
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        if (mDMDetailTwitter == null) {
+            mDMDetailTwitter = mTwitterManager.getDirectMessage();
+            try {
+                liveData.addSource(mDMTwitter,
+                        dmlist -> mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist)));
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            }
         }
     }
+
+    private void removeDirectMessageDetailSource() {
+        if (mObservableDirectMessageDetail == null) return;
+        mObservableDirectMessageDetail.removeSource(mDMDetailRoom);
+        mObservableDirectMessageDetail.removeSource(mDMDetailTwitter);
+        mObservableDirectMessageDetail = null;
+        mDMDetailRoom = null;
+        mDMDetailTwitter = null;
+    }
+
 
     public void fetchDirectMessageDetail(long senderTableId, MediatorLiveData<List<Message>> liveData) {
         mAppExecutors.diskIO().execute(() -> {
@@ -381,9 +456,13 @@ public class TotalSnsRepository {
 
     private void addMentionSource(long userId) {
 
+        if (mMentionRoom != null) {
+            mObservableMention.removeSource(mMentionRoom);
+        }
+        mMentionRoom = mDatabase.articleDao().loadMentions(userId);
         //리포지토리 생성시에 호출하면 동작안함, 옵저버 추가여부를  확인할수 없어서 예외처리
         try {
-            mObservableMention.addSource(mDatabase.articleDao().loadMentions(userId),
+            mObservableMention.addSource(mMentionRoom,
                     timeline ->
                     {
                         mObservableMention.postValue(timeline);
@@ -392,8 +471,14 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
+
+        if (mMentionTwitter == null) {
+            mMentionTwitter = mTwitterManager.getMention();
+        } else {
+            mObservableMention.removeSource(mMentionTwitter);
+        }
         try {
-            mObservableMention.addSource(mTwitterManager.getMention(),
+            mObservableMention.addSource(mMentionTwitter,
                     timeline ->
                     {
                         mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
@@ -401,6 +486,13 @@ public class TotalSnsRepository {
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         }
+    }
+
+    private void removeMentionSource() {
+        mObservableMention.removeSource(mMentionRoom);
+        mObservableMention.removeSource(mMentionTwitter);
+        mMentionRoom = null;
+        mMentionTwitter = null;
     }
 
     public MutableLiveData<List<Article>> getMention() {
@@ -428,6 +520,10 @@ public class TotalSnsRepository {
                         if (first != null && first.getArticleId() > 0)
                             paging.setMaxId(first.getArticleId() - 1);
                         break;
+                    case QueryMention.BETWEEN:
+                        paging.setSinceId(query.getSinceId());
+                        paging.setMaxId(query.getMaxId());
+                        break;
                 }
 
                 mAppExecutors.networkIO().execute(() -> {
@@ -448,16 +544,26 @@ public class TotalSnsRepository {
     public synchronized void signOut() {
         isSignOutFinished.postValue(false);
         mHasSourceAdded.set(false);
+
+        removeSources();
+
         mAppExecutors.networkIO().execute(() -> {
-            mObservableTimelines.postValue(null);
-            mObservableMention.postValue(null);
-            mObservableDirectMessage.postValue(null);
+            mObservableTimelines.postValue(new ArrayList<>());
+            mObservableMention.postValue(new ArrayList<>());
+            mObservableDirectMessage.postValue(new ArrayList<>());
             mDatabase.accountDao().updateSignOutBySns(Constants.TWITTER);
             isSnsNetworkOnUse.postValue(true);
             mTwitterManager.signOut();
             isSnsNetworkOnUse.postValue(false);
             isSignOutFinished.postValue(true);
         });
+    }
+
+    public void removeSources() {
+        removeTimelineSource();
+        removeDirectMessageSource();
+        removeDirectMessageDetailSource();
+        removeMentionSource();
     }
 
     public LiveData<Boolean> isSignOutFinished() {
@@ -703,5 +809,11 @@ public class TotalSnsRepository {
 
     public LiveData<LongSparseArray<UserInfo>> getUserCache() {
         return userCache;
+    }
+
+    public void updateArticle(Article article) {
+        mAppExecutors.diskIO().execute(() -> {
+            mDatabase.articleDao().updateArticle(article);
+        });
     }
 }

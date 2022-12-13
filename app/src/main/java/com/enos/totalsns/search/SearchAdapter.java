@@ -1,9 +1,12 @@
 package com.enos.totalsns.search;
 
+import static com.enos.totalsns.data.Constants.INVALID_ID;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,10 +52,11 @@ public class SearchAdapter extends HFSupportAdapter {
 
     private ItemSearchHeaderBinding headerViewHolder = null;
     private OnFollowBtnClickListener followBtnListener;
+    private ViewModel mViewModel;
 
     public SearchAdapter(List<UserInfo> items, List<Article> list,
                          OnSearchUserClickListener mListener, OnArticleClickListener articleClickListener,
-                         OnMoreUserButtonClickListener moreUserButtonClickListener, OnFollowBtnClickListener followBtnListener) {
+                         OnMoreUserButtonClickListener moreUserButtonClickListener, OnFollowBtnClickListener followBtnListener, ViewModel viewModel) {
         mValues = list;
         mFilteredList = items;
         this.mListener = mListener;
@@ -60,6 +64,7 @@ public class SearchAdapter extends HFSupportAdapter {
         this.moreUserButtonClickListener = moreUserButtonClickListener;
         this.followBtnListener = followBtnListener;
         recycledViewPool = new RecyclerView.RecycledViewPool();
+        mViewModel = viewModel;
     }
 
     @Override
@@ -195,6 +200,18 @@ public class SearchAdapter extends HFSupportAdapter {
             });
             if (hasImage) {
                 binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);
+            }
+
+            boolean isMoreBetween = mItem.getSinceId() > INVALID_ID;
+            binding.tlMoreBtn.setVisibility(isMoreBetween ? View.VISIBLE : View.GONE);
+            if (isMoreBetween) {
+                binding.tlMoreBtn.setOnClickListener((view) -> {
+                    if (mViewModel != null) {
+                        if (mViewModel instanceof SearchViewModel) {
+                            ((SearchViewModel) mViewModel).fetchRecentBetween(mItem);
+                        }
+                    }
+                });
             }
 
             binding.tlUserId.setText(mItem.getUserId());

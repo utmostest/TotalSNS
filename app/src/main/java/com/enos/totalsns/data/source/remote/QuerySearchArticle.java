@@ -1,14 +1,17 @@
 package com.enos.totalsns.data.source.remote;
 
+import static com.enos.totalsns.data.Constants.INVALID_ID;
+
 public class QuerySearchArticle {
     private String query;
-    private long sinceId;
-    private long maxId;
+    private long sinceId = INVALID_ID;
+    private long maxId = INVALID_ID;
     private int queryType;
 
     public static final int FIRST = 1;
     public static final int PAST = 2;
     public static final int RECENT = 3;
+    public static final int BETWEEN = 4;
 
     public QuerySearchArticle(int queryType) {
         this.queryType = queryType;

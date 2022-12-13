@@ -1,5 +1,6 @@
 package com.enos.totalsns.data;
 
+import static com.enos.totalsns.data.Constants.INVALID_ID;
 import static com.enos.totalsns.data.Constants.INVALID_POSITION;
 
 import android.os.Parcel;
@@ -15,6 +16,7 @@ import com.enos.totalsns.util.CompareUtils;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 @Entity(tableName = "article")
 public class Article implements Parcelable, Cloneable {
@@ -36,10 +38,8 @@ public class Article implements Parcelable, Cloneable {
     private HashMap<String, String> urlMap;
     private boolean isMention;
     private long longUserId;
-    //임시적으로 룸에 저장되지 않도록 ignore 어노테이션 추가
-    @Ignore
+    private long sinceId = INVALID_ID;
     private double latitude = INVALID_POSITION;
-    @Ignore
     private double longitude = INVALID_POSITION;
 
 
@@ -81,6 +81,9 @@ public class Article implements Parcelable, Cloneable {
         urlMap = in.readHashMap(String.class.getClassLoader());
         isMention = in.readByte() != 0;
         longUserId = in.readLong();
+        sinceId = in.readLong();
+        latitude = in.readDouble();
+        longitude = in.readDouble();
     }
 
     public static final Creator<Article> CREATOR = new Creator<Article>() {
@@ -115,6 +118,9 @@ public class Article implements Parcelable, Cloneable {
         dest.writeMap(urlMap);
         dest.writeByte((byte) (isMention ? 1 : 0));
         dest.writeLong(longUserId);
+        dest.writeLong(sinceId);
+        dest.writeDouble(latitude);
+        dest.writeDouble(longitude);
     }
 
     public void setTablePlusArticleId(String tablePlusArticleId) {
@@ -237,17 +243,27 @@ public class Article implements Parcelable, Cloneable {
         this.longitude = longitude;
     }
 
-    @Override
-    public int hashCode() {
-        return tablePlusArticleId.hashCode();
+    public long getSinceId() {
+        return sinceId;
+    }
+
+    public void setSinceId(long sinceId) {
+        this.sinceId = sinceId;
     }
 
     @Override
-    public boolean equals(@Nullable Object obj) {
-        if (obj instanceof Article) {
-            return CompareUtils.isArticleSame(this, (Article) obj);
-        }
-        return false;
+    public int hashCode() {
+        int result = Objects.hash(tablePlusArticleId, tableUserId, articleId, userId, userName, message, profileImg, postedAt, snsType, urlMap, isMention, longUserId, sinceId, latitude, longitude);
+        result = 31 * result + Arrays.hashCode(imageUrls);
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Article)) return false;
+        Article article = (Article) o;
+        return tableUserId == article.tableUserId && articleId == article.articleId && postedAt == article.postedAt && snsType == article.snsType && isMention == article.isMention && longUserId == article.longUserId && sinceId == article.sinceId && Double.compare(article.latitude, latitude) == 0 && Double.compare(article.longitude, longitude) == 0 && tablePlusArticleId.equals(article.tablePlusArticleId) && userId.equals(article.userId) && Objects.equals(userName, article.userName) && Objects.equals(message, article.message) && Objects.equals(profileImg, article.profileImg) && Arrays.equals(imageUrls, article.imageUrls) && Objects.equals(urlMap, article.urlMap);
     }
 
     @Override
@@ -266,6 +282,7 @@ public class Article implements Parcelable, Cloneable {
                 ", urlMap=" + urlMap +
                 ", isMention=" + isMention +
                 ", longUserId=" + longUserId +
+                ", sinceId=" + sinceId +
                 ", latitude=" + latitude +
                 ", longitude=" + longitude +
                 '}';

@@ -53,7 +53,6 @@
             android:maxWidth="150dp"
             android:maxLines="1"
             android:minWidth="30dp"
-            android:textColor="@color/black_overlay"
             android:textSize="16sp"
             android:textStyle="bold"
             android:transitionName="@string/tran_user_name"
@@ -68,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
-            android:textColor="@color/text_pink"
+            android:textColor="@color/colorAccent"
             android:textSize="12sp"
             android:transitionName="@string/tran_created_at"
             app:layout_constraintBaseline_toBaselineOf="@+id/tlUserId"
@@ -84,7 +83,6 @@
             android:clickable="false"
             android:duplicateParentState="true"
             android:focusable="false"
-            android:textColor="@color/text_black"
             android:textSize="16sp"
             android:transitionName="@string/tran_message"
             app:layout_constraintBottom_toTopOf="@+id/imageContainer"
@@ -114,6 +112,18 @@
             app:layout_constraintEnd_toEndOf="@+id/tlMessage"
             app:layout_constraintStart_toStartOf="@+id/tlProfileImg"
             app:layout_constraintTop_toBottomOf="@+id/tlMessage" />
+
+        <ImageButton
+            android:id="@+id/tl_more_btn"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimary"
+            android:scaleType="fitCenter"
+            android:src="@drawable/more_dot"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/imageContainer" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

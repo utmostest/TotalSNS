@@ -55,11 +55,12 @@ public class CompareUtils {
     }
 
     public static boolean isAccountSame(Account oldAccount, Account newAccount) {
-        return oldAccount.getId() == newAccount.getId();
+        return isStringEqual(oldAccount.getPrimaryId(), newAccount.getPrimaryId());
     }
 
     public static boolean isAccountEqual(Account oldAccount, Account newAccount) {
-        return oldAccount.getId() == newAccount.getId() &&
+        return isStringEqual(oldAccount.getPrimaryId(), newAccount.getPrimaryId()) &&
+                oldAccount.getId() == newAccount.getId() &&
                 oldAccount.getSnsType() == newAccount.getSnsType() &&
                 oldAccount.isCurrent() == newAccount.isCurrent() &&
                 isStringEqual(oldAccount.getName(), newAccount.getName()) &&
@@ -113,8 +114,8 @@ public class CompareUtils {
                 isStringEqual(oldItem.getProfileBackColor(), newItem.getProfileBackColor()) &&
                 isStringEqual(oldItem.getEmail(), newItem.getEmail()) &&
                 isStringEqual(oldItem.getLocation(), newItem.getLocation()) &&
-                isStringEqual(oldItem.getMessage(), newItem.getMessage());
-//                && isArticleSame(oldItem.getLastArticle(), newItem.getLastArticle());
+                isStringEqual(oldItem.getMessage(), newItem.getMessage()) &&
+                isArticleEqual(oldItem.getLastArticle(), newItem.getLastArticle());
     }
 
     public static boolean isStringEqual(String one, String other) {

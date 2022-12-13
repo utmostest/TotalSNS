@@ -78,13 +78,15 @@ public class TimelineListFragment extends Fragment {
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 manager.getOrientation());
         mBinding.tlRv.addItemDecoration(dividerItemDecoration);
-        TimelineAdapter adapter = new TimelineAdapter(null, mListener);
+        TimelineAdapter adapter = new TimelineAdapter(null, mListener, mViewModel);
         mBinding.tlRv.setAdapter(adapter);
 
         mViewModel.getHomeTimeline().observe(getViewLifecycleOwner(), articleList -> {
 //                LinearLayoutManager lm = (LinearLayoutManager) mBinding.tlRv.getLayoutManager();
 //                int currentPosFirst = lm.findFirstCompletelyVisibleItemPosition();
-
+            if (mViewModel.isBetweenFetching()) {
+                mViewModel.setBetweenFetching(false);
+            }
             adapter.swapTimelineList(articleList);
 
 //                if (currentPosFirst == 0)

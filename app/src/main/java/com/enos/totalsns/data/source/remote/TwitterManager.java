@@ -1,5 +1,7 @@
 package com.enos.totalsns.data.source.remote;
 
+import static com.enos.totalsns.data.Constants.INVALID_ID;
+
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -130,7 +132,7 @@ public class TwitterManager {
 
         loggedInUser = TwitterObjConverter.toUserInfo(credential, new FollowInfo(false, false, true), credential.getId());
 
-        return new Account(loggedInUser.getLongUserId(), loggedInUser.getUserId(), token.getToken(), token.getSecret(),
+        return new Account(TwitterObjConverter.getAccountPK(loggedInUser.getLongUserId(), Constants.TWITTER), loggedInUser.getLongUserId(), loggedInUser.getUserId(), token.getToken(), token.getSecret(),
                 loggedInUser.getProfileImg(), loggedInUser.getUserName(), Constants.TWITTER, true);
     }
 
@@ -163,6 +165,9 @@ public class TwitterManager {
         SingletonToast.getInstance().log("twitter timeline", list.size() + "개 :" + list.toString());
         long currentUserId = getLoggedInUser().getLongUserId();
         ArrayList<Article> articleList = TwitterObjConverter.toArticleList(list, currentUserId, false);
+        if (paging.getSinceId() > INVALID_ID && articleList.size() > 20) {
+            articleList.get(articleList.size() - 1).setSinceId(paging.getSinceId());
+        }
         homeTimeline.postValue(articleList);
     }
 
@@ -177,6 +182,9 @@ public class TwitterManager {
         SingletonToast.getInstance().log("twitter mention", list.size() + "개 :" + list.toString());
         long currentUserId = getLoggedInUser().getLongUserId();
         ArrayList<Article> articleList = TwitterObjConverter.toArticleList(list, currentUserId, true);
+        if (paging.getSinceId() > INVALID_ID && articleList.size() > 20) {
+            articleList.get(articleList.size() - 1).setSinceId(paging.getSinceId());
+        }
         mentionList.postValue(articleList);
     }
 
@@ -299,12 +307,17 @@ public class TwitterManager {
             case QuerySearchArticle.RECENT:
                 tQuery.setSinceId(querySearchArticle.getSinceId());
                 break;
+            case QuerySearchArticle.BETWEEN:
+                tQuery.setSinceId(query.getSinceId());
+                tQuery.setMaxId(query.getMaxId());
+                break;
         }
 
         SingletonToast.getInstance().log("twitter search timeline", tQuery.toString());
         QueryResult result = null;
         result = mTwitter.search(tQuery);
-        SingletonToast.getInstance().log("twitter search timeline", result.getCount() + "개 :" + result.toString());
+
+        SingletonToast.getInstance().log("twitter search timeline", result.getTweets().size() + "개 :" + result.toString());
 
         if (result != null) {
             long[] ids = TwitterObjConverter.getSmallAndLargeId(result);
@@ -322,7 +335,11 @@ public class TwitterManager {
                     break;
             }
         }
-        return TwitterObjConverter.toArticleList(result, getLoggedInUser().getLongUserId());
+        ArrayList<Article> articleList = TwitterObjConverter.toArticleList(result, getLoggedInUser().getLongUserId());
+        if (tQuery.getSinceId() > INVALID_ID && result.getTweets().size() > 20) {
+            articleList.get(articleList.size() - 1).setSinceId(tQuery.getSinceId());
+        }
+        return articleList;
     }
 
     public ArrayList<Article> getSearchNearBy(QueryArticleNearBy query) throws TwitterException {

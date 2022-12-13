@@ -1,5 +1,7 @@
 package com.enos.totalsns.util;
 
+import static com.enos.totalsns.data.Constants.INVALID_POSITION;
+
 import android.util.Log;
 
 import androidx.collection.ArraySet;
@@ -29,13 +31,17 @@ import twitter4j.User;
 
 public class TwitterObjConverter {
 
-    public static String getUserMessagePK(long tableUser, long articleId) {
-        return tableUser + "_" + articleId;
+    public static String getUserMessagePK(long tableUser, long articleId, int snsType) {
+        return tableUser + "_" + articleId + "_" + snsType;
     }
 
     //tableUserId_articleId primary key for Article class
-    public static String getUserArticlePK(long tableUser, long articleId, boolean isMention) {
-        return tableUser + "_" + articleId + "_" + isMention;
+    public static String getUserArticlePK(long tableUser, long articleId, boolean isMention, int snsType) {
+        return tableUser + "_" + articleId + "_" + isMention + "_" + snsType;
+    }
+
+    public static String getAccountPK(long userId, int snsType) {
+        return userId + "_" + snsType;
     }
 
     public static String[] toStringArray(MediaEntity[] urls) {
@@ -152,7 +158,7 @@ public class TwitterObjConverter {
         User user = status.getUser();
         long articleId = status.getId();
         Article article = new Article(
-                TwitterObjConverter.getUserArticlePK(currentUserId, articleId, isMentionDb), currentUserId, articleId,
+                TwitterObjConverter.getUserArticlePK(currentUserId, articleId, isMentionDb, Constants.TWITTER), currentUserId, articleId,
                 user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                 toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                 toStringHashMap(status.getURLEntities()), user.getId());
@@ -213,7 +219,7 @@ public class TwitterObjConverter {
 
     public static Message toMessage(DirectMessage dm, long currentUserId, String senderName, String senderScreenId, String senderProfile) {
 
-        Message message = new Message(TwitterObjConverter.getUserMessagePK(currentUserId, dm.getId()), currentUserId, dm.getId(),
+        Message message = new Message(TwitterObjConverter.getUserMessagePK(currentUserId, dm.getId(), Constants.TWITTER), currentUserId, dm.getId(),
                 dm.getRecipientId(), dm.getSenderId(), senderName, senderScreenId, senderProfile,
                 dm.getText(), dm.getCreatedAt().getTime(), Constants.TWITTER, currentUserId == dm.getSenderId() ? dm.getRecipientId() : dm.getSenderId());
         return message;
@@ -238,10 +244,13 @@ public class TwitterObjConverter {
         Article article = null;
         if (status != null) {
             article = new Article(
-                    TwitterObjConverter.getUserArticlePK(currentUserId, status.getId(), false), currentUserId, status.getId(),
+                    TwitterObjConverter.getUserArticlePK(currentUserId, status.getId(), false, Constants.TWITTER), currentUserId, status.getId(),
                     user.getScreenName(), user.getName(), status.getText(), user.get400x400ProfileImageURL(),
                     toStringArray(status.getMediaEntities()), status.getCreatedAt().getTime(), Constants.TWITTER,
                     toStringHashMap(status.getURLEntities()), user.getId());
+            GeoLocation geoLocation = status.getGeoLocation();
+            Place place = status.getPlace();
+            setArticleLocationIfExist(article, geoLocation, place);
             article.setMention(false);
         }
         UserInfo userInfo = new UserInfo(user.getId(), user.getScreenName(), user.getName(), user.getDescription(),

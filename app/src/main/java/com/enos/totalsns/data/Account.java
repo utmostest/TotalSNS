@@ -1,6 +1,7 @@
 package com.enos.totalsns.data;
 
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -11,6 +12,8 @@ import com.enos.totalsns.util.CompareUtils;
 public class Account {
 
     @PrimaryKey
+    @NonNull
+    private String primaryId;
     private long id;
     private String screenName;
     private String oauthKey;
@@ -23,7 +26,8 @@ public class Account {
     public Account() {
     }
 
-    public Account(long uid, String screen_name, String oauth_key, String oauth_secret, String profileImage, String name, int snsType, boolean isCurrent) {
+    public Account(String primaryId, long uid, String screen_name, String oauth_key, String oauth_secret, String profileImage, String name, int snsType, boolean isCurrent) {
+        this.primaryId = primaryId;
         this.id = uid;
         this.screenName = screen_name;
         this.oauthKey = oauth_key;
@@ -33,6 +37,14 @@ public class Account {
 
         this.snsType = snsType;
         this.isCurrent = isCurrent;
+    }
+
+    public void setPrimaryId(String primaryId) {
+        this.primaryId = primaryId;
+    }
+
+    public String getPrimaryId() {
+        return primaryId;
     }
 
     public String getName() {

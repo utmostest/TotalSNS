@@ -1,11 +1,14 @@
 package com.enos.totalsns.timeline.list;
 
 
+import static com.enos.totalsns.data.Constants.INVALID_ID;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.lifecycle.ViewModel;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -13,6 +16,7 @@ import com.bumptech.glide.Glide;
 import com.enos.totalsns.data.Article;
 import com.enos.totalsns.databinding.ItemArticleBinding;
 import com.enos.totalsns.listener.OnArticleClickListener;
+import com.enos.totalsns.mention.MentionListViewModel;
 import com.enos.totalsns.util.AutoLinkTextUtils;
 import com.enos.totalsns.util.CompareUtils;
 import com.enos.totalsns.util.GlideUtils;
@@ -25,10 +29,17 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
 
     private List<Article> mFilteredList;
     private final OnArticleClickListener mListener;
+    private ViewModel mViewModel = null;
 
     public TimelineAdapter(List<Article> items, OnArticleClickListener listener) {
         mFilteredList = items;
         mListener = listener;
+    }
+
+    public TimelineAdapter(List<Article> items, OnArticleClickListener listener, ViewModel viewModel) {
+        mFilteredList = items;
+        mListener = listener;
+        mViewModel = viewModel;
     }
 
     @NonNull
@@ -105,6 +116,20 @@ public class TimelineAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             });
             if (hasImage) {
                 binding.imageContainer.loadImageViewsWithGlide(Glide.with(binding.imageContainer.getContext()), imgUrls);
+            }
+
+            boolean isMoreBetween = mItem.getSinceId() > INVALID_ID;
+            binding.tlMoreBtn.setVisibility(isMoreBetween ? View.VISIBLE : View.GONE);
+            if (isMoreBetween) {
+                binding.tlMoreBtn.setOnClickListener((view) -> {
+                    if (mViewModel != null) {
+                        if (mViewModel instanceof MentionListViewModel) {
+                            ((MentionListViewModel) mViewModel).fetchMentionForBetween(mItem);
+                        } else if (mViewModel instanceof TimelineListViewModel) {
+                            ((TimelineListViewModel) mViewModel).fetchBetweenTimeline(mItem);
+                        }
+                    }
+                });
             }
 
             binding.tlUserId.setText(mItem.getUserId());

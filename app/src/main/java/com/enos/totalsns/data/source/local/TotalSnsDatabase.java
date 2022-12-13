@@ -51,9 +51,7 @@ public abstract class TotalSnsDatabase extends RoomDatabase {
         if (sInstance == null) {
             synchronized (LOCK) {
                 if (sInstance == null) {
-                    sInstance = Room.databaseBuilder(context.getApplicationContext(),
-                            TotalSnsDatabase.class, TotalSnsDatabase.DATABASE_NAME).
-                            addMigrations(MIGRATION_1_2, MIGRATION_2_3).build();
+                    sInstance = Room.databaseBuilder(context.getApplicationContext(), TotalSnsDatabase.class, TotalSnsDatabase.DATABASE_NAME).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build();
                 }
             }
         }
@@ -73,16 +71,21 @@ public abstract class TotalSnsDatabase extends RoomDatabase {
     static final Migration MIGRATION_1_2 = new Migration(1, 2) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("CREATE TABLE `Fruit` (`id` INTEGER, "
-                    + "`name` TEXT, PRIMARY KEY(`id`))");
+
+//            database.execSQL("CREATE TABLE message_new(tableUserId INTEGER,messageId INTEGER,receiverId INTEGER,senderId INTEGER,senderName TEXT," +
+//                    "senderScreenId TEXT,senderProfile TEXT,message TEXT,createdAt INTEGER,snsType INTEGER,senderTableId INTEGER,maxCreatedAt INTEGER," +
+//                    "CONSTRAINT primaryKeys PRIMARY KEY(tableUserId,messageId))");
+//            database.execSQL("INSERT INTO message_new (tableUserId,messageId,receiverId,senderId,senderName,senderScreenId,senderProfile,message,createdAt,snsType,senderTableId,maxCreatedAt) " +
+//                    "SELECT tableUserId,messageId,receiverId,senderId,senderName,senderScreenId,senderProfile,message,createdAt,snsType,senderTableId,maxCreatedAt FROM message");
+//            database.execSQL("DROP TABLE message");
+//            database.execSQL("ALTER TABLE message_new RENAME TO message");
         }
     };
 
     static final Migration MIGRATION_2_3 = new Migration(2, 3) {
         @Override
         public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE Book "
-                    + " ADD COLUMN pub_year INTEGER");
+
         }
     };
 }

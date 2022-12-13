@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.enos.totalsns.R;
 import com.enos.totalsns.data.Article;
+import com.enos.totalsns.data.Constants;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentSearchBinding;
 import com.enos.totalsns.listener.OnArticleClickListener;
@@ -38,6 +39,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
 
     private SearchViewModel mViewModel;
     private FragmentSearchBinding mBinding;
+    private SearchAdapter mSearchAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,17 +78,22 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     private void initObserver() {
         mViewModel.getSearchQuery().observe(getViewLifecycleOwner(), (query) -> {
             if (query != null && query.length() > 0) {
-                ((SearchAdapter) mBinding.searchArticleRv.getAdapter()).swapUserList(null);
+                mSearchAdapter.swapUserList(null);
                 mViewModel.fetchSearch(query);
             }
         });
         mViewModel.getSearchUserList().observe(getViewLifecycleOwner(), list -> {
-            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
-            adapter.swapUserList(list);
+            mSearchAdapter.swapUserList(list);
         });
         mViewModel.getSearchList().observe(getViewLifecycleOwner(), (list) -> {
-            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
-            List<Article> old = adapter.getArticleList();
+            List<Article> old = mSearchAdapter.getArticleList();
+            if (list != null) {
+                if (mViewModel.isBetweenFetching()) {
+                    if (list.size() < 20) {
+                        old.get(old.indexOf(mViewModel.getCurrentBetween())).setSinceId(Constants.INVALID_ID);
+                    }
+                }
+            }
             if (old != null && old.size() > 0) {
                 Article oldLast = old.get(0);
                 Article oldFirst = old.get(old.size() - 1);
@@ -97,16 +104,27 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
                         list.addAll(list.size(), old);
                     } else if (last.getArticleId() < oldFirst.getArticleId()) {
                         list.addAll(0, old);
+                    } else if (mViewModel.isBetweenFetching()) {
+
+                        int index = old.indexOf(mViewModel.getCurrentBetween());
+                        if (index > 0) {
+                            old.get(index).setSinceId(Constants.INVALID_ID);
+                            list.addAll(0, old.subList(0, index + 1));
+                            list.addAll(list.size(), old.subList(index + 1, old.size()));
+                        }
                     }
                 } else if (list != null) {
                     list.addAll(old);
                 }
             }
-            adapter.swapTimelineList(list);
+            if (mViewModel.isBetweenFetching()) {
+                mViewModel.setBetweenFetching(false);
+            }
+            mSearchAdapter.swapTimelineList(list);
+            mSearchAdapter.notifyDataSetChanged();
         });
         mViewModel.getUserCache().observe(getViewLifecycleOwner(), cache -> {
-            SearchAdapter adapter = (SearchAdapter) mBinding.searchArticleRv.getAdapter();
-            ArrayList<UserInfo> current = (ArrayList<UserInfo>) adapter.getUserList();
+            ArrayList<UserInfo> current = (ArrayList<UserInfo>) mSearchAdapter.getUserList();
             if (current == null || cache == null) return;
             Log.i("userCache", cache.size() + " search");
             LongSparseArray<UserInfo> changed = new LongSparseArray<>();
@@ -125,7 +143,7 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
                     changedList.remove(index);
                     changedList.add(index, userInfo);
                 }
-                adapter.swapUserList(changedList);
+                mSearchAdapter.swapUserList(changedList);
             }
         });
         mViewModel.isNetworkOnUse().observe(getViewLifecycleOwner(), refresh -> {
@@ -140,11 +158,10 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
     }
 
     private List<UserInfo> replaceChangedUser(ArrayList<UserInfo> current, UserInfo user) {
-        ArrayList<UserInfo> users = new ArrayList<>(current);
         int index = current.indexOf(user);
-        users.remove(index);
-        users.add(index, user);
-        return users;
+        current.remove(index);
+        current.add(index, user);
+        return current;
     }
 
     private void initView() {
@@ -152,17 +169,22 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
 
         LinearLayoutManager managerVertical = new LinearLayoutManager(getContext());
         managerVertical.setOrientation(LinearLayoutManager.VERTICAL);
-        SearchAdapter searchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(),
-                mListener, mArticleListener, mMoreUserListener, this);
+        mSearchAdapter = new SearchAdapter(mViewModel.getSearchUserList().getValue(), mViewModel.getSearchList().getValue(),
+                mListener, mArticleListener, mMoreUserListener, this, mViewModel);
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(getContext(),
                 managerVertical.getOrientation());
-        searchAdapter.setEnableHeader(true, true);
+        mSearchAdapter.setEnableHeader(true, true);
         mBinding.searchArticleRv.addItemDecoration(dividerItemDecoration);
-        mBinding.searchArticleRv.setAdapter(searchAdapter);
+        mBinding.searchArticleRv.setAdapter(mSearchAdapter);
         mBinding.swipeContainer.setOnRefreshListener(direction -> {
             switch (direction) {
                 case TOP:
-                    mViewModel.fetchRecent();
+                    List<Article> articles = mSearchAdapter.getArticleList();
+                    if (articles.size() > 0) {
+                        mViewModel.fetchRecent(articles.get(0).getArticleId());
+                    } else {
+                        mViewModel.fetchRecent(-1);
+                    }
                     break;
                 case BOTTOM:
                     mViewModel.fetchPast();
