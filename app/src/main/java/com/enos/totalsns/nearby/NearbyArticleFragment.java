@@ -4,6 +4,7 @@ import static com.enos.totalsns.data.Constants.INVALID_POSITION;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.location.Location;
@@ -46,6 +47,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
@@ -352,6 +354,20 @@ public class NearbyArticleFragment extends Fragment
             }
         });
 
+        int currentNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        switch (currentNightMode) {
+            case Configuration.UI_MODE_NIGHT_YES:
+                map.setMapStyle(MapStyleOptions.loadRawResourceStyle(
+                        getContext(), R.raw.night_map));
+                // Night mode is active, we're using dark theme
+                break;
+            case Configuration.UI_MODE_NIGHT_NO:
+//                map.setMapStyle(MapStyleOptions.loadRawResourceStyle(
+//                        getContext(), R.raw.standard_map));
+                // Night mode is not active, we're using the light theme
+            default:
+                break;
+        }
     }
 
     private void addSearchRadiusCircle() {
