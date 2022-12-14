@@ -67,7 +67,7 @@ import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.StringUtils;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.ferfalk.simplesearchview.SimpleSearchView;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 
 import java.util.HashMap;
@@ -83,6 +83,8 @@ public class ContentsActivity extends AppCompatActivity
     private int menuType = Constants.DEFAULT_MENU;
     private AtomicBoolean mSignOutOnce = new AtomicBoolean(false);
     private AtomicBoolean mQuitOnce = new AtomicBoolean(false);
+
+    private boolean isNetworkOnUse = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -185,8 +187,11 @@ public class ContentsActivity extends AppCompatActivity
         mBinding.appBar.searchView.setOnSearchViewListener(new SimpleSearchView.SearchViewListener() {
             @Override
             public void onSearchViewShown() {
-                if (mBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
+                if (!isNetworkOnUse && mBinding.appBar.timelineNavigation.getSelectedItemId() != R.id.navigation_search) {
                     mBinding.appBar.timelineNavigation.setSelectedItemId(R.id.navigation_search);
+                } else if (isNetworkOnUse) {
+                    Toast.makeText(getApplicationContext(), "네트워크 사용중엔 이동할 수 없습니다.", Toast.LENGTH_SHORT).show();
+                    mBinding.appBar.searchView.closeSearch();
                 }
             }
 
@@ -224,6 +229,9 @@ public class ContentsActivity extends AppCompatActivity
             if (!CompareUtils.isUserInfoEqual(user, current)) {
                 updateHeaderView(current);
             }
+        });
+        viewModel.getIsNetworkOnUse().observe(this, networkOnUse -> {
+            isNetworkOnUse = networkOnUse;
         });
     }
 
@@ -289,7 +297,7 @@ public class ContentsActivity extends AppCompatActivity
     }
 
     private void initBottomNavigation() {
-        mBinding.appBar.timelineNavigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+        mBinding.appBar.timelineNavigation.setOnItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 
     private void initFab() {
@@ -388,8 +396,13 @@ public class ContentsActivity extends AppCompatActivity
     private void edit() {
     }
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+    private NavigationBarView.OnItemSelectedListener mOnNavigationItemSelectedListener
             = item -> {
+
+        if (isNetworkOnUse) {
+            Toast.makeText(this, "네트워크 사용중에는 이동할 수 없습니다.", Toast.LENGTH_SHORT).show();
+            return false;
+        }
 
         boolean menuSelected = false;
         Class<?> clazz = null;
