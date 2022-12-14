@@ -203,6 +203,7 @@ public class SearchAdapter extends HFSupportAdapter {
             }
 
             boolean isMoreBetween = mItem.getSinceId() > INVALID_ID;
+            binding.tempDivider.setVisibility(isMoreBetween ? View.VISIBLE : View.GONE);
             binding.tlMoreBtn.setVisibility(isMoreBetween ? View.VISIBLE : View.GONE);
             if (isMoreBetween) {
                 binding.tlMoreBtn.setOnClickListener((view) -> {

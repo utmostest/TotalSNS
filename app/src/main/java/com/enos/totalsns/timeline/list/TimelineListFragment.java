@@ -88,7 +88,7 @@ public class TimelineListFragment extends Fragment {
                 mViewModel.setBetweenFetching(false);
             }
             adapter.swapTimelineList(articleList);
-
+            adapter.notifyDataSetChanged();
 //                if (currentPosFirst == 0)
 //                    mBinding.tlRv.smoothScrollToPosition(0);
         });

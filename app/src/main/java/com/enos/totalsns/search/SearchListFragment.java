@@ -88,10 +88,8 @@ public class SearchListFragment extends Fragment implements OnFollowBtnClickList
         mViewModel.getSearchList().observe(getViewLifecycleOwner(), (list) -> {
             List<Article> old = mSearchAdapter.getArticleList();
             if (list != null) {
-                if (mViewModel.isBetweenFetching()) {
-                    if (list.size() < 20) {
-                        old.get(old.indexOf(mViewModel.getCurrentBetween())).setSinceId(Constants.INVALID_ID);
-                    }
+                if (mViewModel.isBetweenFetching() && list.size() < 20) {
+                    old.get(old.indexOf(mViewModel.getCurrentBetween())).setSinceId(Constants.INVALID_ID);
                 }
             }
             if (old != null && old.size() > 0) {
