@@ -16,15 +16,15 @@ import com.enos.totalsns.data.Constants;
 
 public class GlideUtils {
     public static void loadProfileImage(Context context, String imageUrl, ImageView imageView) {
-        loadProfileImage(context, imageUrl, imageView, R.drawable.ic_account_circle_black_48dp);
+        loadProfileImage(context, imageUrl, imageView, R.drawable.ic_account);
     }
 
     public static void loadProfileImage(Context context, String imageUrl, ImageView imageView, RequestListener<Drawable> callback) {
         Glide.with(context)
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                .placeholder(R.drawable.ic_account)
                                 .dontTransform()
                                 .optionalCircleCrop()
                 )
@@ -38,10 +38,10 @@ public class GlideUtils {
 
     public static void loadProfileImage(Context context, String imageUrl, SimpleTarget<Drawable> target) {
         Glide.with(context)
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                .placeholder(R.drawable.ic_account)
                                 .dontTransform()
                                 .optionalCircleCrop()
                 )
@@ -54,7 +54,7 @@ public class GlideUtils {
 
     public static void loadProfileImage(Context context, String imageUrl, ImageView imageView, int res, RequestListener<Drawable> callback) {
         Glide.with(context)
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
                                 .placeholder(res)
@@ -72,7 +72,7 @@ public class GlideUtils {
     public static void loadBackImageWithCallback(Context context, String imageUrl, ImageView imageView, RequestListener<Bitmap> callback) {
         Glide.with(context)
                 .asBitmap()
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
                                 .dontTransform()
@@ -85,10 +85,10 @@ public class GlideUtils {
     public static void loadProfileImageWithTarget(Context context, String image, int imageSize, Target<Bitmap> target) {
         Glide.with(context)
                 .asBitmap()
-                .load(image)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(image))
                 .apply(
                         new RequestOptions()
-                                .placeholder(R.drawable.ic_account_circle_black_48dp)
+                                .placeholder(R.drawable.ic_account)
                                 .dontTransform()
                                 .override(imageSize)
                                 .centerCrop()
@@ -103,7 +103,7 @@ public class GlideUtils {
 
     public static void loadBackImage(Context context, String imageUrl, ImageView imageView, RequestListener<Drawable> callback) {
         Glide.with(context)
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
                                 .dontTransform()
@@ -116,7 +116,7 @@ public class GlideUtils {
     public static void loadBigImage(Context context, String imageUrl, ImageView imageView, RequestListener<Bitmap> callback) {
         Glide.with(context)
                 .asBitmap()
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
                                 .dontTransform()
@@ -127,7 +127,7 @@ public class GlideUtils {
 
     public static void loadBigImage(Context context, String imageUrl, ImageView imageView) {
         Glide.with(context)
-                .load(imageUrl)
+                .load(StringUtils.checkHttpSchemeAndInsertIfNotExist(imageUrl))
                 .apply(
                         new RequestOptions()
                                 .dontTransform()

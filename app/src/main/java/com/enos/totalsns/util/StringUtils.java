@@ -35,7 +35,9 @@ public class StringUtils {
     public static String checkHttpSchemeAndInsertIfNotExist(String matchedText) {
         String normalizedString = matchedText;
         if (!matchedText.contains("http://") && !matchedText.contains("https://")) {
-            normalizedString = "http://" + normalizedString;
+            normalizedString = "https://" + normalizedString;
+        } else if (matchedText.contains("http://")) {
+            normalizedString = normalizedString.replace("http://", "https://");
         }
         return normalizedString;
     }
