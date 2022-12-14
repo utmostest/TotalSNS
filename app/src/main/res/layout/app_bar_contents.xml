@@ -81,6 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
                 android:background="?android:attr/windowBackground"
+                app:itemTextColor="@color/colorPrimary"
                 app:menu="@menu/timeline_navigation" />
         </RelativeLayout>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

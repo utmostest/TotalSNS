@@ -18,7 +18,7 @@
             android:transitionName="@string/tran_profile_image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+            app:srcCompat="@drawable/ic_account" />
 
         <TextView
             android:id="@+id/msUserId"

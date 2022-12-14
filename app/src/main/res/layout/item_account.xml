@@ -17,7 +17,7 @@
             app:layout_constraintEnd_toStartOf="@+id/accUserId"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+            app:srcCompat="@drawable/ic_account" />
 
         <TextView
             android:id="@+id/accUserId"
@@ -42,7 +42,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginLeft="8dp"
             android:gravity="center_vertical"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

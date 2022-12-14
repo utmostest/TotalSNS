@@ -57,7 +57,7 @@
             app:layout_constraintEnd_toEndOf="@+id/tl_write_close"
             app:layout_constraintStart_toStartOf="@+id/tl_write_close"
             app:layout_constraintTop_toBottomOf="@+id/tl_write_close"
-            app:srcCompat="@drawable/ic_account_circle_black_36dp" />
+            app:srcCompat="@drawable/ic_account" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"

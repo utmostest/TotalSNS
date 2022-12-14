@@ -26,7 +26,7 @@
         app:layout_constraintBottom_toTopOf="@+id/header_userid"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/ic_account_circle_black_48dp" />
+        app:srcCompat="@drawable/ic_account" />
 
     <View
         android:id="@+id/header_text_bg"
