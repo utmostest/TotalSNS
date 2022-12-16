@@ -22,7 +22,6 @@ public class ContentsViewModel extends ViewModel {
     private TotalSnsRepository mRepository;
     private MediatorLiveData<Boolean> isShouldQuit;
     private MutableLiveData<Boolean> isBackPressed;
-    private MediatorLiveData<Boolean> isNetworkOnUse;
 
     public ContentsViewModel(Context application, TotalSnsRepository repository) {
 
@@ -30,12 +29,10 @@ public class ContentsViewModel extends ViewModel {
         mRepository = repository;
         isShouldQuit = new MediatorLiveData<>();
         isBackPressed = new MutableLiveData<>();
-        isNetworkOnUse = new MediatorLiveData<>();
         isBackPressed.setValue(false);
         isShouldQuit.addSource(isBackPressed, (isPressed) -> {
             if (isPressed != null && isPressed) setFalseAfterDelay();
         });
-        isNetworkOnUse.addSource(mRepository.isSnsNetworkOnUse(), (onUse) -> isNetworkOnUse.postValue(onUse));
     }
 
     public void signOut() {
@@ -91,14 +88,9 @@ public class ContentsViewModel extends ViewModel {
     private void clearViewModel() {
         isShouldQuit.postValue(null);
         mRepository.getSearchQuery().postValue(null);
-        isNetworkOnUse.removeSource(mRepository.isSnsNetworkOnUse());
     }
 
     public LiveData<LongSparseArray<UserInfo>> getUserCache() {
         return mRepository.getUserCache();
-    }
-
-    public MediatorLiveData<Boolean> getIsNetworkOnUse() {
-        return isNetworkOnUse;
     }
 }
