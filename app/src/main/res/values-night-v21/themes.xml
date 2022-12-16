@@ -1,6 +1,7 @@
 <resources>
 
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="android:windowDisablePreview">true</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
         <item name="background">@color/dark_gray</item>
         <item name="android:windowBackground">@color/dark_gray</item>

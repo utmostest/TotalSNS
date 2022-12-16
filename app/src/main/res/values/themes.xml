@@ -3,6 +3,7 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.DarkActionBar">
         <!-- Customize your theme here. -->
+        <item name="android:windowDisablePreview">true</item>
         <item name="background">@color/white</item>
         <item name="colorSurface">@color/light_gray</item>
         <item name="colorOnSurface">@color/text_black</item>
