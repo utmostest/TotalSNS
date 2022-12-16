@@ -103,6 +103,7 @@
             android:transitionName="@string/tran_image_container"
             android:visibility="gone"
             app:cardCornerRadius="10dp"
+            app:cardUseCompatPadding="true"
             app:imageCount="0"
             app:imageOrientation="horizontal"
             app:layout_constraintDimensionRatio="16:9"
