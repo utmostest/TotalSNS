@@ -20,6 +20,7 @@ import com.enos.totalsns.util.TwitterObjConverter;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 
 import twitter4j.DirectMessage;
@@ -344,7 +345,12 @@ public class TwitterManager {
 
     public ArrayList<Article> getSearchNearBy(QueryArticleNearBy query) throws TwitterException {
 
-        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(new Date());
+        Date dt = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(dt);
+        c.add(Calendar.DATE, 1); //최신 글이 검색안되어 내일로 수정
+        dt = c.getTime();
+        String dateString = new SimpleDateFormat("yyyy-MM-dd").format(dt);
         // default query string for until today
         Query tQuery = new Query().until(dateString).count(Constants.PAGE_CNT);
 
