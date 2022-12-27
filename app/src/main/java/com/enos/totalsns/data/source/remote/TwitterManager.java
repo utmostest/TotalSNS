@@ -22,6 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import twitter4j.DirectMessage;
 import twitter4j.DirectMessageList;
@@ -50,10 +51,6 @@ public class TwitterManager {
     private static TwitterManager mTwitterManager = null;
 
     private Twitter mTwitter = null;
-
-    private MutableLiveData<ArrayList<Article>> homeTimeline;
-    private MutableLiveData<ArrayList<Message>> directMessage;
-    private MutableLiveData<ArrayList<Article>> mentionList;
 
     private UserInfo loggedInUser = null;
 
@@ -86,9 +83,6 @@ public class TwitterManager {
 
         TwitterFactory tf = new TwitterFactory(cb.build());
         mTwitter = tf.getInstance();
-        homeTimeline = new MutableLiveData<ArrayList<Article>>();
-        directMessage = new MutableLiveData<ArrayList<Message>>();
-        mentionList = new MutableLiveData<ArrayList<Article>>();
 
         initSearchVariable();
     }
@@ -155,11 +149,7 @@ public class TwitterManager {
         return article;
     }
 
-    public LiveData<ArrayList<Article>> getHomeTimeline() {
-        return homeTimeline;
-    }
-
-    public void fetchTimeline(Paging paging) throws TwitterException {
+    public List<Article> getTimeline(Paging paging) throws TwitterException {
 
         SingletonToast.getInstance().log("twitter timeline", paging.toString());
         ResponseList<Status> list = mTwitter.getHomeTimeline(paging);
@@ -169,14 +159,10 @@ public class TwitterManager {
         if (paging.getSinceId() > INVALID_ID && articleList.size() > 20) {
             articleList.get(articleList.size() - 1).setSinceId(paging.getSinceId());
         }
-        homeTimeline.postValue(articleList);
+        return articleList;
     }
 
-    public LiveData<ArrayList<Article>> getMention() {
-        return mentionList;
-    }
-
-    public void fetchMention(Paging paging) throws TwitterException {
+    public List<Article> getMention(Paging paging) throws TwitterException {
 
         SingletonToast.getInstance().log("twitter mention", paging.toString());
         ResponseList<Status> list = mTwitter.getMentionsTimeline(paging);
@@ -186,14 +172,10 @@ public class TwitterManager {
         if (paging.getSinceId() > INVALID_ID && articleList.size() > 20) {
             articleList.get(articleList.size() - 1).setSinceId(paging.getSinceId());
         }
-        mentionList.postValue(articleList);
+        return articleList;
     }
 
-    public LiveData<ArrayList<Message>> getDirectMessage() {
-        return directMessage;
-    }
-
-    public void fetchDirectMessage(QueryMessage message) throws TwitterException {
+    public List<Message> getDirectMessage(QueryMessage message) throws TwitterException {
         switch (message.getQueryType()) {
             case QueryMessage.FIRST:
                 queryMessage = message;
@@ -215,9 +197,8 @@ public class TwitterManager {
 
         ResponseList<User> userList = mTwitter.lookupUsers(userSet);
 
-        directMessage.postValue(
-                TwitterObjConverter.toMessageList(list, getLoggedInUser().getLongUserId(),
-                        TwitterObjConverter.getUserIdMap(userList, getLoggedInUser().getLongUserId())));
+        return TwitterObjConverter.toMessageList(list, getLoggedInUser().getLongUserId(),
+                TwitterObjConverter.getUserIdMap(userList, getLoggedInUser().getLongUserId()));
     }
 
     public Message sendDirectMessage(QueryUploadMessage query) throws TwitterException {

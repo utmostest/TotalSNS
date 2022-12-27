@@ -59,25 +59,17 @@ public class TotalSnsRepository {
 
     private LiveData<List<Article>> mTimelineRoom = null;
 
-    private LiveData<ArrayList<Article>> mTimelineTwitter = null;
-
     private MediatorLiveData<List<Message>> mObservableDirectMessage;
 
     private LiveData<List<Message>> mDMRoom = null;
-
-    private LiveData<ArrayList<Message>> mDMTwitter = null;
 
     private MediatorLiveData<List<Article>> mObservableMention;
 
     private LiveData<List<Article>> mMentionRoom = null;
 
-    private LiveData<ArrayList<Article>> mMentionTwitter = null;
-
     private MediatorLiveData<List<Message>> mObservableDirectMessageDetail = null;
 
     private LiveData<List<Message>> mDMDetailRoom = null;
-
-    private LiveData<ArrayList<Message>> mDMDetailTwitter = null;
 
     private MutableLiveData<List<Article>> mObservableSearch;
 
@@ -267,28 +259,11 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
-        if (mTimelineTwitter == null) {
-            mTimelineTwitter = mTwitterManager.getHomeTimeline();
-        } else {
-            mObservableTimelines.removeSource(mTimelineTwitter);
-        }
-        try {
-            mObservableTimelines.addSource(mTimelineTwitter,
-                    timeline ->
-                    {
-                        SingletonToast.getInstance().log("twitter", "timeline size" + timeline.size());
-                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
-                    });
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
     }
 
     private void removeTimelineSource() {
         mObservableTimelines.removeSource(mTimelineRoom);
-        mObservableTimelines.removeSource(mTimelineTwitter);
         mTimelineRoom = null;
-        mTimelineTwitter = null;
     }
 
     public MutableLiveData<List<Article>> getHomeTimeline() {
@@ -324,7 +299,10 @@ public class TotalSnsRepository {
 
                 mAppExecutors.networkIO().execute(() -> {
                     try {
-                        mTwitterManager.fetchTimeline(paging);
+                        List<Article> articles = mTwitterManager.getTimeline(paging);
+                        mAppExecutors.diskIO().execute(() -> {
+                            mDatabase.articleDao().insertArticles(articles);
+                        });
                     } catch (TwitterException e) {
                         e.printStackTrace();
                     }
@@ -355,27 +333,11 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
-        if (mDMTwitter == null) {
-            mDMTwitter = mTwitterManager.getDirectMessage();
-        } else {
-            mObservableDirectMessage.removeSource(mDMTwitter);
-        }
-        try {
-            mObservableDirectMessage.addSource(mDMTwitter,
-                    dmlist ->
-                    {
-                        mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist));
-                    });
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
     }
 
     private void removeDirectMessageSource() {
         mObservableDirectMessage.removeSource(mDMRoom);
-        mObservableDirectMessage.removeSource(mDMTwitter);
         mDMRoom = null;
-        mDMTwitter = null;
     }
 
     public MutableLiveData<List<Message>> getDirectMessage() {
@@ -391,7 +353,10 @@ public class TotalSnsRepository {
                 mAppExecutors.mainThread().execute(() -> addDirectMessageSource(userId));
                 mAppExecutors.networkIO().execute(() -> {
                     try {
-                        mTwitterManager.fetchDirectMessage(message);
+                        List<Message> messages = mTwitterManager.getDirectMessage(message);
+                        mAppExecutors.diskIO().execute(() -> {
+                            mDatabase.messageDao().insertMessages(messages);
+                        });
                     } catch (TwitterException e) {
                         e.printStackTrace();
                     }
@@ -406,9 +371,8 @@ public class TotalSnsRepository {
 
     private void addDirectMessageSourceDetail(long userId, long otherId, MediatorLiveData<List<Message>> liveData) {
 
-        if (mObservableDirectMessageDetail != null) {
-            removeDirectMessageDetailSource();
-        }
+        removeDirectMessageDetailSource();
+
         mObservableDirectMessageDetail = liveData;
 
         if (mDMDetailRoom == null) {
@@ -421,25 +385,13 @@ public class TotalSnsRepository {
                 e.printStackTrace();
             }
         }
-
-        if (mDMDetailTwitter == null) {
-            mDMDetailTwitter = mTwitterManager.getDirectMessage();
-            try {
-                liveData.addSource(mDMTwitter,
-                        dmlist -> mAppExecutors.diskIO().execute(() -> mDatabase.messageDao().insertMessages(dmlist)));
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private void removeDirectMessageDetailSource() {
         if (mObservableDirectMessageDetail == null) return;
-        mObservableDirectMessageDetail.removeSource(mDMDetailRoom);
-        mObservableDirectMessageDetail.removeSource(mDMDetailTwitter);
+        if (mDMDetailRoom != null) mObservableDirectMessageDetail.removeSource(mDMDetailRoom);
         mObservableDirectMessageDetail = null;
         mDMDetailRoom = null;
-        mDMDetailTwitter = null;
     }
 
 
@@ -471,28 +423,11 @@ public class TotalSnsRepository {
             e.printStackTrace();
         }
 
-
-        if (mMentionTwitter == null) {
-            mMentionTwitter = mTwitterManager.getMention();
-        } else {
-            mObservableMention.removeSource(mMentionTwitter);
-        }
-        try {
-            mObservableMention.addSource(mMentionTwitter,
-                    timeline ->
-                    {
-                        mAppExecutors.diskIO().execute(() -> mDatabase.articleDao().insertArticles(timeline));
-                    });
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        }
     }
 
     private void removeMentionSource() {
         mObservableMention.removeSource(mMentionRoom);
-        mObservableMention.removeSource(mMentionTwitter);
         mMentionRoom = null;
-        mMentionTwitter = null;
     }
 
     public MutableLiveData<List<Article>> getMention() {
@@ -528,7 +463,10 @@ public class TotalSnsRepository {
 
                 mAppExecutors.networkIO().execute(() -> {
                     try {
-                        mTwitterManager.fetchMention(paging);
+                        List<Article> articles = mTwitterManager.getMention(paging);
+                        mAppExecutors.diskIO().execute(() -> {
+                            mDatabase.articleDao().insertArticles(articles);
+                        });
                     } catch (TwitterException e) {
                         e.printStackTrace();
                     }
