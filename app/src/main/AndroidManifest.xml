@@ -11,9 +11,7 @@
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-
-    <!--안드로이드 33이상을 타겟 컴파일 sdk로 설정했을 경우-->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /> <!-- 안드로이드 33이상을 타겟 컴파일 sdk로 설정했을 경우 -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
@@ -37,7 +35,7 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <!--requestLegacyExternalStorage 안드로이드 10이상에서 외부 디렉토리 파일 접근제한 해제-->
+        <!-- requestLegacyExternalStorage 안드로이드 10이상에서 외부 디렉토리 파일 접근제한 해제 -->
         <activity
             android:name=".image.ImageActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -147,8 +145,7 @@
         -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-        <!-- hardwareAccelerated 구글맵 에러가 발생해서 추가 애플리케이션에 추가할 수도 있음 -->
+            android:value="@string/google_maps_key" /> <!-- hardwareAccelerated 구글맵 에러가 발생해서 추가 애플리케이션에 추가할 수도 있음 -->
         <activity
             android:name=".nearby.NearbyArticleActivity"
             android:hardwareAccelerated="true"
@@ -160,7 +157,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.enos.totalsns.ContentsActivity" />
         </activity>
-
         <activity
             android:name=".settings.SettingsActivity"
             android:exported="false"

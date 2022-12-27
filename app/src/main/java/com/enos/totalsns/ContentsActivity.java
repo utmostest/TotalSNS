@@ -91,7 +91,7 @@ public class ContentsActivity extends AppCompatActivity
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_contents);
         viewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(this)).get(ContentsViewModel.class);
 
-        initUI();
+        initUI(savedInstanceState);
         initObserver();
     }
 
@@ -111,14 +111,18 @@ public class ContentsActivity extends AppCompatActivity
         }
     }
 
-    private void initUI() {
+    private void initUI(Bundle saved) {
         initToolbar();
         initSearchView();
         initFab();
         initActionBar();
         initNavigation();
         initBottomNavigation();
-        initFragment();
+        if (saved == null) {
+            initFragment();
+        } else {
+            setIconAndShowFab();
+        }
     }
 
     private void initFragment() {
