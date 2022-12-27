@@ -127,12 +127,14 @@
             android:layout_width="match_parent"
             android:layout_height="48dp"
             android:layout_marginTop="16dp"
-            android:background="@color/icon_tint"
+            android:background="@android:color/transparent"
             android:scaleType="fitCenter"
-            android:src="@drawable/more_dot"
             android:tint="@color/colorPrimary"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/temp_divider" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/temp_divider"
+            app:srcCompat="@drawable/more_dot" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
