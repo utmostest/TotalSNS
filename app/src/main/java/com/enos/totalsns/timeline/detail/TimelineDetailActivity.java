@@ -67,7 +67,6 @@ public class TimelineDetailActivity extends AppCompatActivity implements OnArtic
 
     @Override
     public void onArticleImageClicked(ImageView iv, Article article, int position) {
-//        Toast.makeText(this, "TODO : add image pager activity", Toast.LENGTH_SHORT).show();
         ImageActivity.start(this, article.getImageUrls(), position);
     }
 

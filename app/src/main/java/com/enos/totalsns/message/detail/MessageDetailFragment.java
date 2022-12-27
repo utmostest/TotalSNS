@@ -1,13 +1,17 @@
 package com.enos.totalsns.message.detail;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
@@ -17,11 +21,16 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.enos.totalsns.R;
+import com.enos.totalsns.custom.GlideCustomAdapter;
 import com.enos.totalsns.data.UserInfo;
 import com.enos.totalsns.databinding.FragmentMessageDetailBinding;
 import com.enos.totalsns.listener.OnMessageClickListener;
+import com.enos.totalsns.util.SingletonToast;
 import com.enos.totalsns.util.ViewModelFactory;
 import com.omadahealth.github.swipyrefreshlayout.library.SwipyRefreshLayoutDirection;
+import com.sangcomz.fishbun.FishBun;
+
+import java.util.ArrayList;
 
 public class MessageDetailFragment extends Fragment implements View.OnClickListener {
 
@@ -31,6 +40,8 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     private FragmentMessageDetailBinding mBinding;
 
     private UserInfo receiver = null;
+
+    ActivityResultLauncher<Intent> lancher;
 
     public static MessageDetailFragment newInstance(UserInfo receiver) {
         MessageDetailFragment fragment = new MessageDetailFragment();
@@ -43,6 +54,31 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        lancher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), result -> {
+            if (result.getResultCode() == Activity.RESULT_OK) {
+                ArrayList<Uri> uriList = new ArrayList<>();
+                uriList = result.getData().getParcelableArrayListExtra(FishBun.INTENT_PATH);
+//                if (result.getData() == null) {   // 어떤 이미지도 선택하지 않은 경우
+//
+//                } else {   // 이미지를 하나라도 선택한 경우
+//                    if (result.getData().getClipData() == null) {     // 이미지를 하나만 선택한 경우
+//                        Uri imageUri = result.getData().getData();
+//                        uriList.add(imageUri);
+//
+//                    } else {      // 이미지를 여러장 선택한 경우
+//                        ClipData clipData = result.getData().getClipData();
+//
+//                        for (int i = 0; i < clipData.getItemCount(); i++) {
+//                            Uri imageUri = clipData.getItemAt(i).getUri();  // 선택한 이미지들의 uri를 가져온다.
+//                            uriList.add(imageUri);  //uri를 list에 담는다.
+//                        }
+//                    }
+//                }
+
+                SingletonToast.getInstance().show("선택한 이미지는 " + uriList.size() + "개");
+            }
+        });
 
         mViewModel = ViewModelProviders.of(this, (ViewModelProvider.Factory) ViewModelFactory.getInstance(getContext())).get(MessageDetailViewModel.class);
         if (getArguments() != null) {
@@ -130,11 +166,23 @@ public class MessageDetailFragment extends Fragment implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.message_detail_image:
-                Toast.makeText(getContext(), "TODO : add image selector", Toast.LENGTH_SHORT).show();
+                FishBun.with(getActivity())
+                        .setImageAdapter(new GlideCustomAdapter())
+                        .setMaxCount(4)
+                        .setActionBarColor(getResources().getColor(R.color.colorPrimary), getResources().getColor(R.color.colorPrimaryDark), false)
+//                        .setActionBarTitleColor(getResources().getColor(R.color.search_back))
+                        .startAlbumWithActivityResultCallback(lancher);
+//                Intent intent = new Intent(Intent.ACTION_PICK);
+//                intent.setDataAndType(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, MediaStore.Images.Media.CONTENT_TYPE);
+//                intent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);  // 다중 이미지를 가져올 수 있도록 세팅
+//                lancher.launch(intent);
+//                Toast.makeText(getContext(), "TODO : add image selector", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.message_detail_send:
                 postDirectMessage();
                 break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + v.getId());
         }
     }
 }

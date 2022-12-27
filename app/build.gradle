@@ -181,4 +181,7 @@ dependencies {
 
     //speed dial
     implementation "com.leinardi.android:speed-dial:3.3.0"
+
+    //multi image picker
+    implementation 'io.github.sangcomz:fishbun:1.1.1'
 }
